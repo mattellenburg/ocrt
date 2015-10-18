@@ -1,0 +1,161 @@
+body {
+    /*background-image: url("../images/background.jpg");*/
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    margin: 0;
+}
+
+html {
+    height: 100%;
+}
+
+a, a:visited {
+    text-decoration: none;
+    color: #000;
+}
+
+#header {
+    width: 100%;
+    height: 100px;
+    background-color: white;
+}
+
+#header h1 {
+}
+
+#title {
+    display: inline-block;
+    height: 100%;
+    margin-left: 50px;
+}
+
+#navigation {
+    display: inline-block;
+    height: 100%;
+    margin-left: 100px;
+}
+
+#navigation ul li {
+    display: inline-block;  
+    margin-left: 20px;
+    padding: 10px;
+}
+
+#navigation ul li:hover {
+    background-color: grey;
+}
+
+#navigation ul li a {
+    color: black;  
+    font-size: 24px;
+}
+
+#home {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    padding: 50px;
+}
+
+#home img {
+    width: 200px;
+    height: 200px;
+    padding: 100px;
+    border: 3px solid #000;
+    border-radius: 50px;
+    background-color: #fff;
+}
+
+#home h2 {
+    padding: 20px;
+    border: 3px solid #000;
+    border-radius: 50px;
+    background-color: #fff;
+}
+
+#explore {
+    display: inline-block;   
+}
+
+#train {
+    display: inline-block;
+    margin: 0px 50px 0px 50px;
+}
+
+#race {
+    display: inline-block;    
+}
+
+#message {
+    background-color: #fff;
+    width: 100%;
+    margin-top: 10px;
+    margin-left: 20px;
+}
+
+#instructions {
+    background-color: #fff;
+    width: 600px;
+    display: inline-block;
+    margin-left: 10px;
+}
+
+#instructions h2 {
+}
+
+#instructions p {
+}
+
+#googleMap {
+    width: 600px;
+    height: 500px;
+}
+
+#pointInformation {
+    width: 400px;
+    height: 600px;
+    display: inline-block;
+    vertical-align: top;
+    background-color: #fff;
+    margin-left: 10px;
+    padding: 0px 10px 0px 10px;
+}
+
+#filters {
+    width: 400px;
+    height: 600px;
+    display: inline-block;
+    vertical-align: top;
+    background-color: #fff;
+    margin-left: 10px;
+    padding: 0px 10px 0px 10px;
+}
+
+#pointInformation label {
+    width: 70px;
+    display: inline-block;
+}
+
+#divIcon {
+    width: 95%;
+    border: 1px solid black;
+    display: inline-block;
+    overflow-x: scroll;
+}
+
+#divIcon img {
+    display: inline-block;    
+}
+
+.radioIcon {
+    display: inline-block;
+}
+
+#pointInformation textarea {
+    width: 95%;
+}
+
+#footer {
+    width: 100%;
+    border: 1px solid black;
+}
