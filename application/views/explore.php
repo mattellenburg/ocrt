@@ -13,66 +13,66 @@
         <h2>Information</h2>
     </div>
     <div id="filters">
-        <h2>Filters</h2>
-        <form action="<?= base_url('index.php/explore/index') ?>">
-            <p>
-                Average Rating: 
-                <input type="radio" name="rating" value="1" />
-                <input type="radio" name="rating" value="2" />
-                <input type="radio" name="rating" value="3" />
-                <input type="radio" name="rating" value="4" />
-                <input type="radio" name="rating" value="5" />
-                or higher
-            </p>
-            <p>Submitted by Me: <input type="checkbox" name="mysubmissions"></p>
-            <p>Approval Status: <input type="radio" name="approvalstatus" value="0">All<input type="radio" name="approvalstatus" value="1">Approved<input type="radio" name="approvalstatus" value="2">Pending</p>
-            <p>
-                Keyword Search: 
-                <div id="keywords">
-                    <?php foreach ($keywords as $keyword): ?>
-                        <input name="keywords[]" type="checkbox" value=" <?php echo $keyword->id ?> " /><?php echo $keyword->keyword ?><br>
-                    <?php endforeach; ?>
-                </div>
-            </p>
-            <p>Title/Description Search: <input type="text" name="search" /></p>
-            <p><input type="submit" value="Search" /></p>
-        </form>
+        <?php if (isset($_SESSION['user_id'])) : ?>
+            <h2>Filters</h2>
+            <form action="<?= base_url('index.php/explore/index') ?>">
+                <p>
+                    Average Rating: 
+                    <input type="radio" name="rating" value="1" />
+                    <input type="radio" name="rating" value="2" />
+                    <input type="radio" name="rating" value="3" />
+                    <input type="radio" name="rating" value="4" />
+                    <input type="radio" name="rating" value="5" />
+                    or higher
+                </p>
+                <p>Submitted by Me: <input type="checkbox" name="mysubmissions"></p>
+                <p>Approval Status: <input type="radio" name="approvalstatus" value="0">All<input type="radio" name="approvalstatus" value="1">Approved<input type="radio" name="approvalstatus" value="2">Pending</p>
+                <p>
+                    Keyword Search: 
+                    <div id="keywords">
+                        <?php foreach ($keywords as $keyword): ?>
+                            <input name="keywords[]" type="checkbox" value=" <?php echo $keyword->id ?> " /><?php echo $keyword->keyword ?><br>
+                        <?php endforeach; ?>
+                    </div>
+                </p>
+                <p>Title/Description Search: <input type="text" name="search" /></p>
+                <p><input type="submit" value="Search" /></p>
+            </form>
+        <?php endif; ?>
     </div>
 </div>
 
 <script src="http://maps.googleapis.com/maps/api/js"></script>
 <script>
 function initialize() {
-	var sessionid = " <?php if (isset($_SESSION['user_id'])) { echo $_SESSION['user_id']; } else { echo 0; } ?> ";
-	var mapProp = {
-		zoom:15,
-		mapTypeId:google.maps.MapTypeId.ROADMAP
-	};
-	var map=new google.maps.Map(document.getElementById("googleMap"),mapProp);
-	
-	// Try HTML5 geolocation.
-	if (navigator.geolocation) {
-		navigator.geolocation.getCurrentPosition(function(position) {
-			var pos = {
-				lat: position.coords.latitude,
-				lng: position.coords.longitude
-			};	
+    var sessionid = " <?php if (isset($_SESSION['user_id'])) { echo $_SESSION['user_id']; } else { echo 0; } ?> ";
+    var mapProp = {
+        zoom:15,
+        mapTypeId:google.maps.MapTypeId.ROADMAP
+    };
+    var map=new google.maps.Map(document.getElementById("googleMap"),mapProp);
 
-			loadPoints(map, sessionid);
-			
-			map.setCenter(pos);
-		}, function() {
-			handleLocationError(true, infoWindow, map.getCenter());
-		});
-	} 
-	else {
-		// Browser doesn't support Geolocation
-		handleLocationError(false, infoWindow, map.getCenter());
-	}
-	
-	if (sessionid > 0) {
-		addMapClickEvent(map);
-	}
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+                var pos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                };	
+
+                loadPoints(map, sessionid);
+
+                map.setCenter(pos);
+        }, function() {
+                handleLocationError(true, infoWindow, map.getCenter());
+        });
+    } 
+    else {
+        handleLocationError(false, infoWindow, map.getCenter());
+    }
+
+    if (sessionid > 0) {
+        addMapClickEvent(map);
+    }
 }
 
 function loadPoints(map, sessionid) {
@@ -198,22 +198,22 @@ function placeMarker(pos, map, message) {
 }
 
 function addMapClickEvent(map) {
-	google.maps.event.addListener(map, 'click', function(event) {
-		placeMarker(event.latLng, map, 'Latitude: ' + event.latLng.lat() + '<br>Longitude: ' + event.latLng.lng());
-		document.getElementById('pointInformation').innerHTML = buildForm(event.latLng.lat(), event.latLng.lng());
-	});	
+    google.maps.event.addListener(map, 'click', function(event) {
+        placeMarker(event.latLng, map, 'Latitude: ' + event.latLng.lat() + '<br>Longitude: ' + event.latLng.lng());
+        document.getElementById('pointInformation').innerHTML = buildForm(event.latLng.lat(), event.latLng.lng());
+    });	
 }
 
 function buildForm(latitude, longitude) {
-	var heading = '<p>Enter a title and description and click the button to submit your point for review.</p>';
-	var latitude = '<label for="latitude">Latitude:</label> <input type="text" name="latitude" value=' + latitude + ' readonly><br>';
-	var longitude = '<label for="longitude">Longitude:</label> <input type="text" name="longitude" value=' + longitude + ' readonly><br>';
-	var title = '<label for="title">Title:</label> <input type="text" name="title"><br>';
-	var description = '<p>Description:</p> <textarea name="description" rows="10"></textarea><br>';
-	var icon = '<label for="icon">Icon:</label> <div id="divIcon"><input type="radio" name="icon" value="1" class="radioIcon"><img src=" <?php echo base_url('assets/images/playground.jpg') ?> " /></input><input type="radio" name="icon" value="2" class="radioIcon"><img src=" <?php echo base_url('assets/images/pullupbars.png') ?> " /></input><input type="radio" name="icon" value="2" class="radioIcon"><img src=" <?php echo base_url('assets/images/pullupbars.png') ?> " /></input><input type="radio" name="icon" value="2" class="radioIcon"><img src=" <?php echo base_url('assets/images/pullupbars.png') ?> " /></input><input type="radio" name="icon" value="2" class="radioIcon"><img src=" <?php echo base_url('assets/images/pullupbars.png') ?> " /></input><input type="radio" name="icon" value="2" class="radioIcon"><img src=" <?php echo base_url('assets/images/pullupbars.png') ?> " /></input><input type="radio" name="icon" value="2" class="radioIcon"><img src=" <?php echo base_url('assets/images/pullupbars.png') ?> " /></input></div><br>';
-	var submit = '<br><input type="submit" value="Submit">';
-	
-	return '<form action="index">' + heading + latitude + longitude + icon + title + description + submit + '</form>';
+    var heading = '<p>Enter a title and description and click the button to submit your point for review.</p>';
+    var latitude = '<label for="latitude">Latitude:</label> <input type="text" name="latitude" value=' + latitude + ' readonly><br>';
+    var longitude = '<label for="longitude">Longitude:</label> <input type="text" name="longitude" value=' + longitude + ' readonly><br>';
+    var title = '<label for="title">Title:</label> <input type="text" name="title"><br>';
+    var description = '<p>Description:</p> <textarea name="description" rows="10"></textarea><br>';
+    var icon = '<label for="icon">Icon:</label> <div id="divIcon"><input type="radio" name="icon" value="1" class="radioIcon"><img src=" <?php echo base_url('assets/images/Playground-50.png') ?> " /></input><input type="radio" name="icon" value="2" class="radioIcon"><img src=" <?php echo base_url('assets/images/Pullups Filled-50.png') ?> " /></input><input type="radio" name="icon" value="3" class="radioIcon"><img src=" <?php echo base_url('assets/images/City Bench-50.png') ?> " /></input><input type="radio" name="icon" value="4" class="radioIcon"><img src=" <?php echo base_url('assets/images/Weight-50.png') ?> " /></input><input type="radio" name="icon" value="5" class="radioIcon"><img src=" <?php echo base_url('assets/images/Pushups-50.png') ?> " /></input><input type="radio" name="icon" value="6" class="radioIcon"><img src=" <?php echo base_url('assets/images/Stadium-50.png') ?> " /></input><input type="radio" name="icon" value="7" class="radioIcon"><img src=" <?php echo base_url('assets/images/Trekking-50.png') ?> " /></input><input type="radio" name="icon" value="8" class="radioIcon"><img src=" <?php echo base_url('assets/images/Climbing Filled-50.png') ?> " /></input><input type="radio" name="icon" value="9" class="radioIcon"><img src=" <?php echo base_url('assets/images/Wakeup Hill on Stairs-50.png') ?> " /></input></div><br>';
+    var submit = '<br><input type="submit" value="Submit">';
+
+    return '<form action="index">' + heading + latitude + longitude + icon + title + description + submit + '</form>';
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
