@@ -95,34 +95,39 @@ a, a:visited {
 
 #instructions {
     background-color: #fff;
-    width: 800px;
-    margin-top: 10px;
-    margin-left: 20px;
+    width: 600px;
+    display: inline-block;
+    margin-left: 10px;
 }
 
 #instructions h2 {
-    margin-left: 10px;
 }
+
 #instructions p {
-    margin-left: 10px;
-    margin-bottom: 0px;
-    padding-bottom: 10px;
 }
 
 #googleMap {
-    width: 800px;
+    width: 600px;
     height: 500px;
-    display: inline-block;
-    margin-left: 20px;
 }
 
 #pointInformation {
     width: 400px;
-    height: 500px;
+    height: 600px;
     display: inline-block;
     vertical-align: top;
     background-color: #fff;
-    margin-left: 100px;
+    margin-left: 10px;
+    padding: 0px 10px 0px 10px;
+}
+
+#filters {
+    width: 400px;
+    height: 600px;
+    display: inline-block;
+    vertical-align: top;
+    background-color: #fff;
+    margin-left: 10px;
     padding: 0px 10px 0px 10px;
 }
 
