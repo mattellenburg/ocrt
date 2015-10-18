@@ -26,14 +26,14 @@
                 <li><a href="<?= base_url('index.php/race/index') ?>">Race</a></li>    
                 <li><a href="<?= base_url('index.php/about/index') ?>">About</a></li>
                 <li><a href="<?= base_url('index.php/contact/index') ?>">Contact</a></li>
-                <?php if (isset($_SESSION['username']) && $_SESSION['logged_in'] === true) : ?>
-                    <?php if ($_SESSION['user_id'] == 1) : ?>
+                <?php if (isset($_SESSION['user_id']) && $_SESSION['logged_in'] && $_SESSION['is_confirmed']) : ?>
+                    <?php if ($_SESSION['is_admin']) : ?>
                         <li><a href="<?= base_url('index.php/admin/index') ?>">Admin</a></li>
                     <?php endif; ?>
-                    <li><a href="<?= base_url('index.php/logout') ?>">Logout</a></li>
+                    <li><a href="<?= base_url('index.php/user/logout') ?>">Logout</a></li>
                 <?php else : ?>
-                    <li><a href="<?= base_url('index.php/register') ?>">Register</a></li>
-                    <li><a href="<?= base_url('index.php/login') ?>">Login</a></li>
+                    <li><a href="<?= base_url('index.php/user/register') ?>">Register</a></li>
+                    <li><a href="<?= base_url('index.php/user/login') ?>">Login</a></li>
                 <?php endif; ?>
             </ul>
         </div>
