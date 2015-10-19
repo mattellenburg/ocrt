@@ -126,6 +126,27 @@ function loadPoints(map, sessionid) {
         else if (locations[i][4] == 2) {
             image = " <?php echo base_url('assets/images/Pullups Filled-50.png') ?> ";
         }
+        else if (locations[i][4] == 3) {
+            image = " <?php echo base_url('assets/images/City Bench-50.png') ?> ";
+        }
+        else if (locations[i][4] == 4) {
+            image = " <?php echo base_url('assets/images/Weight-50.png') ?> ";
+        }
+        else if (locations[i][4] == 5) {
+            image = " <?php echo base_url('assets/images/Pushups-50.png') ?> ";
+        }
+        else if (locations[i][4] == 6) {
+            image = " <?php echo base_url('assets/images/Stadium-50.png') ?> ";
+        }
+        else if (locations[i][4] == 7) {
+            image = " <?php echo base_url('assets/images/Trekking-50.png') ?> ";
+        }
+        else if (locations[i][4] == 8) {
+            image = " <?php echo base_url('assets/images/Climbing Filled-50.png') ?> ";
+        }
+        else if (locations[i][4] == 9) {
+            image = " <?php echo base_url('assets/images/Wakeup Hill on Stairs-50.png') ?> ";
+        }
         else {
             image = " <?php echo base_url('assets/images/Marker-50.png') ?> ";
         }
