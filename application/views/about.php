@@ -28,5 +28,10 @@
             <li>Click on map to submit a new point</li>
         </ul>
     </ul>
+    <h3>0.1 Beta release</h3>
+    <ul>
+        <li>Added contact page</li>
+        <li>Added icons to Explore</li>
+    </ul>
 </div>
 

@@ -35,6 +35,8 @@ class Contact extends CI_Controller {
 
             $this->email->send();
             
+            echo $this->email->print_debugger();
+            
             $this->load->view('header');
             $this->load->view('contact', $data);
             $this->load->view('footer');
