@@ -25,17 +25,23 @@ class Pointskeywords_model extends CI_Model {
             'updatedate' => date('Y-m-j H:i:s')
         );
 
+        $userid = 0;
+        if (isset($_SESSION['user_id']))
+        {
+            $userid = $_SESSION['user_id'];
+        }
+        
         if ($keywordid == NULL) {
             $where = array(
                 'pointid' => $pointid,
-                'userid' => $_SESSION['user_id']
+                'userid' => $userid
             );
         }
         else {
             $where = array(
                 'pointid' => $pointid,
                 'keywordid' => $keywordid,
-                'userid' => $_SESSION['user_id']
+                'userid' => $userid
             );
         }
 
