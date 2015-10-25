@@ -166,14 +166,13 @@ function loadPoints(map, sessionid) {
                 document.getElementById('pointInformation').innerHTML += '<h3>' + locations[i][0] + '</h3>';
                 document.getElementById('pointInformation').innerHTML += '<p>' + locations[i][3] + '</p>';
 
-                if (locations[i][5] == 'confirmed') {
+                if (locations[i][5] === 'confirmed') {
                     if (sessionid>0) {
-                        document.getElementById('pointInformation').innerHTML += '<p>Your Rating: ' + locations[i][7] + '</p>';
-
+                        var form = '<form method="post" action=' + "<?= base_url('index.php/explore/index') ?>" + '/' + locations[i][6].trim() + '>';
+                        var userrating = '<p>Your Rating: ' + locations[i][7] + '</p>';
+                        
                         var ratingsystem = '<p>Rate this location</p>';
-                        ratingsystem += '<form action=' + "<?= base_url('index.php/explore/index') ?>" + '/' + locations[i][6].trim() + '><input name="rating" type="radio" value=1 class="star"/> <input name="rating" type="radio" value=2 class="star"/> <input name="rating" type="radio" value=3 class="star"/> <input name="rating" type="radio" value=4 class="star"/> <input name="rating" type="radio" value=5 class="star"/><input type=submit value=Rate></form>';
-
-                        document.getElementById('pointInformation').innerHTML += ratingsystem;
+                        ratingsystem += '<input id="rating" name="rating" type="radio" value=1 class="star"/> <input name="rating" type="radio" value=2 class="star"/> <input name="rating" type="radio" value=3 class="star"/> <input name="rating" type="radio" value=4 class="star"/> <input name="rating" type="radio" value=5 class="star"/>';
 
                         var keywordlist = '<div id="keywords">';
                         <?php foreach ($keywords as $keyword): ?>
@@ -181,11 +180,13 @@ function loadPoints(map, sessionid) {
                             if (locations[i][9].indexOf("<?php echo $keyword->keyword ?>") >= 0) {
                                 checked = 'checked';
                             }
-                            keywordlist += '<input name="keywords[]" type="checkbox" value=" <?php echo $keyword->id ?> "' + checked + ' />' + " <?php echo $keyword->keyword ?> " + '<br>';
+                            keywordlist += '<input id="keywords[]" name="keywords[]" type="checkbox" value=" <?php echo $keyword->id ?> "' + checked + ' />' + " <?php echo $keyword->keyword ?> " + '<br>';
                         <?php endforeach; ?>
                         keywordlist += '</div>';
                         
-                        document.getElementById('pointInformation').innerHTML += keywordlist;
+                        var submit = '<input type="submit" value="Submit Rating and Keywords"></form>';
+
+                        document.getElementById('pointInformation').innerHTML += form + userrating + ratingsystem + keywordlist + submit;
                     }
                 }
             }
