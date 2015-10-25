@@ -33,5 +33,10 @@
         <li>Added contact page</li>
         <li>Added icons to Explore</li>
     </ul>
+    <h3>0.2 Beta release</h3>
+    <ul>
+        <li>Added ability to submit rating</li>
+        <li>Added ability to submit keywords</li>
+    </ul>
 </div>
 
