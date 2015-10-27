@@ -15,28 +15,20 @@
     <div id="filters">
         <?php if (isset($_SESSION['user_id'])) : ?>
             <h2>Filters</h2>
-            <form action="<?= base_url('index.php/explore/index') ?>">
-                <p>
-                    Average Rating: 
-                    <input type="radio" name="rating" value="1" />
-                    <input type="radio" name="rating" value="2" />
-                    <input type="radio" name="rating" value="3" />
-                    <input type="radio" name="rating" value="4" />
-                    <input type="radio" name="rating" value="5" />
-                    or higher
-                </p>
-                <p>Submitted by Me: <input type="checkbox" name="mysubmissions"></p>
-                <p>Approval Status: <input type="radio" name="approvalstatus" value="0">All<input type="radio" name="approvalstatus" value="1">Approved<input type="radio" name="approvalstatus" value="2">Pending</p>
-                <p>
-                    Keyword Search: 
-                    <div id="keywords">
-                        <?php foreach ($keywords as $keyword): ?>
-                            <input name="keywords[]" type="checkbox" value=" <?php echo $keyword->id ?> " /><?php echo $keyword->keyword ?><br>
-                        <?php endforeach; ?>
-                    </div>
-                </p>
-                <p>Title/Description Search: <input type="text" name="search" /></p>
-                <p><input type="submit" value="Search" /></p>
+            <?php echo $filter ?>
+            <?= form_open() ?>
+            <p>
+                Average Rating: 
+                <input type="radio" id="filterrating" name="filterrating" value="1" />
+                <input type="radio" id="filterrating" name="filterrating" value="2" />
+                <input type="radio" id="filterrating" name="filterrating" value="3" />
+                <input type="radio" id="filterrating" name="filterrating" value="4" />
+                <input type="radio" id="filterrating" name="filterrating" value="5" />
+                or higher
+            </p>
+            <p>Submitted by Me: <input type="checkbox" id="mysubmissions" name="mysubmissions"></p>
+            <p>Title/Description Search: <input type="text" id="search" name="search" /></p>
+            <p><input type="submit" value="Search" /></p>
             </form>
         <?php endif; ?>
     </div>
