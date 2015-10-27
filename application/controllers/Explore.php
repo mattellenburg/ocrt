@@ -13,11 +13,34 @@ class Explore extends CI_Controller {
         $this->load->model('keyword_model');
         $this->load->helper('form');
         $this->load->library('form_validation');
+        $this->load->library('googlemaps');
     }
 
     public function index($pointid = NULL) {
         $data = new stdClass();
 
+        $where = ' where (p.title like '."'%".$this->input->post('search')."%'".' or p.description like '."'%".$this->input->post('search')."%'".')';        echo $this->input->post('filterkeywords').'<BR>';
+        $filter = '';
+        if ($this->input->post('filterrating') > 0) {
+            $where = $where.' and pr.avgrating >= '.strval($this->input->post('filterrating'));
+            $filter = $filter.'Average Rating: '.strval($this->input->post('filterrating')).'+<br>';
+        }
+        if ($this->input->post('mysubmissions') == 'on') {
+            $where = $where.' and p.createdbyid = '.$_SESSION['user_id'];
+            $filter = $filter.'My submissions<br>';
+        }
+        if ($this->input->post('search') > '') {
+            $filter = $filter.'Search term: '.$this->input->post('search');
+        }
+        
+        if ($filter !== '') {
+            $data->filter = '<h3>Current selections</h3><p><i>'.$filter.'</i></p>';
+        }
+        else {
+            $data->filter = '';
+        }
+        $data->points = $this->point_model->get_points($where);
+        
         if ($this->input->post('rating') > 0) {
             $query = $this->pointsratings_model->get_rating($pointid);
 
@@ -93,11 +116,10 @@ class Explore extends CI_Controller {
             $data->message = '';
         }
 
-        $data->points = $this->point_model->get_points();
         $data->points_pending = $this->point_pending_model->get_points();
         $data->keywords = $this->keyword_model->get_keywords();
 
-        $this->load->view('header');
+        $this->load->view('header', $data);
         $this->load->view('explore', $data);
         $this->load->view('footer');			
     }
