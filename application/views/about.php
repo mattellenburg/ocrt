@@ -38,5 +38,9 @@
         <li>Added ability to submit rating</li>
         <li>Added ability to submit keywords</li>
     </ul>
+    <h3>0.3 Beta release</h3>
+    <ul>
+        <li>Added filters</li>
+    </ul>
 </div>
 
