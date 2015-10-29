@@ -39,21 +39,73 @@
 function initialize() {
     var sessionid = " <?php if (isset($_SESSION['user_id'])) { echo $_SESSION['user_id']; } else { echo 0; } ?> ";
     var mapProp = {
-        zoom:15,
+        zoom:13,
         mapTypeId:google.maps.MapTypeId.ROADMAP
     };
     var map=new google.maps.Map(document.getElementById("googleMap"),mapProp);
 
+    google.maps.event.addListener(map,'dragstart',function(){
+        this.set('dragging',true);          
+    });
+
+    google.maps.event.addListener(map,'dragend',function(){
+        this.set('dragging',false);
+        google.maps.event.trigger(this,'idle',{});
+    });
+    
+    google.maps.event.addListener(map, 'idle', function() {
+        if(!this.get('dragging') && this.get('oldCenter') && this.get('oldCenter')!==this.getCenter()) {
+            redirectURL (map.getCenter().lat(), map.getCenter().lng());
+        }
+        if(!this.get('dragging')){
+            this.set('oldCenter',this.getCenter())
+        }
+    });
+
+    getMapCenter(map, sessionid);    
+    
+    if (sessionid > 0) {
+        addMapClickEvent(map);
+    }    
+}
+
+function redirectURL (latitude, longitude) {
+    window.location = "<?= base_url('index.php/explore/index/') ?>" + '/' + latitude + '/' + longitude;
+}
+
+function getMapCenter(map, sessionid) {
+    var latitude = "<?php echo $latitude?>";
+    var longitude = "<?php echo $longitude?>";
+
+    if (map.getCenter() === undefined && latitude === '' && longitude === '') {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                redirectURL(position.coords.latitude, position.coords.longitude);
+            }, 
+            function() {
+                handleLocationError(true, infoWindow, map.getCenter());
+            });
+        } 
+        else {
+            handleLocationError(false, infoWindow, map.getCenter());
+        }
+    }
+    else {
+        map.setCenter(new google.maps.LatLng(latitude, longitude));
+        loadPoints(map, sessionid)
+        
+        new google.maps.Marker({
+            position: new google.maps.LatLng(latitude, longitude),
+            map: map,
+        });
+    }
+}
+
+function getMapCenter2(map) {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) {
-                var pos = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                };	
-
-                loadPoints(map, sessionid);
-
-                map.setCenter(pos);
+            getMapCenter(map, position);
+            loadPoints(map, sessionid);
         }, function() {
                 handleLocationError(true, infoWindow, map.getCenter());
         });
@@ -62,11 +114,21 @@ function initialize() {
         handleLocationError(false, infoWindow, map.getCenter());
     }
 
-    if (sessionid > 0) {
-        addMapClickEvent(map);
-    }
-}
+    var pos = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+    };	
+    map.setCenter(pos);
 
+    var latitude = "<?php echo $latitude?>";
+    var longitude = "<?php echo $longitude?>";
+    if (latitude === '' || longitude === '') {
+        redirectURL (position.coords.latitude, position.coords.longitude)
+    }
+
+    placeMarker(pos, map);
+}
+ 
 function loadPoints(map, sessionid) {
     var locations = new Array();
     var i = 0;
@@ -81,8 +143,9 @@ function loadPoints(map, sessionid) {
         var userrating = " <?php echo $point['userrating'] ?> ";
         var avgrating = " <?php echo $point['avgrating'] ?> ";
         var keywords = " <?php echo $point['keywords'] ?> ";
-
-        var point = new Array(title, latitude, longitude, description, icon, type, pointid, userrating, avgrating, keywords);
+        var distance = " <?php echo $point['distance'] ?> ";
+        
+        var point = new Array(title, latitude, longitude, description, icon, type, pointid, userrating, avgrating, keywords, distance);
 
         locations[i] = point;
 
@@ -151,7 +214,7 @@ function loadPoints(map, sessionid) {
 
         google.maps.event.addListener(marker, 'click', (function(marker, i) {
             return function() {
-                infoWindow.setContent('<b>Average Rating:</b> ' + parseFloat(Math.round(locations[i][8])).toFixed(1));
+                infoWindow.setContent('<b>Average Rating:</b> ' + parseFloat(locations[i][8]).toFixed(1) + '<br><b>Distance:</b> ' + parseFloat(locations[i][10]).toFixed(1) + ' miles');
                 infoWindow.open(map, marker);
 
                 document.getElementById('pointInformation').innerHTML = '<h2>Information</h2>';
@@ -160,7 +223,7 @@ function loadPoints(map, sessionid) {
 
                 if (locations[i][5] === 'confirmed') {
                     if (sessionid>0) {
-                        var form = '<form method="post" action=' + "<?= base_url('index.php/explore/index') ?>" + '/' + locations[i][6].trim() + '>';
+                        var form = '<form method="post" action=' + "<?= base_url('index.php/explore/index/NULL/NULL/') ?>" + locations[i][6].trim() + '>';
                         var userrating = '<p>Your Rating: ' + locations[i][7] + '</p>';
                         
                         var ratingsystem = '<p>Rate this location</p>';
@@ -193,9 +256,8 @@ function loadPoints(map, sessionid) {
     }		
 }
 
-function placeMarker(pos, map, message) {
+function placeMarker(pos, map) {
     var marker=new google.maps.Marker();
-    var infoWindow = new google.maps.InfoWindow();
 
     marker.setPosition(pos);
     marker.setMap(map);
@@ -213,7 +275,7 @@ function placeMarker(pos, map, message) {
 
 function addMapClickEvent(map) {
     google.maps.event.addListener(map, 'click', function(event) {
-        placeMarker(event.latLng, map, 'Latitude: ' + event.latLng.lat() + '<br>Longitude: ' + event.latLng.lng());
+        placeMarker(event.latLng, map);
         document.getElementById('pointInformation').innerHTML = buildForm(event.latLng.lat(), event.latLng.lng());
     });	
 }

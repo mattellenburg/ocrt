@@ -16,7 +16,7 @@ class Explore extends CI_Controller {
         $this->load->library('googlemaps');
     }
 
-    public function index($pointid = NULL) {
+    public function index($latitude = NULL, $longitude = NULL, $pointid = NULL) {
         $data = new stdClass();
 
         $where = ' where (p.title like '."'%".$this->input->post('search')."%'".' or p.description like '."'%".$this->input->post('search')."%'".')';        echo $this->input->post('filterkeywords').'<BR>';
@@ -39,7 +39,9 @@ class Explore extends CI_Controller {
         else {
             $data->filter = '';
         }
-        $data->points = $this->point_model->get_points($where);
+        $data->points = $this->point_model->get_points($where, $latitude, $longitude);
+        $data->latitude = $latitude;
+        $data->longitude = $longitude;
         
         if ($this->input->post('rating') > 0) {
             $query = $this->pointsratings_model->get_rating($pointid);
@@ -121,6 +123,6 @@ class Explore extends CI_Controller {
 
         $this->load->view('header', $data);
         $this->load->view('explore', $data);
-        $this->load->view('footer');			
+        $this->load->view('footer');	
     }
 }
