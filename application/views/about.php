@@ -42,5 +42,9 @@
     <ul>
         <li>Added filters</li>
     </ul>
+    <h3>0.4 Beta release</h3>
+    <ul>
+        <li>Added latitude/longitude logic to database query</li>
+    </ul>
 </div>
 
