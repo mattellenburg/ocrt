@@ -155,6 +155,55 @@ a, a:visited {
     width: 95%;
 }
 
+#contact {
+    padding: 0px 10px 0px 10px;
+}
+
+#contact p label {
+    display: inline-block;
+    font-weight: bold;
+    width: 100px;
+}
+
+#contact p input {
+    display: inline-block;
+    width: 200px;
+}
+
+#about {
+    padding: 0px 10px 0px 10px;    
+}
+
+#login {
+    padding: 0px 10px 0px 10px;    
+}
+
+#login p label {
+    display: inline-block;
+    font-weight: bold;
+    width: 100px;
+}
+
+#login p input {
+    display: inline-block;
+    width: 200px;
+}
+
+#register {
+    padding: 0px 10px 0px 10px;    
+}
+
+#register p label {
+    display: inline-block;
+    font-weight: bold;
+    width: 100px;
+}
+
+#register p input {
+    display: inline-block;
+    width: 200px;
+}
+
 #footer {
     width: 100%;
     border: 1px solid black;
