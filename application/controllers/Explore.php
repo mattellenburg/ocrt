@@ -16,7 +16,7 @@ class Explore extends CI_Controller {
         $this->load->library('googlemaps');
     }
 
-    public function index($latitude = NULL, $longitude = NULL, $pointid = NULL) {
+    public function index($zoom = NULL, $latitude = NULL, $longitude = NULL, $pointid = NULL) {
         $data = new stdClass();
 
         $where = ' where (p.title like '."'%".$this->input->post('search')."%'".' or p.description like '."'%".$this->input->post('search')."%'".')';        echo $this->input->post('filterkeywords').'<BR>';
@@ -40,6 +40,7 @@ class Explore extends CI_Controller {
             $data->filter = '';
         }
         $data->points = $this->point_model->get_points($where, $latitude, $longitude);
+        $data->zoom = $zoom;
         $data->latitude = $latitude;
         $data->longitude = $longitude;
         
