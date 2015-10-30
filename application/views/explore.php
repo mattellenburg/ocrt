@@ -10,11 +10,11 @@
         </div>
     </div>
     <div id="pointInformation">
-        <h2>Information</h2>
+        <h2>Location Information</h2>
     </div>
     <div id="filters">
         <?php if (isset($_SESSION['user_id'])) : ?>
-            <h2>Filters</h2>
+            <h2>Location Filters</h2>
             <?php echo $filter ?>
             <?= form_open() ?>
             <p>
@@ -223,7 +223,7 @@ function loadPoints(map, sessionid) {
 
                 if (locations[i][5] === 'confirmed') {
                     if (sessionid>0) {
-                        var form = '<form method="post" action=' + "<?= base_url('index.php/explore/index/NULL/NULL/') ?>" + locations[i][6].trim() + '>';
+                        var form = '<form method="post" action="' + "<?= base_url('index.php/explore/index/'.$latitude.'/'.$longitude) ?>" + '/' + locations[i][6].trim() + '">';
                         var userrating = '<p>Your Rating: ' + locations[i][7] + '</p>';
                         
                         var ratingsystem = '<p>Rate this location</p>';
@@ -247,7 +247,7 @@ function loadPoints(map, sessionid) {
             }
         })(marker, i));
 
-        google.maps.event.addListener(marker, 'rightclick', (function(marker, i) {
+        google.maps.event.addListener(marker, 'dblclick', (function(marker, i) {
             return function() {
                 infoWindow.close();
                 document.getElementById('pointInformation').innerHTML = '';
@@ -264,7 +264,7 @@ function placeMarker(pos, map) {
 
     google.maps.event.clearListeners(map, 'click');
 
-    google.maps.event.addListener(marker, 'rightclick', function(event) {
+    google.maps.event.addListener(marker, 'dblclick', function(event) {
         marker.setMap(null);
         document.getElementById('pointInformation').innerHTML = '';
         addMapClickEvent(map);
@@ -281,7 +281,7 @@ function addMapClickEvent(map) {
 }
 
 function buildForm(latitude, longitude) {
-    var heading = '<p>Enter a title and description and click the button to submit your point for review.</p>';
+    var heading = '<h2>New Location</h2><p>Enter a title and description and click the button to submit your point for review.</p>';
     var latitude = '<label for="latitude">Latitude:</label> <input type="text" name="latitude" value=' + latitude + ' readonly><br>';
     var longitude = '<label for="longitude">Longitude:</label> <input type="text" name="longitude" value=' + longitude + ' readonly><br>';
     var title = '<label for="title">Title:</label> <input type="text" name="title"><br>';
@@ -289,7 +289,7 @@ function buildForm(latitude, longitude) {
     var icon = '<label for="icon">Icon:</label> <div id="divIcon"><input type="radio" name="icon" value="1" class="radioIcon"><img src=" <?php echo base_url('assets/images/Playground-50.png') ?> " /></input><input type="radio" name="icon" value="2" class="radioIcon"><img src=" <?php echo base_url('assets/images/Pullups Filled-50.png') ?> " /></input><input type="radio" name="icon" value="3" class="radioIcon"><img src=" <?php echo base_url('assets/images/City Bench-50.png') ?> " /></input><input type="radio" name="icon" value="4" class="radioIcon"><img src=" <?php echo base_url('assets/images/Weight-50.png') ?> " /></input><input type="radio" name="icon" value="5" class="radioIcon"><img src=" <?php echo base_url('assets/images/Pushups-50.png') ?> " /></input><input type="radio" name="icon" value="6" class="radioIcon"><img src=" <?php echo base_url('assets/images/Stadium-50.png') ?> " /></input><input type="radio" name="icon" value="7" class="radioIcon"><img src=" <?php echo base_url('assets/images/Trekking-50.png') ?> " /></input><input type="radio" name="icon" value="8" class="radioIcon"><img src=" <?php echo base_url('assets/images/Climbing Filled-50.png') ?> " /></input><input type="radio" name="icon" value="9" class="radioIcon"><img src=" <?php echo base_url('assets/images/Wakeup Hill on Stairs-50.png') ?> " /></input></div><br>';
     var submit = '<br><input type="submit" value="Submit">';
 
-    return '<form action="index">' + heading + latitude + longitude + icon + title + description + submit + '</form>';
+    return '<form action="' + "<?= base_url('index.php/explore/index/'.$latitude.'/'.$longitude) ?>" + '">' + heading + latitude + longitude + icon + title + description + submit + '</form>';
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);

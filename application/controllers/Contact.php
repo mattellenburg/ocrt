@@ -17,7 +17,7 @@ class Contact extends CI_Controller {
 
         $this->form_validation->set_rules('name', 'Name', 'trim|required');
         $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
-        $this->form_validation->set_rules('message', 'Message', 'trim|required|min_length[6]');
+        $this->form_validation->set_rules('body', 'Body', 'trim|required|min_length[6]');
 
         if ($this->form_validation->run() === false) {
             $this->load->view('header');
@@ -31,7 +31,7 @@ class Contact extends CI_Controller {
             $this->email->to('mattellenburg@ocrt4me.com'); 
 
             $this->email->subject('ocrt4me.com Feedback');
-            $this->email->message($this->input->post('message'));	
+            $this->email->message($this->input->post('body'));	
 
             $this->email->send();
             
