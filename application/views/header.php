@@ -10,8 +10,16 @@
     <meta name="keywords" content="">
     <meta name="author" content="">
 
-    <!-- css -->
-    <link href="<?= base_url('assets/css/default.css') ?>" rel="stylesheet">
+    <?php
+    function isMobile() {
+        return preg_match("/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i", $_SERVER["HTTP_USER_AGENT"]);
+    }
+    ?>
+    <?php if (isMobile()) {?>
+        <link href="<?= base_url('assets/css/defaultmobile.css') ?>" rel="stylesheet">
+    <?php } else {?>
+        <link href="<?= base_url('assets/css/default.css') ?>" rel="stylesheet">
+    <?php }?>
 </head>
 <body>
     <div id="header">
