@@ -223,7 +223,7 @@ function loadPoints(map, sessionid) {
 
                 if (locations[i][5] === 'confirmed') {
                     if (sessionid>0) {
-                        var form = '<form method="post" action=' + "<?= base_url('index.php/explore/index/NULL/NULL/') ?>" + locations[i][6].trim() + '>';
+                        var form = '<form method="post" action="' + "<?= base_url('index.php/explore/index/'.$latitude.'/'.$longitude) ?>" + '/' + locations[i][6].trim() + '">';
                         var userrating = '<p>Your Rating: ' + locations[i][7] + '</p>';
                         
                         var ratingsystem = '<p>Rate this location</p>';
@@ -289,7 +289,7 @@ function buildForm(latitude, longitude) {
     var icon = '<label for="icon">Icon:</label> <div id="divIcon"><input type="radio" name="icon" value="1" class="radioIcon"><img src=" <?php echo base_url('assets/images/Playground-50.png') ?> " /></input><input type="radio" name="icon" value="2" class="radioIcon"><img src=" <?php echo base_url('assets/images/Pullups Filled-50.png') ?> " /></input><input type="radio" name="icon" value="3" class="radioIcon"><img src=" <?php echo base_url('assets/images/City Bench-50.png') ?> " /></input><input type="radio" name="icon" value="4" class="radioIcon"><img src=" <?php echo base_url('assets/images/Weight-50.png') ?> " /></input><input type="radio" name="icon" value="5" class="radioIcon"><img src=" <?php echo base_url('assets/images/Pushups-50.png') ?> " /></input><input type="radio" name="icon" value="6" class="radioIcon"><img src=" <?php echo base_url('assets/images/Stadium-50.png') ?> " /></input><input type="radio" name="icon" value="7" class="radioIcon"><img src=" <?php echo base_url('assets/images/Trekking-50.png') ?> " /></input><input type="radio" name="icon" value="8" class="radioIcon"><img src=" <?php echo base_url('assets/images/Climbing Filled-50.png') ?> " /></input><input type="radio" name="icon" value="9" class="radioIcon"><img src=" <?php echo base_url('assets/images/Wakeup Hill on Stairs-50.png') ?> " /></input></div><br>';
     var submit = '<br><input type="submit" value="Submit">';
 
-    return '<form action="index">' + heading + latitude + longitude + icon + title + description + submit + '</form>';
+    return '<form action="' + "<?= base_url('index.php/explore/index/'.$latitude.'/'.$longitude) ?>" + '">' + heading + latitude + longitude + icon + title + description + submit + '</form>';
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
