@@ -10,11 +10,11 @@
         </div>
     </div>
     <div id="pointInformation">
-        <h2>Information</h2>
+        <h2>Location Information</h2>
     </div>
     <div id="filters">
         <?php if (isset($_SESSION['user_id'])) : ?>
-            <h2>Filters</h2>
+            <h2>Location Filters</h2>
             <?php echo $filter ?>
             <?= form_open() ?>
             <p>
@@ -247,7 +247,7 @@ function loadPoints(map, sessionid) {
             }
         })(marker, i));
 
-        google.maps.event.addListener(marker, 'rightclick', (function(marker, i) {
+        google.maps.event.addListener(marker, 'dblclick', (function(marker, i) {
             return function() {
                 infoWindow.close();
                 document.getElementById('pointInformation').innerHTML = '';
@@ -264,7 +264,7 @@ function placeMarker(pos, map) {
 
     google.maps.event.clearListeners(map, 'click');
 
-    google.maps.event.addListener(marker, 'rightclick', function(event) {
+    google.maps.event.addListener(marker, 'dblclick', function(event) {
         marker.setMap(null);
         document.getElementById('pointInformation').innerHTML = '';
         addMapClickEvent(map);
@@ -281,7 +281,7 @@ function addMapClickEvent(map) {
 }
 
 function buildForm(latitude, longitude) {
-    var heading = '<p>Enter a title and description and click the button to submit your point for review.</p>';
+    var heading = '<h2>New Location</h2><p>Enter a title and description and click the button to submit your point for review.</p>';
     var latitude = '<label for="latitude">Latitude:</label> <input type="text" name="latitude" value=' + latitude + ' readonly><br>';
     var longitude = '<label for="longitude">Longitude:</label> <input type="text" name="longitude" value=' + longitude + ' readonly><br>';
     var title = '<label for="title">Title:</label> <input type="text" name="title"><br>';
