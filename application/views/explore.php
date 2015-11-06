@@ -1,10 +1,21 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
+<?php
+$address = urlencode("Baltimore, MD");
+$url = "http://maps.google.com/maps/api/geocode/json?address=$address&sensor=false";
+$ch = curl_init(); 
+curl_setopt($ch, CURLOPT_URL, $url); 
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+$output = curl_exec($ch); 
+curl_close($ch);      
+$lat = json_decode($output)->results[0]->geometry->location->lat;
+$lng = json_decode($output)->results[0]->geometry->location->lng;
+?>
 <div id="explore">
     <div id="message">
         <p><?php echo $message ?><p>
     </div>
     <div id="instructions">
-        <h2>Explore</h2>
+        <h2>Explore <input type="text" name="address" id="address" onkeydown="if (event.keyCode == 13) document.getElementById('go').click()" placeholder="Enter location" /> <input id="go" type="button" value="Go" onclick="getLatLong();" /></h2>
         <p>Click on the map to submit a new location. Click on a point to get more information about that location.</p>
         <div id="googleMap">
         </div>
@@ -279,5 +290,21 @@ function buildForm(latitude, longitude) {
     return '<form action="' + "<?= base_url('index.php/explore/index/'.$zoom.'/'.$latitude.'/'.$longitude) ?>" + '">' + heading + latitude + longitude + icon + title + description + submit + '</form>';
 }
 
+function getLatLong() {
+    var geocoder = new google.maps.Geocoder();
+
+    geocoder.geocode( { 'address': document.getElementById("address").value}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+            redirectURL("<?php echo $zoom?>", results[0].geometry.location.lat(), results[0].geometry.location.lng());
+        } 
+    }); 
+}
 google.maps.event.addDomListener(window, 'load', initialize);
+
+$(document).ready(function(){
+    $('#address').keypress(function(e){
+      if(e.keyCode==13)
+      $('#go').click();
+    });
+});
 </script>
