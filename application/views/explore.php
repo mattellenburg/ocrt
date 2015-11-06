@@ -1,15 +1,4 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
-<?php
-$address = urlencode("Baltimore, MD");
-$url = "http://maps.google.com/maps/api/geocode/json?address=$address&sensor=false";
-$ch = curl_init(); 
-curl_setopt($ch, CURLOPT_URL, $url); 
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
-$output = curl_exec($ch); 
-curl_close($ch);      
-$lat = json_decode($output)->results[0]->geometry->location->lat;
-$lng = json_decode($output)->results[0]->geometry->location->lng;
-?>
 <div id="explore">
     <div id="message">
         <p><?php echo $message ?><p>
