@@ -11,6 +11,7 @@ class Contact extends CI_Controller {
 
     public function index() {
         $data = new stdClass();
+        $data->message = '';
 
         $this->load->helper('form');
         $this->load->library('form_validation');
@@ -20,8 +21,8 @@ class Contact extends CI_Controller {
         $this->form_validation->set_rules('body', 'Body', 'trim|required|min_length[6]');
 
         if ($this->form_validation->run() === false) {
-            $this->load->view('header');
-            $this->load->view('contact', $data);
+            $this->load->view('header', $data);
+            $this->load->view('contact');
             $this->load->view('footer');
         } 
         else {
@@ -37,8 +38,8 @@ class Contact extends CI_Controller {
             
             $data->message = 'Your feedback has been received.';
             
-            $this->load->view('header');
-            $this->load->view('contact', $data);
+            $this->load->view('header', $data);
+            $this->load->view('contact');
             $this->load->view('footer');
         }
     }

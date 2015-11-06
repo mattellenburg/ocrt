@@ -11,6 +11,7 @@ class User extends CI_Controller {
 		
     public function register() {
         $data = new stdClass();
+        $data->message = '';
 
         $this->load->helper('form');
         $this->load->library('form_validation');
@@ -20,8 +21,8 @@ class User extends CI_Controller {
         $this->form_validation->set_rules('password_confirm', 'Confirm Password', 'trim|required|min_length[6]|matches[password]');
 
         if ($this->form_validation->run() === false) {
-            $this->load->view('header');
-            $this->load->view('register', $data);
+            $this->load->view('header', $data);
+            $this->load->view('register');
             $this->load->view('footer');
         } 
         else {
@@ -30,15 +31,15 @@ class User extends CI_Controller {
 
             if ($this->user_model->create_user($email, $password)) {             
                 $data->message = 'Your registration has been received.';
-                $this->load->view('header');
-                $this->load->view('register', $data);
+                $this->load->view('header', $data);
+                $this->load->view('register');
                 $this->load->view('footer');
             } 
             else {
                 $data->error = 'There was a problem creating your new account. Please try again.';
 
-                $this->load->view('header');
-                $this->load->view('register', $data);
+                $this->load->view('header', $data);
+                $this->load->view('register');
                 $this->load->view('footer');
             }
         }
@@ -46,6 +47,7 @@ class User extends CI_Controller {
 
     public function login() {
         $data = new stdClass();
+        $data->message = '';
 
         $this->load->helper('form');
         $this->load->library('form_validation');
@@ -54,7 +56,7 @@ class User extends CI_Controller {
         $this->form_validation->set_rules('password', 'Password', 'required');
 
         if ($this->form_validation->run() == false) {
-            $this->load->view('header');
+            $this->load->view('header', $data);
             $this->load->view('login');
             $this->load->view('footer');
         } 
@@ -71,15 +73,15 @@ class User extends CI_Controller {
                 $_SESSION['is_confirmed'] = (bool)$user->is_confirmed;
                 $_SESSION['is_admin']     = (bool)$user->is_admin;
 
-                $this->load->view('header');
-                $this->load->view('home', $data);
+                $this->load->view('header', $data);
+                $this->load->view('home');
                 $this->load->view('footer');
             } 
             else {
                 $data->error = 'Wrong email or password.';
 
-                $this->load->view('header');
-                $this->load->view('login', $data);
+                $this->load->view('header', $data);
+                $this->load->view('login');
                 $this->load->view('footer');
             }
         }
@@ -87,14 +89,15 @@ class User extends CI_Controller {
 
     public function logout() {
         $data = new stdClass();
-
+        $data->message = '';
+        
         if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             foreach ($_SESSION as $key => $value) {
                 unset($_SESSION[$key]);
             }
 
-            $this->load->view('header');
-            $this->load->view('home', $data);
+            $this->load->view('header', $data);
+            $this->load->view('home');
             $this->load->view('footer');
         } 
         else {
