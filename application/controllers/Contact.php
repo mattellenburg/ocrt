@@ -35,7 +35,7 @@ class Contact extends CI_Controller {
 
             $this->email->send();
             
-            echo $this->email->print_debugger();
+            $data->message = 'Your feedback has been received.';
             
             $this->load->view('header');
             $this->load->view('contact', $data);

@@ -47,5 +47,9 @@
         </div>
     </div>
     <div id="main">
+        <div id="message">
+            <p><?php echo $message ?><p>
+        </div>
+
     
 		

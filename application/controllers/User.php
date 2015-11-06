@@ -28,9 +28,10 @@ class User extends CI_Controller {
             $email    = $this->input->post('email');
             $password = $this->input->post('password');
 
-            if ($this->user_model->create_user($email, $password)) {
+            if ($this->user_model->create_user($email, $password)) {             
+                $data->message = 'Your registration has been received.';
                 $this->load->view('header');
-                $this->load->view('home', $data);
+                $this->load->view('register', $data);
                 $this->load->view('footer');
             } 
             else {
