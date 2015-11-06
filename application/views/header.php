@@ -10,8 +10,16 @@
     <meta name="keywords" content="">
     <meta name="author" content="">
 
-    <!-- css -->
-    <link href="<?= base_url('assets/css/default.css') ?>" rel="stylesheet">
+    <?php
+    function isMobile() {
+        return preg_match("/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i", $_SERVER["HTTP_USER_AGENT"]);
+    }
+    ?>
+    <?php if (isMobile()) {?>
+        <link href="<?= base_url('assets/css/defaultmobile.css') ?>" rel="stylesheet">
+    <?php } else {?>
+        <link href="<?= base_url('assets/css/default.css') ?>" rel="stylesheet">
+    <?php }?>
 </head>
 <body>
     <div id="header">
@@ -22,18 +30,18 @@
             <ul>
                 <li><a href="<?= base_url('index.php/home/index') ?>">Home</a></li>
                 <li><a href="<?= base_url('index.php/explore/index') ?>">Explore</a></li>
-                <li><a href="<?= base_url('index.php/train/index') ?>">Train</a></li>
-                <li><a href="<?= base_url('index.php/race/index') ?>">Race</a></li>    
-                <li><a href="<?= base_url('index.php/about/index') ?>">About</a></li>
+                <li><a href="#">Train</a></li>
+                <li><a href="#">Race</a></li>    
                 <li><a href="<?= base_url('index.php/contact/index') ?>">Contact</a></li>
-                <?php if (isset($_SESSION['username']) && $_SESSION['logged_in'] === true) : ?>
-                    <?php if ($_SESSION['user_id'] == 1) : ?>
+                <li><a href="<?= base_url('index.php/about/index') ?>">About</a></li>
+                <?php if (isset($_SESSION['user_id']) && $_SESSION['logged_in'] && $_SESSION['is_confirmed']) : ?>
+                    <?php if ($_SESSION['is_admin']) : ?>
                         <li><a href="<?= base_url('index.php/admin/index') ?>">Admin</a></li>
                     <?php endif; ?>
-                    <li><a href="<?= base_url('index.php/logout') ?>">Logout</a></li>
+                    <li><a href="<?= base_url('index.php/user/logout') ?>">Logout</a></li>
                 <?php else : ?>
-                    <li><a href="<?= base_url('index.php/register') ?>">Register</a></li>
-                    <li><a href="<?= base_url('index.php/login') ?>">Login</a></li>
+                    <li><a href="<?= base_url('index.php/user/register') ?>">Register</a></li>
+                    <li><a href="<?= base_url('index.php/user/login') ?>">Login</a></li>
                 <?php endif; ?>
             </ul>
         </div>

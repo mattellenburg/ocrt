@@ -96,7 +96,7 @@ a, a:visited {
 
 #instructions {
     background-color: #fff;
-    width: 600px;
+    width: 400px;
     display: inline-block;
     margin-left: 10px;
 }
@@ -108,7 +108,7 @@ a, a:visited {
 }
 
 #googleMap {
-    width: 600px;
+    width: 400px;
     height: 500px;
 }
 
