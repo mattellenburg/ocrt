@@ -47,5 +47,9 @@
         <li>Added latitude/longitude logic to database query</li>
         <li>Style improvement for mobile use</li>
     </ul>
+    <h3>0.5 Beta release</h3>
+    <ul>
+        <li>Added location search to Explore</li>
+    </ul>
 </div>
 
