@@ -50,6 +50,7 @@
     <h3>0.5 Beta release</h3>
     <ul>
         <li>Added location search to Explore</li>
+        <li>Contact and Registration form updates</li>
     </ul>
 </div>
 
