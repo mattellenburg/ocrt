@@ -1,10 +1,7 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 <div id="explore">
-    <div id="message">
-        <p><?php echo $message ?><p>
-    </div>
     <div id="instructions">
-        <h2>Explore</h2>
+        <h2>Explore <input type="text" name="address" id="address" onkeydown="if (event.keyCode == 13) document.getElementById('go').click()" placeholder="Enter location" /> <input id="go" type="button" value="Go" onclick="getLatLong();" /></h2>
         <p>Click on the map to submit a new location. Click on a point to get more information about that location.</p>
         <div id="googleMap">
         </div>
@@ -38,8 +35,8 @@
 <script>
 function initialize() {
     var sessionid = " <?php if (isset($_SESSION['user_id'])) { echo $_SESSION['user_id']; } else { echo 0; } ?> ";
+
     var mapProp = {
-        zoom:13,
         mapTypeId:google.maps.MapTypeId.ROADMAP
     };
     var map=new google.maps.Map(document.getElementById("googleMap"),mapProp);
@@ -52,10 +49,19 @@ function initialize() {
         this.set('dragging',false);
         google.maps.event.trigger(this,'idle',{});
     });
-    
+
+    google.maps.event.addListener(map,'zoom_changed',function(){
+        var latitude = "<?php echo $latitude?>";
+        var longitude = "<?php echo $longitude?>";
+        var zoom = "<?php echo $zoom?>";
+        
+        if (parseInt(zoom) !== map.getZoom()) { redirectURL(map.getZoom(), latitude, longitude); }
+    });
+
     google.maps.event.addListener(map, 'idle', function() {
         if(!this.get('dragging') && this.get('oldCenter') && this.get('oldCenter')!==this.getCenter()) {
-            redirectURL (map.getCenter().lat(), map.getCenter().lng());
+            var zoom = "<?php echo $zoom?>";
+            redirectURL (zoom, map.getCenter().lat(), map.getCenter().lng());
         }
         if(!this.get('dragging')){
             this.set('oldCenter',this.getCenter())
@@ -69,29 +75,35 @@ function initialize() {
     }    
 }
 
-function redirectURL (latitude, longitude) {
-    window.location = "<?= base_url('index.php/explore/index/') ?>" + '/' + latitude + '/' + longitude;
+function redirectURL (zoom, latitude, longitude) {
+    window.location = "<?= base_url('index.php/explore/index/') ?>" + '/' + zoom + '/' + latitude + '/' + longitude;
 }
 
 function getMapCenter(map, sessionid) {
     var latitude = "<?php echo $latitude?>";
     var longitude = "<?php echo $longitude?>";
+    var zoom = "<?php echo $zoom?>";
 
     if (map.getCenter() === undefined && latitude === '' && longitude === '') {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
-                redirectURL(position.coords.latitude, position.coords.longitude);
+                redirectURL(13, position.coords.latitude, position.coords.longitude);
             }, 
             function() {
-                handleLocationError(true, infoWindow, map.getCenter());
+                handleLocationError(true, new infoWindow, map.getCenter());
             });
         } 
         else {
-            handleLocationError(false, infoWindow, map.getCenter());
+            handleLocationError(false, new infoWindow, map.getCenter());
         }
     }
+    else if (zoom === '') {
+        redirectURL(13, latitude, longitude);
+    }
     else {
+        map.setZoom(parseInt(zoom));
         map.setCenter(new google.maps.LatLng(latitude, longitude));
+        
         loadPoints(map, sessionid)
         
         new google.maps.Marker({
@@ -99,34 +111,6 @@ function getMapCenter(map, sessionid) {
             map: map,
         });
     }
-}
-
-function getMapCenter2(map) {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            getMapCenter(map, position);
-            loadPoints(map, sessionid);
-        }, function() {
-                handleLocationError(true, infoWindow, map.getCenter());
-        });
-    } 
-    else {
-        handleLocationError(false, infoWindow, map.getCenter());
-    }
-
-    var pos = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-    };	
-    map.setCenter(pos);
-
-    var latitude = "<?php echo $latitude?>";
-    var longitude = "<?php echo $longitude?>";
-    if (latitude === '' || longitude === '') {
-        redirectURL (position.coords.latitude, position.coords.longitude)
-    }
-
-    placeMarker(pos, map);
 }
  
 function loadPoints(map, sessionid) {
@@ -223,7 +207,7 @@ function loadPoints(map, sessionid) {
 
                 if (locations[i][5] === 'confirmed') {
                     if (sessionid>0) {
-                        var form = '<form method="post" action=' + "<?= base_url('index.php/explore/index/NULL/NULL/') ?>" + locations[i][6].trim() + '>';
+                        var form = '<form method="post" action="' + "<?= base_url('index.php/explore/index/'.$zoom.'/'.$latitude.'/'.$longitude) ?>" + '/' + locations[i][6].trim() + '">';
                         var userrating = '<p>Your Rating: ' + locations[i][7] + '</p>';
                         
                         var ratingsystem = '<p>Rate this location</p>';
@@ -289,8 +273,24 @@ function buildForm(latitude, longitude) {
     var icon = '<label for="icon">Icon:</label> <div id="divIcon"><input type="radio" name="icon" value="1" class="radioIcon"><img src=" <?php echo base_url('assets/images/Playground-50.png') ?> " /></input><input type="radio" name="icon" value="2" class="radioIcon"><img src=" <?php echo base_url('assets/images/Pullups Filled-50.png') ?> " /></input><input type="radio" name="icon" value="3" class="radioIcon"><img src=" <?php echo base_url('assets/images/City Bench-50.png') ?> " /></input><input type="radio" name="icon" value="4" class="radioIcon"><img src=" <?php echo base_url('assets/images/Weight-50.png') ?> " /></input><input type="radio" name="icon" value="5" class="radioIcon"><img src=" <?php echo base_url('assets/images/Pushups-50.png') ?> " /></input><input type="radio" name="icon" value="6" class="radioIcon"><img src=" <?php echo base_url('assets/images/Stadium-50.png') ?> " /></input><input type="radio" name="icon" value="7" class="radioIcon"><img src=" <?php echo base_url('assets/images/Trekking-50.png') ?> " /></input><input type="radio" name="icon" value="8" class="radioIcon"><img src=" <?php echo base_url('assets/images/Climbing Filled-50.png') ?> " /></input><input type="radio" name="icon" value="9" class="radioIcon"><img src=" <?php echo base_url('assets/images/Wakeup Hill on Stairs-50.png') ?> " /></input></div><br>';
     var submit = '<br><input type="submit" value="Submit">';
 
-    return '<form action="index">' + heading + latitude + longitude + icon + title + description + submit + '</form>';
+    return '<form action="' + "<?= base_url('index.php/explore/index/'.$zoom.'/'.$latitude.'/'.$longitude) ?>" + '">' + heading + latitude + longitude + icon + title + description + submit + '</form>';
 }
 
+function getLatLong() {
+    var geocoder = new google.maps.Geocoder();
+
+    geocoder.geocode( { 'address': document.getElementById("address").value}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+            redirectURL("<?php echo $zoom?>", results[0].geometry.location.lat(), results[0].geometry.location.lng());
+        } 
+    }); 
+}
 google.maps.event.addDomListener(window, 'load', initialize);
+
+$(document).ready(function(){
+    $('#address').keypress(function(e){
+      if(e.keyCode==13)
+      $('#go').click();
+    });
+});
 </script>
