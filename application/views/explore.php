@@ -198,11 +198,8 @@ function loadPoints(map, sessionid) {
 
         google.maps.event.addListener(marker, 'click', (function(marker, i) {
             return function() {
-                infoWindow.setContent('<b>Average Rating:</b> ' + parseFloat(locations[i][8]).toFixed(1) + '<br><b>Distance:</b> ' + parseFloat(locations[i][10]).toFixed(1) + ' miles');
-                infoWindow.open(map, marker);
-
                 document.getElementById('pointInformation').innerHTML = '<h2>Information</h2>';
-                document.getElementById('pointInformation').innerHTML += '<h3>' + locations[i][0] + '</h3>';
+                document.getElementById('pointInformation').innerHTML += '<h3>' + locations[i][0] + ' (' + parseFloat(locations[i][8]).toFixed(1) + ' / ' + parseFloat(locations[i][10]).toFixed(1) + ' miles)</h3>';
                 document.getElementById('pointInformation').innerHTML += '<p>' + locations[i][3] + '</p>';
 
                 if (locations[i][5] === 'confirmed') {
@@ -286,11 +283,4 @@ function getLatLong() {
     }); 
 }
 google.maps.event.addDomListener(window, 'load', initialize);
-
-$(document).ready(function(){
-    $('#address').keypress(function(e){
-      if(e.keyCode==13)
-      $('#go').click();
-    });
-});
 </script>
