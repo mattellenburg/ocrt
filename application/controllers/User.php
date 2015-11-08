@@ -73,8 +73,9 @@ class User extends CI_Controller {
                 $_SESSION['is_confirmed'] = (bool)$user->is_confirmed;
                 $_SESSION['is_admin']     = (bool)$user->is_admin;
 
+                $data->message = 'You have successfully logged into the site.';
+                
                 $this->load->view('header', $data);
-                $this->load->view('home');
                 $this->load->view('footer');
             } 
             else {
