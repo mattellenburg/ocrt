@@ -8,6 +8,8 @@
     </div>
     <div id="pointInformation">
         <h2>Location Information</h2>
+        <h3></h3>
+        <p></p>
     </div>
     <div id="filters">
         <?php if (isset($_SESSION['user_id'])) : ?>
@@ -198,9 +200,15 @@ function loadPoints(map, sessionid) {
 
         google.maps.event.addListener(marker, 'click', (function(marker, i) {
             return function() {
-                document.getElementById('pointInformation').innerHTML = '<h2>Information</h2>';
-                document.getElementById('pointInformation').innerHTML += '<h3>' + locations[i][0] + ' (' + parseFloat(locations[i][8]).toFixed(1) + ' / ' + parseFloat(locations[i][10]).toFixed(1) + ' miles)</h3>';
-                document.getElementById('pointInformation').innerHTML += '<p>' + locations[i][3] + '</p>';
+                var pointinformation = document.getElementById("pointInformation");
+                var h3 = pointinformation.getElementsByTagName("h3");
+                var i;
+                for (i = 0; i < h3.length; i++) {
+                    h3[i].innerHTML = locations[i][0] + ' (' + parseFloat(locations[i][8]).toFixed(1) + ' / ' + parseFloat(locations[i][10]).toFixed(1) + ' miles)';
+                }    
+                
+                var p = pointinformation.getElementsByTagName("p");
+                p[0].innerHTML = locations[i][3];
 
                 if (locations[i][5] === 'confirmed') {
                     if (sessionid>0) {
@@ -222,7 +230,7 @@ function loadPoints(map, sessionid) {
                         
                         var submit = '<input type="submit" value="Submit Rating and Keywords"></form>';
 
-                        document.getElementById('pointInformation').innerHTML += form + userrating + ratingsystem + keywordlist + submit;
+                        pointinformation.innerHTML += form + userrating + ratingsystem + keywordlist + submit;
                     }
                 }
             }

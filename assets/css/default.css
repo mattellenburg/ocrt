@@ -19,9 +19,6 @@ a, a:visited {
     background-color: white;
 }
 
-#header h1 {
-}
-
 #title {
     display: inline-block;
     margin-left: 50px;
@@ -74,17 +71,9 @@ a, a:visited {
     background-color: #fff;
 }
 
-#explore {
+.homeblock {
     display: inline-block;   
-}
-
-#train {
-    display: inline-block;
-    margin: 0px 50px 0px 50px;
-}
-
-#race {
-    display: inline-block;    
+    margin-left: 50px;
 }
 
 #message {
@@ -92,6 +81,11 @@ a, a:visited {
     width: 100%;
     margin-top: 10px;
     margin-left: 20px;
+}
+
+#googleMap {
+    width: 600px;
+    height: 500px;
 }
 
 #instructions {
@@ -103,7 +97,6 @@ a, a:visited {
 
 #pointInformation {
     width: 400px;
-    height: 600px;
     display: inline-block;
     vertical-align: top;
     background-color: #fff;
@@ -113,7 +106,7 @@ a, a:visited {
 
 #filters {
     width: 400px;
-    height: 600px;
+    height: 400px;
     display: inline-block;
     vertical-align: top;
     background-color: #fff;
