@@ -52,5 +52,9 @@
         <li>Added location search to Explore</li>
         <li>Contact and Registration form updates</li>
     </ul>
+    <h3>0.6 Beta release</h3>
+    <ul>
+        <li>User interface enhancements for desktop and mobile devices</li>
+    </ul>
 </div>
 
