@@ -3,9 +3,9 @@
 <script>
     var w = window.innerWidth;
     var h = window.innerHeight;
-    var urlparts = window.location.pathname.replace("/ocrt/index.php/","").split("/");
-//    alert(w + 'x' + h);
-//    alert(window.location.pathname);
+    var pathname = window.location.pathname.replace("/ocrt","").replace("/index.php/","");
+    var urlparts = pathname.split("/");
+    var page = urlparts[0];
 
     if (w < 600) {
         //All pages
@@ -44,7 +44,7 @@
             a[0].style.fontSize="medium";
         }    
 
-        if (urlparts[0]==="home") {
+        if (page==="home" || page === "") {
             var home = document.getElementById("home");
             home.style.padding="0px";
 
@@ -59,7 +59,7 @@
                 img[0].style.padding = "0px";
             }    
         }
-        else if (urlparts[0]==="explore") {
+        else if (page==="explore") {
             var explore = document.getElementById("explore");
 
             var div = explore.getElementsByTagName("div");
