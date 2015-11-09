@@ -56,6 +56,7 @@
                 var img = a[0].getElementsByTagName("img");
                 img[0].style.width = "100px";
                 img[0].style.height = "100px";
+                img[0].style.borderRadius = "5px";
                 img[0].style.padding = "0px";
             }    
         }
