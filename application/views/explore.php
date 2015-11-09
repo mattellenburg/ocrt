@@ -8,6 +8,9 @@
     </div>
     <div id="pointInformation">
         <h2>Location Information</h2>
+        <h3></h3>
+        <p></p>
+        <div></div>
     </div>
     <div id="filters">
         <?php if (isset($_SESSION['user_id'])) : ?>
@@ -198,12 +201,14 @@ function loadPoints(map, sessionid) {
 
         google.maps.event.addListener(marker, 'click', (function(marker, i) {
             return function() {
-                infoWindow.setContent('<b>Average Rating:</b> ' + parseFloat(locations[i][8]).toFixed(1) + '<br><b>Distance:</b> ' + parseFloat(locations[i][10]).toFixed(1) + ' miles');
-                infoWindow.open(map, marker);
+                var pointinformation = document.getElementById("pointInformation");
+                var h3 = pointinformation.getElementsByTagName("h3");
+                h3[0].innerHTML = locations[i][0] + ' (' + parseFloat(locations[i][8]).toFixed(1) + ' / ' + parseFloat(locations[i][10]).toFixed(1) + ' miles)';
+                
+                var p = pointinformation.getElementsByTagName("p");
+                p[0].innerHTML = locations[i][3];
 
-                document.getElementById('pointInformation').innerHTML = '<h2>Information</h2>';
-                document.getElementById('pointInformation').innerHTML += '<h3>' + locations[i][0] + '</h3>';
-                document.getElementById('pointInformation').innerHTML += '<p>' + locations[i][3] + '</p>';
+                var div = pointinformation.getElementsByTagName("div");
 
                 if (locations[i][5] === 'confirmed') {
                     if (sessionid>0) {
@@ -225,7 +230,7 @@ function loadPoints(map, sessionid) {
                         
                         var submit = '<input type="submit" value="Submit Rating and Keywords"></form>';
 
-                        document.getElementById('pointInformation').innerHTML += form + userrating + ratingsystem + keywordlist + submit;
+                        div[0].innerHTML = form + userrating + ratingsystem + keywordlist + submit;
                     }
                 }
             }
@@ -233,8 +238,7 @@ function loadPoints(map, sessionid) {
 
         google.maps.event.addListener(marker, 'dblclick', (function(marker, i) {
             return function() {
-                infoWindow.close();
-                document.getElementById('pointInformation').innerHTML = '';
+                redirectURL("<?php echo $zoom?>", "<?php echo $latitude?>", "<?php echo $longitude?>");
             }
         })(marker, i));
     }		
@@ -249,9 +253,7 @@ function placeMarker(pos, map) {
     google.maps.event.clearListeners(map, 'click');
 
     google.maps.event.addListener(marker, 'dblclick', function(event) {
-        marker.setMap(null);
-        document.getElementById('pointInformation').innerHTML = '';
-        addMapClickEvent(map);
+        redirectURL("<?php echo $zoom?>", "<?php echo $latitude?>", "<?php echo $longitude?>");
     });
 
     return marker;
@@ -270,8 +272,8 @@ function buildForm(latitude, longitude) {
     var longitude = '<label for="longitude">Longitude:</label> <input type="text" name="longitude" value=' + longitude + ' readonly><br>';
     var title = '<label for="title">Title:</label> <input type="text" name="title"><br>';
     var description = '<p>Description:</p> <textarea name="description" rows="10"></textarea><br>';
-    var icon = '<label for="icon">Icon:</label> <div id="divIcon"><input type="radio" name="icon" value="1" class="radioIcon"><img src=" <?php echo base_url('assets/images/Playground-50.png') ?> " /></input><input type="radio" name="icon" value="2" class="radioIcon"><img src=" <?php echo base_url('assets/images/Pullups Filled-50.png') ?> " /></input><input type="radio" name="icon" value="3" class="radioIcon"><img src=" <?php echo base_url('assets/images/City Bench-50.png') ?> " /></input><input type="radio" name="icon" value="4" class="radioIcon"><img src=" <?php echo base_url('assets/images/Weight-50.png') ?> " /></input><input type="radio" name="icon" value="5" class="radioIcon"><img src=" <?php echo base_url('assets/images/Pushups-50.png') ?> " /></input><input type="radio" name="icon" value="6" class="radioIcon"><img src=" <?php echo base_url('assets/images/Stadium-50.png') ?> " /></input><input type="radio" name="icon" value="7" class="radioIcon"><img src=" <?php echo base_url('assets/images/Trekking-50.png') ?> " /></input><input type="radio" name="icon" value="8" class="radioIcon"><img src=" <?php echo base_url('assets/images/Climbing Filled-50.png') ?> " /></input><input type="radio" name="icon" value="9" class="radioIcon"><img src=" <?php echo base_url('assets/images/Wakeup Hill on Stairs-50.png') ?> " /></input></div><br>';
-    var submit = '<br><input type="submit" value="Submit">';
+    var icon = '<label for="icon">Icon:</label> <div id="divIcon"><input type="radio" name="icon" value="1" class="radioIcon"><img src=" <?php echo base_url('assets/images/Playground-50.png') ?> " /></input><input type="radio" name="icon" value="2" class="radioIcon"><img src=" <?php echo base_url('assets/images/Pullups Filled-50.png') ?> " /></input><input type="radio" name="icon" value="3" class="radioIcon"><img src=" <?php echo base_url('assets/images/City Bench-50.png') ?> " /></input><input type="radio" name="icon" value="4" class="radioIcon"><img src=" <?php echo base_url('assets/images/Weight-50.png') ?> " /></input><input type="radio" name="icon" value="5" class="radioIcon"><img src=" <?php echo base_url('assets/images/Pushups-50.png') ?> " /></input><br><input type="radio" name="icon" value="6" class="radioIcon"><img src=" <?php echo base_url('assets/images/Stadium-50.png') ?> " /></input><input type="radio" name="icon" value="7" class="radioIcon"><img src=" <?php echo base_url('assets/images/Trekking-50.png') ?> " /></input><input type="radio" name="icon" value="8" class="radioIcon"><img src=" <?php echo base_url('assets/images/Climbing Filled-50.png') ?> " /></input><input type="radio" name="icon" value="9" class="radioIcon"><img src=" <?php echo base_url('assets/images/Wakeup Hill on Stairs-50.png') ?> " /></input></div><br>';
+    var submit = '<br><input type="submit" value="Submit"><input type="button" value="Cancel" onClick="redirectURL(' + <?php echo $zoom?> + ',' + <?php echo $latitude?> + ',' + <?php echo $longitude?> + ');">';
 
     return '<form action="' + "<?= base_url('index.php/explore/index/'.$zoom.'/'.$latitude.'/'.$longitude) ?>" + '">' + heading + latitude + longitude + icon + title + description + submit + '</form>';
 }
@@ -286,11 +288,4 @@ function getLatLong() {
     }); 
 }
 google.maps.event.addDomListener(window, 'load', initialize);
-
-$(document).ready(function(){
-    $('#address').keypress(function(e){
-      if(e.keyCode==13)
-      $('#go').click();
-    });
-});
 </script>

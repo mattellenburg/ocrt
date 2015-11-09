@@ -11,8 +11,11 @@ class Admin extends CI_Controller {
     }
 
     public function index() {
+        $data = new stdClass();
+        $data->message = '';
+
         if ($_SESSION['is_admin']) {
-            $this->load->view('header');
+            $this->load->view('header', $data);
             $this->load->view('admin/index');
             $this->load->view('footer');
         }
@@ -22,6 +25,9 @@ class Admin extends CI_Controller {
     }
 
     public function approvepoints($id = NULL) {
+        $data = new stdClass();
+        $data->message = '';
+
         if ($_SESSION['is_admin']) {
             $data = new stdClass();
 
@@ -40,8 +46,8 @@ class Admin extends CI_Controller {
 
             $data->points_pending = $this->point_pending_model->get_points();
 
-            $this->load->view('header');
-            $this->load->view('admin/approvepoints', $data);
+            $this->load->view('header', $data);
+            $this->load->view('admin/approvepoints');
             $this->load->view('footer');
         }
         else {

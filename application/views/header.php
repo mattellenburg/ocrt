@@ -16,10 +16,9 @@
     }
     ?>
     <?php if (isMobile()) {?>
-        <link href="<?= base_url('assets/css/defaultmobile.css') ?>" rel="stylesheet">
     <?php } else {?>
-        <link href="<?= base_url('assets/css/default.css') ?>" rel="stylesheet">
     <?php }?>
+    <link href="<?= base_url('assets/css/default.css') ?>" rel="stylesheet">
 </head>
 <body>
     <div id="header">
