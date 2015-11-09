@@ -3,10 +3,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class User extends CI_Controller {
     public function __construct() {
-            parent::__construct();
-            $this->load->library(array('session'));
-            $this->load->helper(array('url'));
-            $this->load->model('user_model');
+        parent::__construct();
+        $this->load->library(array('session'));
+        $this->load->helper(array('url'));
+        $this->load->model('user_model');
     }
 		
     public function register() {
@@ -26,16 +26,20 @@ class User extends CI_Controller {
             $this->load->view('footer');
         } 
         else {
-            $email    = $this->input->post('email');
+            $email = $this->input->post('email');
             $password = $this->input->post('password');
 
-            if ($this->user_model->create_user($email, $password)) {             
+            if ($this->user_model->create_user($email, $password)) {    
+                sendEmail($this->input->post('email').' has registered for an account.');
+                
                 $data->message = 'Your registration has been received.';
                 $this->load->view('header', $data);
                 $this->load->view('register');
                 $this->load->view('footer');
             } 
             else {
+                sendEmail($this->input->post('email').' was unable to register for an account.');
+
                 $data->error = 'There was a problem creating your new account. Please try again.';
 
                 $this->load->view('header', $data);
@@ -45,6 +49,18 @@ class User extends CI_Controller {
         }
     }
 
+    public function sendEmail($message=NULL) {
+        $this->load->library('email');
+
+        $this->email->from($this->input->post('email'));
+        $this->email->to('mattellenburg@ocrt4me.com'); 
+
+        $this->email->subject('ocrt4me.com Registration');
+        $this->email->message($message);	
+
+        $this->email->send();
+    }
+    
     public function login() {
         $data = new stdClass();
         $data->message = '';
@@ -68,10 +84,10 @@ class User extends CI_Controller {
                 $user_id = $this->user_model->get_user_id_from_email($email);
                 $user    = $this->user_model->get_user($user_id);
 
-                $_SESSION['user_id']      = (int)$user->id;
-                $_SESSION['logged_in']    = (bool)true;
+                $_SESSION['user_id'] = (int)$user->id;
+                $_SESSION['logged_in'] = (bool)true;
                 $_SESSION['is_confirmed'] = (bool)$user->is_confirmed;
-                $_SESSION['is_admin']     = (bool)$user->is_admin;
+                $_SESSION['is_admin'] = (bool)$user->is_admin;
 
                 $data->message = 'You have successfully logged into the site.';
                 
@@ -90,7 +106,7 @@ class User extends CI_Controller {
 
     public function logout() {
         $data = new stdClass();
-        $data->message = '';
+        $data->message = 'You have been logged out of the system.';
         
         if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             foreach ($_SESSION as $key => $value) {
