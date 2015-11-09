@@ -55,6 +55,7 @@
     <h3>0.6 Beta release</h3>
     <ul>
         <li>User interface enhancements for desktop and mobile devices</li>
+        <li>Explore functionality updates</li>
     </ul>
 </div>
 
