@@ -10,6 +10,7 @@
         <h2>Location Information</h2>
         <h3></h3>
         <p></p>
+        <div></div>
     </div>
     <div id="filters">
         <?php if (isset($_SESSION['user_id'])) : ?>
@@ -202,13 +203,12 @@ function loadPoints(map, sessionid) {
             return function() {
                 var pointinformation = document.getElementById("pointInformation");
                 var h3 = pointinformation.getElementsByTagName("h3");
-                var i;
-                for (i = 0; i < h3.length; i++) {
-                    h3[i].innerHTML = locations[i][0] + ' (' + parseFloat(locations[i][8]).toFixed(1) + ' / ' + parseFloat(locations[i][10]).toFixed(1) + ' miles)';
-                }    
+                h3[0].innerHTML = locations[i][0] + ' (' + parseFloat(locations[i][8]).toFixed(1) + ' / ' + parseFloat(locations[i][10]).toFixed(1) + ' miles)';
                 
                 var p = pointinformation.getElementsByTagName("p");
                 p[0].innerHTML = locations[i][3];
+
+                var div = pointinformation.getElementsByTagName("div");
 
                 if (locations[i][5] === 'confirmed') {
                     if (sessionid>0) {
@@ -230,7 +230,7 @@ function loadPoints(map, sessionid) {
                         
                         var submit = '<input type="submit" value="Submit Rating and Keywords"></form>';
 
-                        pointinformation.innerHTML += form + userrating + ratingsystem + keywordlist + submit;
+                        div[0].innerHTML = form + userrating + ratingsystem + keywordlist + submit;
                     }
                 }
             }
@@ -238,8 +238,7 @@ function loadPoints(map, sessionid) {
 
         google.maps.event.addListener(marker, 'dblclick', (function(marker, i) {
             return function() {
-                infoWindow.close();
-                document.getElementById('pointInformation').innerHTML = '';
+                redirectURL("<?php echo $zoom?>", "<?php echo $latitude?>", "<?php echo $longitude?>");
             }
         })(marker, i));
     }		
@@ -254,7 +253,7 @@ function placeMarker(pos, map) {
     google.maps.event.clearListeners(map, 'click');
 
     google.maps.event.addListener(marker, 'dblclick', function(event) {
-        redirectURL(' + <?php echo $zoom?> + ',' + <?php echo $latitude?> + ',' + <?php echo $longitude?> + ');
+        redirectURL("<?php echo $zoom?>", "<?php echo $latitude?>", "<?php echo $longitude?>");
     });
 
     return marker;
