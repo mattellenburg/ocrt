@@ -7,6 +7,7 @@ class User extends CI_Controller {
         $this->load->library(array('session'));
         $this->load->helper(array('url'));
         $this->load->model('user_model');
+        $this->load->library('email');
     }
 		
     public function register() {
@@ -30,7 +31,13 @@ class User extends CI_Controller {
             $password = $this->input->post('password');
 
             if ($this->user_model->create_user($email, $password)) {    
-                sendEmail($this->input->post('email').' has registered for an account.');
+                $this->email->from($this->input->post('email'));
+                $this->email->to('mattellenburg@ocrt4me.com'); 
+
+                $this->email->subject('ocrt4me.com Registration');
+                $this->email->message($this->input->post('email').' has registered for an account.');	
+
+                $this->email->send();
                 
                 $data->message = 'Your registration has been received.';
                 $this->load->view('header', $data);
@@ -38,7 +45,13 @@ class User extends CI_Controller {
                 $this->load->view('footer');
             } 
             else {
-                sendEmail($this->input->post('email').' was unable to register for an account.');
+                $this->email->from($this->input->post('email'));
+                $this->email->to('mattellenburg@ocrt4me.com'); 
+
+                $this->email->subject('ocrt4me.com Registration');
+                $this->email->message($this->input->post('email').' was unable to register for an account.');	
+
+                $this->email->send();
 
                 $data->error = 'There was a problem creating your new account. Please try again.';
 
@@ -47,18 +60,6 @@ class User extends CI_Controller {
                 $this->load->view('footer');
             }
         }
-    }
-
-    public function sendEmail($message=NULL) {
-        $this->load->library('email');
-
-        $this->email->from($this->input->post('email'));
-        $this->email->to('mattellenburg@ocrt4me.com'); 
-
-        $this->email->subject('ocrt4me.com Registration');
-        $this->email->message($message);	
-
-        $this->email->send();
     }
     
     public function login() {
