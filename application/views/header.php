@@ -10,7 +10,14 @@
     <meta name="keywords" content="">
     <meta name="author" content="">
 
-    <!-- css -->
+    <?php
+    function isMobile() {
+        return preg_match("/(android|avantgo|blackberry|bolt|boost|cricket|docomo|fone|hiptop|mini|mobi|palm|phone|pie|tablet|up\.browser|up\.link|webos|wos)/i", $_SERVER["HTTP_USER_AGENT"]);
+    }
+    ?>
+    <?php if (isMobile()) {?>
+    <?php } else {?>
+    <?php }?>
     <link href="<?= base_url('assets/css/default.css') ?>" rel="stylesheet">
 </head>
 <body>
@@ -24,7 +31,7 @@
                 <li><a href="<?= base_url('index.php/explore/index') ?>">Explore</a></li>
                 <li><a href="#">Train</a></li>
                 <li><a href="#">Race</a></li>    
-                <li><a href="#">Contact</a></li>
+                <li><a href="<?= base_url('index.php/contact/index') ?>">Contact</a></li>
                 <li><a href="<?= base_url('index.php/about/index') ?>">About</a></li>
                 <?php if (isset($_SESSION['user_id']) && $_SESSION['logged_in'] && $_SESSION['is_confirmed']) : ?>
                     <?php if ($_SESSION['is_admin']) : ?>
@@ -39,5 +46,9 @@
         </div>
     </div>
     <div id="main">
+        <div id="message">
+            <p><?php echo $message ?><p>
+        </div>
+
     
 		

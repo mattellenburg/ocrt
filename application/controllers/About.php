@@ -10,7 +10,10 @@ class About extends CI_Controller {
     }
 
     public function index() {
-        $this->load->view('header');
+        $data = new stdClass();
+        $data->message = '';
+
+        $this->load->view('header', $data);
         $this->load->view('about');	
         $this->load->view('footer');
     }

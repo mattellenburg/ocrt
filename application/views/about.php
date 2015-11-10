@@ -28,5 +28,34 @@
             <li>Click on map to submit a new point</li>
         </ul>
     </ul>
+    <h3>0.1 Beta release</h3>
+    <ul>
+        <li>Added contact page</li>
+        <li>Added icons to Explore</li>
+    </ul>
+    <h3>0.2 Beta release</h3>
+    <ul>
+        <li>Added ability to submit rating</li>
+        <li>Added ability to submit keywords</li>
+    </ul>
+    <h3>0.3 Beta release</h3>
+    <ul>
+        <li>Added filters</li>
+    </ul>
+    <h3>0.4 Beta release</h3>
+    <ul>
+        <li>Added latitude/longitude logic to database query</li>
+        <li>Style improvement for mobile use</li>
+    </ul>
+    <h3>0.5 Beta release</h3>
+    <ul>
+        <li>Added location search to Explore</li>
+        <li>Contact and Registration form updates</li>
+    </ul>
+    <h3>0.6 Beta release</h3>
+    <ul>
+        <li>User interface enhancements for desktop and mobile devices</li>
+        <li>Explore functionality updates</li>
+    </ul>
 </div>
 
