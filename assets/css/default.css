@@ -88,6 +88,15 @@ a, a:visited {
     height: 500px;
 }
 
+label > input{ /* HIDE RADIO */
+  visibility: hidden; /* Makes input not-clickable */
+  position: absolute; /* Remove input from document flow */
+}
+label > input + img{ /* IMAGE STYLES */
+  cursor:pointer;
+  border:2px solid transparent;
+}
+
 #instructions {
     background-color: #fff;
     width: 600px;
