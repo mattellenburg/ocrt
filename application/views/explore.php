@@ -19,11 +19,11 @@
             <?= form_open() ?>
             <p>
                 Average Rating: 
-                <input type="radio" id="filterrating" name="filterrating" value="1" />
-                <input type="radio" id="filterrating" name="filterrating" value="2" />
-                <input type="radio" id="filterrating" name="filterrating" value="3" />
-                <input type="radio" id="filterrating" name="filterrating" value="4" />
-                <input type="radio" id="filterrating" name="filterrating" value="5" />
+                <label><input type="radio" id="filterrating" name="filterrating" value="1" onclick="stars(this.name);" /><img id="filterratingstar1" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
+                <label><input type="radio" id="filterrating" name="filterrating" value="2" onclick="stars(this.name);" /><img id="filterratingstar2" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
+                <label><input type="radio" id="filterrating" name="filterrating" value="3" onclick="stars(this.name);" /><img id="filterratingstar3" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
+                <label><input type="radio" id="filterrating" name="filterrating" value="4" onclick="stars(this.name);" /><img id="filterratingstar4" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
+                <label><input type="radio" id="filterrating" name="filterrating" value="5" onclick="stars(this.name);" /><img id="filterratingstar5" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
                 or higher
             </p>
             <p>Submitted by Me: <input type="checkbox" id="mysubmissions" name="mysubmissions"></p>
@@ -36,6 +36,23 @@
 
 <script src="http://maps.googleapis.com/maps/api/js"></script>
 <script>
+function stars(name, rating) {
+    if (typeof rating === 'undefined') {
+        rating = document.querySelector('input[name = "' + name + '"]:checked').value;
+    }
+
+    for(i=1; i<=5; i++) {
+        var star = name + 'star' + i.toString()
+
+        if (i<=rating) {
+            document.getElementById(star).src="<?php echo base_url('assets/images/starblack.png') ?>";    
+        }
+        else {
+            document.getElementById(star).src="<?php echo base_url('assets/images/starwhite.png') ?>";            
+        }
+    }
+}
+
 function initialize() {
     var sessionid = " <?php if (isset($_SESSION['user_id'])) { echo $_SESSION['user_id']; } else { echo 0; } ?> ";
 
@@ -203,7 +220,7 @@ function loadPoints(map, sessionid) {
             return function() {
                 var pointinformation = document.getElementById("pointInformation");
                 var h3 = pointinformation.getElementsByTagName("h3");
-                h3[0].innerHTML = locations[i][0] + ' (' + parseFloat(locations[i][8]).toFixed(1) + ' / ' + parseFloat(locations[i][10]).toFixed(1) + ' miles)';
+                h3[0].innerHTML = locations[i][0] + ' (' + parseFloat(locations[i][8]).toFixed(1) + ' stars / ' + parseFloat(locations[i][10]).toFixed(1) + ' miles)';
                 
                 var p = pointinformation.getElementsByTagName("p");
                 p[0].innerHTML = locations[i][3];
@@ -213,12 +230,15 @@ function loadPoints(map, sessionid) {
                 if (locations[i][5] === 'confirmed') {
                     if (sessionid>0) {
                         var form = '<form method="post" action="' + "<?= base_url('index.php/explore/index/'.$zoom.'/'.$latitude.'/'.$longitude) ?>" + '/' + locations[i][6].trim() + '">';
-                        var userrating = '<p>Your Rating: ' + locations[i][7] + '</p>';
-                        
-                        var ratingsystem = '<p>Rate this location</p>';
-                        ratingsystem += '<input id="rating" name="rating" type="radio" value=1 class="star"/> <input name="rating" type="radio" value=2 class="star"/> <input name="rating" type="radio" value=3 class="star"/> <input name="rating" type="radio" value=4 class="star"/> <input name="rating" type="radio" value=5 class="star"/>';
 
-                        var keywordlist = '<div id="keywords">';
+                        var ratingsystem = '<h4>Rate This Location:</h4>';
+                        ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="1" onclick="stars(this.name);" /><img id="locationratingstar1" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
+                        ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="2" onclick="stars(this.name);" /><img id="locationratingstar2" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
+                        ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="3" onclick="stars(this.name);" /><img id="locationratingstar3" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
+                        ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="4" onclick="stars(this.name);" /><img id="locationratingstar4" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
+                        ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="5" onclick="stars(this.name);" /><img id="locationratingstar5" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
+                        
+                        var keywordlist = '<div id="keywords"><h4>Keywords:</h4>';
                         <?php foreach ($keywords as $keyword): ?>
                             var checked='';
                             if (locations[i][9].indexOf("<?php echo $keyword->keyword ?>") >= 0) {
@@ -230,7 +250,11 @@ function loadPoints(map, sessionid) {
                         
                         var submit = '<input type="submit" value="Submit Rating and Keywords"></form>';
 
-                        div[0].innerHTML = form + userrating + ratingsystem + keywordlist + submit;
+                        div[0].innerHTML = form + ratingsystem + keywordlist + submit;
+                        
+                        if (locations[i][7] > 0) {
+                            stars('locationrating', parseInt(locations[i][7]));
+                        }
                     }
                 }
             }
