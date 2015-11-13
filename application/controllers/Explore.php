@@ -39,16 +39,16 @@ class Explore extends CI_Controller {
         else {
             $data->filter = '';
         }
-        $data->points = $this->point_model->get_points($where, $latitude, $longitude);
+
         $data->zoom = $zoom;
         $data->latitude = $latitude;
         $data->longitude = $longitude;
         
-        if ($this->input->post('rating') > 0) {
+        if ($this->input->post('locationrating') > 0) {
             $query = $this->pointsratings_model->get_rating($pointid);
 
             if ($query->num_rows() > 0) {
-                if ($this->pointsratings_model->update_rating($pointid, $this->input->post('rating'))) {
+                if ($this->pointsratings_model->update_rating($pointid, $this->input->post('locationrating'))) {
                     $data->message = 'Your rating has been updated.';				
                 }
                 else {
@@ -56,7 +56,7 @@ class Explore extends CI_Controller {
                 }
             }
             else {
-                if ($this->pointsratings_model->create_rating($pointid, $this->input->post('rating'))) {				
+                if ($this->pointsratings_model->create_rating($pointid, $this->input->post('locationrating'))) {				
                     $data->message = 'Your rating has been recorded.';					
                 } 
                 else {
@@ -119,6 +119,7 @@ class Explore extends CI_Controller {
             $data->message = '';
         }
 
+        $data->points = $this->point_model->get_points($where, $latitude, $longitude);
         $data->points_pending = $this->point_pending_model->get_points();
         $data->keywords = $this->keyword_model->get_keywords();
 
