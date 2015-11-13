@@ -10,7 +10,7 @@ $tmpl = array (
 
     'row_start'           => '<tr>',
     'row_end'             => '</tr>',
-    'cell_start'          => '<td>',
+    'cell_start'          => '<td width="100px">',
     'cell_end'            => '</td>',
 
     'row_alt_start'       => '<tr>',
