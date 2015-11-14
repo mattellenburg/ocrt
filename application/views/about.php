@@ -57,5 +57,9 @@
         <li>User interface enhancements for desktop and mobile devices</li>
         <li>Explore functionality updates</li>
     </ul>
+    <h3>0.7 Beta release</h3>
+    <ul>
+        <li>Added star rating system and filter</li>
+    </ul>
 </div>
 
