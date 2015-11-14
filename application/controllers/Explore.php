@@ -100,15 +100,8 @@ class Explore extends CI_Controller {
             }
         }
         
-        $title = $this->input->get('title', TRUE);
-        $description = $this->input->get('description', TRUE);
-        $icon = $this->input->get('icon', TRUE);
-        $latitude = $this->input->get('latitude', TRUE);
-        $longitude = $this->input->get('longitude', TRUE);
-        $rating = $this->input->get('rating', TRUE);
-
-        if ($title <> '' && $description <> '') {
-            if ($this->point_pending_model->create_point($title, $description, $latitude, $longitude, $icon)) {				
+        if ($this->input->get('title', TRUE) <> '' && $this->input->get('description', TRUE) <> '') {
+            if ($this->point_pending_model->create_point($this->input->get('title', TRUE), $this->input->get('description', TRUE), $this->input->get('latitude', TRUE), $this->input->get('longitude', TRUE), $this->input->get('icon', TRUE))) {				
                 $data->message = 'Your location has been submitted for review.';
             } 
             else {
