@@ -238,7 +238,7 @@ function loadPoints(map, sessionid) {
                         ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="4" onclick="stars(this.name);" /><img id="locationratingstar4" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
                         ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="5" onclick="stars(this.name);" /><img id="locationratingstar5" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
                         
-                        var keywordlist = '<div id="keywords"><h4>Keywords:</h4>';
+                        var keywordlist = '<h4>Keywords:</h4><div id="keywords">';
                         <?php foreach ($keywords as $keyword): ?>
                             var checked='';
                             if (locations[i][9].indexOf("<?php echo $keyword->keyword ?>") >= 0) {
