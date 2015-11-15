@@ -69,6 +69,7 @@
     <h3>0.9 Beta release</h3>
     <ul>
         <li>Updated keywords</li>
+        <li>UI updates</li>
     </ul>
 </div>
 
