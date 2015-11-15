@@ -1,8 +1,9 @@
 body {
-    /*background-image: url("../images/background.jpg");*/
+    background-image: url("../images/background.jpg");
     background-repeat: no-repeat;
     background-size: 100% 100%;
     margin: 0;
+    color: white;
 }
 
 html {
@@ -11,12 +12,15 @@ html {
 
 a, a:visited {
     text-decoration: none;
-    color: #000;
+    color: white;
+}
+
+ul {
+    color: white;
 }
 
 #header {
     width: 100%;
-    background-color: white;
 }
 
 #title {
@@ -36,11 +40,10 @@ a, a:visited {
 }
 
 #navigation ul li:hover {
-    background-color: grey;
 }
 
 #navigation ul li a {
-    color: black;  
+    color: white;  
     font-size: 24px;
 }
 
@@ -61,14 +64,15 @@ a, a:visited {
     padding: 100px;
     border: 3px solid #000;
     border-radius: 50px;
-    background-color: #fff;
+    background-color: white;
 }
 
 #home h2 {
     padding: 20px;
     border: 3px solid #000;
     border-radius: 50px;
-    background-color: #fff;
+    background-color: white;
+    color: black;
 }
 
 .homeblock {
@@ -77,10 +81,25 @@ a, a:visited {
 }
 
 #message {
-    background-color: #fff;
     width: 100%;
     margin-top: 10px;
     margin-left: 20px;
+}
+
+#explore h2 {
+    color: black;
+}
+
+#explore h3 {
+    color: black;
+}
+
+#explore h4 {
+    color: black;
+}
+
+#explore p { 
+    color: black;
 }
 
 #googleMap {
@@ -99,36 +118,37 @@ label > input + img {
 }
 
 #instructions {
-    background-color: #fff;
+    background-color: white;
     width: 600px;
     display: inline-block;
     margin-left: 10px;
+    padding: 0px 10px 10px 10px;
 }
 
 #keywords {
     height: 300px;
-    width: 300px;
+    width: 400px;
     overflow-y: scroll;
     margin-bottom: 10px;
+    color: black;
 }
 
 #pointInformation {
     width: 400px;
     display: inline-block;
     vertical-align: top;
-    background-color: #fff;
+    background-color: white;
     margin-left: 10px;
-    padding: 0px 10px 0px 10px;
+    padding: 0px 10px 10px 10px;
 }
 
 #filters {
     width: 400px;
-    height: 400px;
     display: inline-block;
     vertical-align: top;
-    background-color: #fff;
+    background-color: white;
     margin-left: 10px;
-    padding: 0px 10px 0px 10px;
+    padding: 0px 10px 10px 10px;
 }
 
 #pointInformation label {
@@ -155,6 +175,19 @@ label > input + img {
     width: 95%;
 }
 
+#train {
+    overflow-y: scroll;
+    width: 800px;
+    height: 600px;
+}
+
+#race {
+    overflow-y: scroll;
+    width: 800px;
+    height: 600px;
+    margin-left: 10px;
+}
+
 #contact {
     padding: 0px 10px 0px 10px;
 }
@@ -171,7 +204,10 @@ label > input + img {
 }
 
 #about {
-    padding: 0px 10px 0px 10px;    
+    overflow-y: scroll;
+    width: 800px;
+    height: 600px;
+    margin-left: 10px;
 }
 
 #login {

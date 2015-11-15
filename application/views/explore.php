@@ -13,23 +13,25 @@
         <div></div>
     </div>
     <div id="filters">
+        <h2>Location Filters</h2>
         <?php if (isset($_SESSION['user_id'])) : ?>
-            <h2>Location Filters</h2>
-            <?php echo $filter ?>
-            <?= form_open() ?>
-            <p>
-                Average Rating: 
-                <label><input type="radio" id="filterrating" name="filterrating" value="1" onclick="stars(this.name);" /><img id="filterratingstar1" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
-                <label><input type="radio" id="filterrating" name="filterrating" value="2" onclick="stars(this.name);" /><img id="filterratingstar2" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
-                <label><input type="radio" id="filterrating" name="filterrating" value="3" onclick="stars(this.name);" /><img id="filterratingstar3" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
-                <label><input type="radio" id="filterrating" name="filterrating" value="4" onclick="stars(this.name);" /><img id="filterratingstar4" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
-                <label><input type="radio" id="filterrating" name="filterrating" value="5" onclick="stars(this.name);" /><img id="filterratingstar5" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
-                or higher
-            </p>
-            <p>Submitted by Me: <input type="checkbox" id="mysubmissions" name="mysubmissions"></p>
-            <p>Title/Description Search: <input type="text" id="search" name="search" /></p>
-            <p><input type="submit" value="Search" /></p>
-            </form>
+            <div>
+                <?php echo $filter ?>
+                <?= form_open() ?>
+                <p>
+                    Average Rating: 
+                    <label><input type="radio" id="filterrating" name="filterrating" value="1" onclick="stars(this.name);" /><img id="filterratingstar1" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
+                    <label><input type="radio" id="filterrating" name="filterrating" value="2" onclick="stars(this.name);" /><img id="filterratingstar2" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
+                    <label><input type="radio" id="filterrating" name="filterrating" value="3" onclick="stars(this.name);" /><img id="filterratingstar3" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
+                    <label><input type="radio" id="filterrating" name="filterrating" value="4" onclick="stars(this.name);" /><img id="filterratingstar4" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
+                    <label><input type="radio" id="filterrating" name="filterrating" value="5" onclick="stars(this.name);" /><img id="filterratingstar5" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
+                    or higher
+                </p>
+                <p>Submitted by Me: <input type="checkbox" id="mysubmissions" name="mysubmissions"></p>
+                <p>Title/Description Search: <input type="text" id="search" name="search" /></p>
+                <p><input type="submit" value="Search" /></p>
+                </form>
+            </div>
         <?php endif; ?>
     </div>
 </div>
