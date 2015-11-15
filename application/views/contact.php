@@ -8,9 +8,12 @@
     <?php endif; ?>
     <h2>Contact</h2>
     <?= form_open() ?>
-    <p><label for="name">Name:</label><input type="text" id="email" name="name" placeholder="Enter your name"></p>
+    <p><label for="name">Name:</label><input type="text" id="name" name="name" placeholder="Enter your name"></p>
     <p><label for="email">Email:</label><input type="email" id="email" name="email" placeholder="Enter your email"></p>
-    <p><label for="message">Message:</label><input type="text" id="email" name="message" placeholder="Enter your messasge"></p>
+    <p><label for="message">Message:</label></p>
+    <p>
+        <textarea id="body" name="body" placeholder="Enter your messasge" cols="80" rows="10"></textarea>
+    </p>
     <p><input type="submit" value="Submit"></p>
     </form>
 </div>
