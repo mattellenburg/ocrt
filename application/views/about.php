@@ -66,5 +66,9 @@
         <li>Fixed point distances from map center</li>
         <li>Added initial train and race content</li>
     </ul>
+    <h3>0.9 Beta release</h3>
+    <ul>
+        <li>Updated keywords</li>
+    </ul>
 </div>
 
