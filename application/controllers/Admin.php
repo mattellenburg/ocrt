@@ -9,6 +9,7 @@ class Admin extends CI_Controller {
         $this->load->model('point_model');
         $this->load->model('point_pending_model');
         $this->load->model('keyword_model');
+        $this->load->model('race_model');
         $this->load->library('table');
         $this->load->helper('form');
         $this->load->library('form_validation');
@@ -71,7 +72,51 @@ class Admin extends CI_Controller {
             redirect('/');
         }
     }
-    
+
+    public function races($id = NULL) {
+        $data = new stdClass();
+        $data->message = '';
+
+        if ($_SESSION['is_admin']) {
+            $this->form_validation->set_rules('race', 'Race', 'trim|required');
+
+            if ($this->form_validation->run() === true) {
+                if ($this->input->post('id') > 0) {
+                    if ($this->race_model->update_race($this->input->post('id'), $this->input->post('race'), $this->input->post('date'), $this->input->post('location'), $this->input->post('description'))) {           
+                        redirect('/admin/races');
+                    }
+                    else {
+                        $data->message = 'There was a problem updating the race';
+                    }
+                }
+                else {
+                    if ($this->race_model->create_race($this->input->post('race'), $this->input->post('date'), $this->input->post('location'), $this->input->post('description'))) {           
+                        $data->message = 'Race has been entered';
+                    }
+                    else {
+                        $data->message = 'There was a problem entering the race';
+                    }
+                }
+            }
+            elseif ($id > 0) {
+                $data->race = $this->race_model->get_race($id)[0];
+            }
+
+            $this->table->set_heading('ID', 'Race', 'Date', 'Location', 'Description');
+
+            foreach($this->race_model->get_races() as $race) {
+                $this->table->add_row('<a href="'.base_url('index.php/admin/races/'.$race->id).'">'.$race->id.'</a>', $race->race, $race->date, $race->location, $race->description);
+            }
+
+            $this->load->view('header', $data);
+            $this->load->view('admin/races');
+            $this->load->view('footer');
+        }
+        else {
+            redirect('/');
+        }
+    }
+
     public function garmin($start = 1) {
         $data = new stdClass();
         $data->message = '';
