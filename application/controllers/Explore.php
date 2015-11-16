@@ -23,18 +23,18 @@ class Explore extends CI_Controller {
         $filter = '';
         if ($this->input->post('filterrating') > 0) {
             $where = $where.' and pr.avgrating >= '.strval($this->input->post('filterrating'));
-            $filter = $filter.'Average Rating: '.strval($this->input->post('filterrating')).'+<br>';
+            $filter = $filter.'<li>Average Rating: '.strval($this->input->post('filterrating')).'+</li>';
         }
         if ($this->input->post('mysubmissions') == 'on') {
             $where = $where.' and p.createdbyid = '.$_SESSION['user_id'];
-            $filter = $filter.'My submissions<br>';
+            $filter = $filter.'<li>My submissions</li>';
         }
         if ($this->input->post('search') > '') {
-            $filter = $filter.'Search term: '.$this->input->post('search');
+            $filter = $filter.'<li>Search term: '.$this->input->post('search').'</li>';
         }
         
         if ($filter !== '') {
-            $data->filter = '<h3>Current selections</h3><p><i>'.$filter.'</i></p>';
+            $data->filter = '<ul>'.$filter.'</ul>';
         }
         else {
             $data->filter = '';
