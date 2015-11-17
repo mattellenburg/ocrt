@@ -90,7 +90,7 @@ class User extends CI_Controller {
                 $_SESSION['is_confirmed'] = (bool)$user->is_confirmed;
                 $_SESSION['is_admin'] = (bool)$user->is_admin;
 
-                $data->message = 'You have successfully logged into the site.';
+                $data->message = '<span class="message">You have successfully logged into the site.</span>';
                 
                 $this->load->view('header', $data);
                 $this->load->view('footer');
@@ -107,7 +107,7 @@ class User extends CI_Controller {
 
     public function logout() {
         $data = new stdClass();
-        $data->message = 'You have been logged out of the system.';
+        $data->message = '<span class="message">You have been logged out of the system.</span>';
         
         if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             foreach ($_SESSION as $key => $value) {

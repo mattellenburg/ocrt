@@ -10,8 +10,31 @@ html {
     height: 100%;
 }
 
+h2 {
+    border-radius: 10px;
+    background-color: #CADFAA;
+    padding: 10px;
+    margin: 0px 0px 5px 0px;
+}
+
+.content {
+    overflow-y: scroll;
+    height: 500px;
+    background-color: #E9E5DC;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.content ul li a, a:visited {
+    color: black;
+}
+
 a, a:visited {
     text-decoration: none;
+    color: white;
+}
+
+.message {
     color: white;
 }
 
@@ -34,10 +57,12 @@ a, a:visited {
 
 #navigation ul li:hover {
     background-color: #CADFAA;
+    border-radius: 10px;
 }
 
 #navigation ul li:hover a {
     color: black;  
+    border-radius: 10px;
 }
 
 #navigation ul li a {
@@ -94,8 +119,9 @@ a, a:visited {
 
 #explore > div {
     display: inline-block;
-    width: 45%;
+    width: 49%;
     vertical-align: top;
+    min-width: 400px;
 }
 
 #explore h2 {
@@ -122,17 +148,13 @@ a, a:visited {
     padding: 5px 0px 5px 0px;
 }
 
-.content {
+#map > .content {
     border-radius: 10px;
     background-color: #E9E5DC;
     padding: 10px;
     margin-bottom: 5px;
-}
-
-.scroll {
-    width: 100%;
-    overflow-y: scroll;
-    height: 200px;
+    overflow: visible;
+    height: 550px;
 }
 
 #googleMap {
@@ -159,13 +181,35 @@ label > input + img {
     color: black;
 }
 
-#filters {
-    width: 100%;
-    height: 300px;
+#filters > .content {
+    border-radius: 10px;
+    background-color: #E9E5DC;
+    padding: 10px;
+    margin-bottom: 5px;
+    overflow: visible;
+    height: 165px;
 }
 
-#pointInformation {
-    height: 300px;
+#filters ul {
+    list-style-type: none;
+    font-size: 14px;
+    width: 50%;
+    display: inline;
+}
+
+#filters ul li {
+    display: inline;
+    margin-left: 5px;
+}
+
+#pointInformation > .content {
+    width: 97%;
+    overflow-y: scroll;
+    height: 308px;
+    border-radius: 10px;
+    background-color: #E9E5DC;
+    padding: 10px;
+    margin-bottom: 5px;
 }
 
 #pointInformation label {
@@ -174,10 +218,8 @@ label > input + img {
 }
 
 #divIcon {
-    width: 95%;
-    border: 1px solid black;
+    width: 100%;
     display: inline-block;
-    overflow-x: scroll;
 }
 
 #divIcon img {
@@ -186,78 +228,4 @@ label > input + img {
 
 .radioIcon {
     display: inline-block;
-}
-
-#pointInformation textarea {
-    width: 95%;
-}
-
-#train {
-    overflow-y: scroll;
-    width: 800px;
-    height: 600px;
-}
-
-#race {
-    overflow-y: scroll;
-    width: 800px;
-    height: 600px;
-    margin-left: 10px;
-}
-
-#contact {
-    padding: 0px 10px 0px 10px;
-}
-
-#contact p label {
-    display: inline-block;
-    font-weight: bold;
-    width: 100px;
-}
-
-#contact p input {
-    display: inline-block;
-    width: 200px;
-}
-
-#about {
-    overflow-y: scroll;
-    width: 800px;
-    height: 600px;
-    margin-left: 10px;
-}
-
-#login {
-    padding: 0px 10px 0px 10px;    
-}
-
-#login p label {
-    display: inline-block;
-    font-weight: bold;
-    width: 100px;
-}
-
-#login p input {
-    display: inline-block;
-    width: 200px;
-}
-
-#register {
-    padding: 0px 10px 0px 10px;    
-}
-
-#register p label {
-    display: inline-block;
-    font-weight: bold;
-    width: 100px;
-}
-
-#register p input {
-    display: inline-block;
-    width: 200px;
-}
-
-#footer {
-    width: 100%;
-    border: 1px solid black;
 }

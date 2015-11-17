@@ -34,7 +34,7 @@ class Point_model extends CI_Model {
         }
         else {
             if ($latitude !== NULL && $longitude !== NULL) {
-                return $this->db->query('select p.*, NULL as userrating, avgrating, GROUP_CONCAT(k.keyword) as keywords, (3959*acos(cos(radians('.$latitude.'))*cos(radians(p.latitude))*cos(radians(p.longitude)-radians('.$longitude.'))+sin(radians('.$latitude.'))*sin(radians(p.latitude)))) AS distance from points as p left join (select pointid, avg(rating) as avgrating from pointsratings group by pointid) as pr on p.id=pr.pointid left join (select * from pointskeywords where deleteflag=0) as pk on p.id=pk.pointid left join keywords k on pk.keywordid=k.id where (3959*acos(cos(radians('.$latitude.'))*cos(radians(p.latitude))*cos(radians(p.longitude)-radians('.$longitude.'))+sin(radians('.$latitude.'))*sin(radians(p.latitude)))) <= 3 group by p.id')->result_array();
+                return $this->db->query('select p.*, NULL as userrating, avgrating, GROUP_CONCAT(k.keyword) as keywords, (3959*acos(cos(radians('.$latitude.'))*cos(radians(p.latitude))*cos(radians(p.longitude)-radians('.$longitude.'))+sin(radians('.$latitude.'))*sin(radians(p.latitude)))) AS distance from points as p left join (select pointid, avg(rating) as avgrating from pointsratings group by pointid) as pr on p.id=pr.pointid left join (select * from pointskeywords where deleteflag=0) as pk on p.id=pk.pointid left join keywords k on pk.keywordid=k.id '.$where.' and (3959*acos(cos(radians('.$latitude.'))*cos(radians(p.latitude))*cos(radians(p.longitude)-radians('.$longitude.'))+sin(radians('.$latitude.'))*sin(radians(p.latitude)))) <= 3 group by p.id')->result_array();
             }
             else
             {

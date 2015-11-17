@@ -25,16 +25,16 @@ class Explore extends CI_Controller {
             $where = $where.' and pr.avgrating >= '.strval($this->input->post('filterrating'));
             $filter = $filter.'<li>Average Rating: '.strval($this->input->post('filterrating')).'+</li>';
         }
+        if ($this->input->post('search') > '') {
+            $filter = $filter.'<li>Search term: '.$this->input->post('search').'</li>';
+        }
         if ($this->input->post('mysubmissions') == 'on') {
             $where = $where.' and p.createdbyid = '.$_SESSION['user_id'];
             $filter = $filter.'<li>My submissions</li>';
         }
-        if ($this->input->post('search') > '') {
-            $filter = $filter.'<li>Search term: '.$this->input->post('search').'</li>';
-        }
         
         if ($filter !== '') {
-            $data->filter = '<ul>'.$filter.'</ul>';
+            $data->filter = '<ul class="selectedfilters">'.$filter.'</ul>';
         }
         else {
             $data->filter = '';
