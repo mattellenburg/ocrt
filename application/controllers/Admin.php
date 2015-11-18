@@ -10,6 +10,8 @@ class Admin extends CI_Controller {
         $this->load->model('point_pending_model');
         $this->load->model('keyword_model');
         $this->load->model('race_model');
+        $this->load->model('obstaclesexercises_model');
+        $this->load->model('obstaclesraces_model');
         $this->load->library('table');
         $this->load->helper('form');
         $this->load->library('form_validation');
@@ -22,6 +24,34 @@ class Admin extends CI_Controller {
         if ($_SESSION['is_admin']) {
             $this->load->view('header', $data);
             $this->load->view('admin/index');
+            $this->load->view('footer');
+        }
+        else {
+            redirect('/');
+        }
+    }
+    
+    public function locations($id = NULL) {
+        $data = new stdClass();
+        $data->message = '';
+
+        if ($_SESSION['is_admin']) {
+            if ($id > 0) {
+                $pending_point = $this->point_pending_model->get_point($id);
+
+                if ($this->point_model->create_point($pending_point->title, $pending_point->description, $pending_point->latitude, $pending_point->longitude, $pending_point->icon)) {					
+                    $this->point_pending_model->delete_point($id);				
+                    $data->message = 'Point has been approved.';
+                } 
+                else {				
+                    $data->message = 'There was a problem approving the point.';
+                }
+            }
+
+            $data->points_pending = $this->point_pending_model->get_points();
+
+            $this->load->view('header', $data);
+            $this->load->view('admin/locations');
             $this->load->view('footer');
         }
         else {
@@ -117,6 +147,99 @@ class Admin extends CI_Controller {
         }
     }
 
+    public function obstaclesexercises($id = NULL) {
+        $data = new stdClass();
+        $data->message = '';
+       
+        if ($_SESSION['is_admin']) {
+            if ($this->input->post('obstacle') > 0 && $this->input->post('exercise') > 0) {
+                if ($this->obstaclesexercises_model->create_obstacleexercise($this->input->post('obstacle'), $this->input->post('exercise'))) {
+                    $data->message = 'Obstacle/Exercise created';
+                }
+                else {
+                    $data->message = 'There was a problem creating the obstacle/exercise';
+                }    
+            }
+            else if ($id>0) {
+                if ($this->obstaclesexercises_model->delete_obstacleexercise($id)) {
+                    $data->message = 'Obstacle/Exercise deleted';
+                }
+                else {
+                    $data->message = 'There was a problem deleting the obstacle/exercise';
+                }
+            }
+            
+            $this->table->set_heading('ID', 'ObstacleID', 'ExerciseID');
+            foreach($this->obstaclesexercises_model->get_obstaclesexercises() as $obstacleexercise) {
+                $this->table->add_row('<a href="'.base_url('index.php/admin/obstaclesexercises/'.$obstacleexercise->id).'">Delete</a>', $this->keyword_model->get_keyword($obstacleexercise->obstacleid)[0]->keyword, $this->keyword_model->get_keyword($obstacleexercise->exerciseid)[0]->keyword);
+            }
+
+            $data->obstacles = $this->builddropdownarray($this->keyword_model->get_obstacles());
+            $data->exercises = $this->builddropdownarray($this->keyword_model->get_exercises());
+            
+            $this->load->view('header', $data);
+            $this->load->view('admin/obstaclesexercises', $data);
+            $this->load->view('footer');
+        }
+        else {
+            redirect('/');
+        }
+    }
+
+        public function obstaclesraces($id = NULL) {
+        $data = new stdClass();
+        $data->message = '';
+       
+        if ($_SESSION['is_admin']) {
+            if ($this->input->post('obstacle') > 0 && $this->input->post('race') > 0) {
+                if ($this->obstaclesraces_model->create_obstaclerace($this->input->post('obstacle'), $this->input->post('race'))) {
+                    $data->message = 'Obstacle/Race created';
+                }
+                else {
+                    $data->message = 'There was a problem creating the obstacle/race';
+                }    
+            }
+            else if ($id>0) {
+                if ($this->obstaclesraces_model->delete_obstaclerace($id)) {
+                    $data->message = 'Obstacle/Race deleted';
+                }
+                else {
+                    $data->message = 'There was a problem deleting the obstacle/race';
+                }
+            }
+            
+            $this->table->set_heading('ID', 'ObstacleID', 'ExerciseID');
+            foreach($this->obstaclesraces_model->get_obstaclesraces() as $obstaclerace) {
+                $this->table->add_row('<a href="'.base_url('index.php/admin/obstaclesraces/'.$obstaclerace->id).'">Delete</a>', $this->keyword_model->get_keyword($obstaclerace->obstacleid)[0]->keyword, $this->race_model->get_race($obstaclerace->raceid)[0]->race);
+            }
+
+            $races = array();
+            foreach ($this->race_model->get_races() as $race)
+            {
+                $races[$race->id] = $race->race;
+            }
+        
+            $data->obstacles = $this->builddropdownarray($this->keyword_model->get_obstacles());
+            $data->races = $races;
+            
+            $this->load->view('header', $data);
+            $this->load->view('admin/obstaclesraces', $data);
+            $this->load->view('footer');
+        }
+        else {
+            redirect('/');
+        }
+    }
+
+    public function builddropdownarray($source) {
+        $array = array();
+        foreach ($source as $item)
+        {
+            $array[$item->id] = $item->keyword;
+        }
+        return $array;
+    }
+
     public function garmin($start = 1) {
         $data = new stdClass();
         $data->message = '';
@@ -135,35 +258,6 @@ class Admin extends CI_Controller {
 
             $this->load->view('header', $data);
             $this->load->view('admin/garmin', $data);
-            $this->load->view('footer');
-        }
-        else {
-            redirect('/');
-        }
-    }
-    
-    public function approvepoints($id = NULL) {
-        $data = new stdClass();
-        $data->message = '';
-
-        if ($_SESSION['is_admin']) {
-            if ($id > 0) {
-                $pending_point = new stdClass();
-                $pending_point = $this->point_pending_model->get_point($id);
-
-                if ($this->point_model->create_point($pending_point->title, $pending_point->description, $pending_point->latitude, $pending_point->longitude, $pending_point->icon)) {					
-                    $this->point_pending_model->delete_point($id);				
-                    $data->message = 'Point has been approved.';
-                } 
-                else {				
-                    $data->message = 'There was a problem approving the point.';
-                }
-            }
-
-            $data->points_pending = $this->point_pending_model->get_points();
-
-            $this->load->view('header', $data);
-            $this->load->view('admin/approvepoints');
             $this->load->view('footer');
         }
         else {

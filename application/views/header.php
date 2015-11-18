@@ -19,9 +19,38 @@
     <?php } else {?>
     <?php }?>
     <link href="<?= base_url('assets/css/default.css') ?>" rel="stylesheet">
-    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.7.2.min.js" type="text/javascript" > </script>
+    <script type="text/javascript">
+
+            $( document ).ready( function( ) {
+                            $( '.tree li' ).each( function() {
+                                            if( $( this ).children( 'ul' ).length > 0 ) {
+                                                            $( this ).addClass( 'parent' );     
+                                            }
+                            });
+
+                            $( '.tree li.parent > a' ).click( function( ) {
+                                            $( this ).parent().toggleClass( 'active' );
+                                            $( this ).parent().children( 'ul' ).slideToggle( 'fast' );
+                            });
+
+                            $( '#all' ).click( function() {
+
+                                    $( '.tree li' ).each( function() {
+                                            $( this ).toggleClass( 'active' );
+                                            $( this ).children( 'ul' ).slideToggle( 'fast' );
+                                    });
+                            });
+
+                            $( '.tree li' ).each( function() {
+                                            $( this ).toggleClass( 'active' );
+                                            $( this ).children( 'ul' ).slideToggle( 'fast' );
+                            });
+
+            });
+
+    </script>
+
 </head>
 <body>
     <div id="header">

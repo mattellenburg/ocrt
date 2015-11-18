@@ -20,7 +20,7 @@
                     <td><?php echo $point['title'] ?></td>
                     <td><?php echo $point['description'] ?></td>
                     <td>&nbsp;</td>
-                    <td><a href="<?= base_url('index.php/admin/approvepoints').'/'.$point['id'] ?>">Approve</a></td>
+                    <td><a href="<?= base_url('index.php/admin/locations').'/'.$point['id'] ?>">Approve</a></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
