@@ -24,7 +24,8 @@ class Train extends CI_Controller {
         foreach ($this->keyword_model->get_obstacles() as $obstacle) {
             $exercises = array ();
             foreach($this->obstaclesexercises_model->get_obstaclesexercises_byobstacleid($obstacle->id) as $obstacleexercise) {
-                array_push($exercises, $this->keyword_model->get_keyword($obstacleexercise->exerciseid)[0]->keyword);
+                $exercise = $this->keyword_model->get_keyword($obstacleexercise->exerciseid)[0]->keyword;
+                array_push($exercises, '<a href="'.base_url('index.php/explore/index/').'?search='.$exercise.'">'.$exercise.'</a>');
             }
             $obstacles['<a>'.$obstacle->keyword.'</a>'] = $exercises;
         }        
