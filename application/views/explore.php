@@ -103,8 +103,8 @@
         }    
     }
 
-    function redirectURL (zoom, latitude, longitude, search) {
-        window.location = "<?= base_url('index.php/explore/index/') ?>" + '/' + zoom + '/' + latitude + '/' + longitude + '?search=' + search;
+    function redirectURL (zoom, latitude, longitude, keyword) {
+        window.location = "<?= base_url('index.php/explore/index/') ?>" + '/' + zoom + '/' + latitude + '/' + longitude + '?keyword=' + keyword;
     }
 
     function getMapCenter(map, sessionid) {
@@ -115,7 +115,7 @@
         if (map.getCenter() === undefined && latitude === '' && longitude === '') {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
-                    redirectURL(13, position.coords.latitude, position.coords.longitude, "<?php echo $search; ?>");
+                    redirectURL(13, position.coords.latitude, position.coords.longitude, "<?php echo $keyword; ?>");
                 }, 
                 function() {
                     handleLocationError(true, new infoWindow, map.getCenter());
@@ -126,7 +126,7 @@
             }
         }
         else if (zoom === '') {
-            redirectURL(13, latitude, longitude);
+            redirectURL(13, latitude, longitude, 'xx');
         }
         else {
             map.setZoom(parseInt(zoom));

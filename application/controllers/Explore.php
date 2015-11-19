@@ -19,14 +19,7 @@ class Explore extends CI_Controller {
     public function index($zoom = NULL, $latitude = NULL, $longitude = NULL, $pointid = NULL) {
         $data = new stdClass();
 
-        $search = $this->input->get('search', TRUE);
-        if ($search > '') {
-            $where = ' where (p.title like '."'%".$search."%'".' or p.description like '."'%".$search."%'".')';
-        }
-        else {
-            $where = ' where (p.title like '."'%".$this->input->post('search')."%'".' or p.description like '."'%".$this->input->post('search')."%'".')';
-        }
-        
+        $where = ' where (p.title like '."'%".$this->input->post('search')."%'".' or p.description like '."'%".$this->input->post('search')."%'".')';
         $filter = '';
         if ($this->input->post('filterrating') > 0) {
             $where = $where.' and pr.avgrating >= '.strval($this->input->post('filterrating'));
@@ -35,12 +28,17 @@ class Explore extends CI_Controller {
         if ($this->input->post('search') > '') {
             $filter = $filter.'<li>Search term: '.$this->input->post('search').'</li>';
         }
-        else if ($search > '') {
-            $filter = $filter.'<li>Search term: '.$search.'</li>';
-        }
         if ($this->input->post('mysubmissions') == 'on') {
             $where = $where.' and p.createdbyid = '.$_SESSION['user_id'];
             $filter = $filter.'<li>My submissions</li>';
+        }
+
+        $keyword = '';
+        $data->keyword = '';
+        if ($this->input->get('keyword', TRUE) > '') {
+            $keyword = ' where p.keywords like '."'%".$this->input->get('keyword', TRUE)."%'";
+            $filter = $filter.'<li>Keywords: '.$this->input->get('keyword', TRUE).'</li>';
+            $data->keyword = $this->input->get('keyword', TRUE);
         }
         
         if ($filter !== '') {
@@ -49,11 +47,10 @@ class Explore extends CI_Controller {
         else {
             $data->filter = '';
         }
-        echo $filter;
+
         $data->zoom = $zoom;
         $data->latitude = $latitude;
         $data->longitude = $longitude;
-        $data->search = $search;
         
         if ($this->input->post('locationrating') > 0) {
             $query = $this->pointsratings_model->get_rating($pointid);
@@ -123,7 +120,7 @@ class Explore extends CI_Controller {
             $data->message = '';
         }
 
-        $data->points = $this->point_model->get_points($where, $latitude, $longitude);
+        $data->points = $this->point_model->get_points($where, $latitude, $longitude, $keyword);
         $data->points_pending = $this->point_pending_model->get_points();
         $data->keywords = $this->keyword_model->get_keywords();
 
