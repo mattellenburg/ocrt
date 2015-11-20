@@ -7,36 +7,42 @@
             <div id="googleMap"></div>
         </div>
     </div>
-    <div id="information">
-        <div id="filters">
-            <h2>Location Filters <?php echo $filter ?></h2>
-            <div class="content">
-                <div>
-                    <?= form_open() ?>
-                    <p>
-                        <label for="filterrating">Average Rating:</label>
-                        <label><input type="radio" id="filterrating" name="filterrating" value="1" onclick="stars(this.name);" /><img id="filterratingstar1" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
-                        <label><input type="radio" id="filterrating" name="filterrating" value="2" onclick="stars(this.name);" /><img id="filterratingstar2" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
-                        <label><input type="radio" id="filterrating" name="filterrating" value="3" onclick="stars(this.name);" /><img id="filterratingstar3" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
-                        <label><input type="radio" id="filterrating" name="filterrating" value="4" onclick="stars(this.name);" /><img id="filterratingstar4" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
-                        <label><input type="radio" id="filterrating" name="filterrating" value="5" onclick="stars(this.name);" /><img id="filterratingstar5" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
-                        or higher
-                    </p>
-                    <label for="search">Title/Description Search:</label><input type="text" id="search" name="search" /></p>
-                    <?php if (isset($_SESSION['user_id'])) : ?>
-                        <p><label for="mysubmissions">Submitted by Me:</label><input type="checkbox" id="mysubmissions" name="mysubmissions"></p>
-                    <?php endif; ?>
-                    <p><input type="submit" value="Search" /></p>
-                    </form>
-                </div>
-            </div>
+    <div id="pointInformation">
+        <h2>Click a point to view its information</h2>
+        <div class="content">
+            <h3></h3>
+            <p></p>
+            <div class="scroll"></div>
         </div>
-        <div id="pointInformation">
-            <h2>Click a point to view its information</h2>
-            <div class="content">
-                <h3></h3>
-                <p></p>
-                <div class="scroll"></div>
+    </div>
+    <div id="filters">
+        <h2>Location Filters <?php echo $filter ?></h2>
+        <div class="content">
+            <div>
+                <?= form_open() ?>
+                <p>
+                    <label for="filterrating">Average Rating:</label>
+                    <label><input type="radio" id="filterrating" name="filterrating" value="1" onclick="stars(this.name);" /><img id="filterratingstar1" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
+                    <label><input type="radio" id="filterrating" name="filterrating" value="2" onclick="stars(this.name);" /><img id="filterratingstar2" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
+                    <label><input type="radio" id="filterrating" name="filterrating" value="3" onclick="stars(this.name);" /><img id="filterratingstar3" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
+                    <label><input type="radio" id="filterrating" name="filterrating" value="4" onclick="stars(this.name);" /><img id="filterratingstar4" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
+                    <label><input type="radio" id="filterrating" name="filterrating" value="5" onclick="stars(this.name);" /><img id="filterratingstar5" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
+                    or higher
+                </p>
+                <label for="search">Title/Description Search:</label><input type="text" id="search" name="search" /></p>
+           
+                <label for="filterkeywords">Keywords:</label>
+                <div class="keywords">
+                <?php foreach ($keywords as $filterkeyword): ?>
+                    <input id="filterkeywords[]" name="filterkeywords[]" type="checkbox" value=" <?php echo $filterkeyword->id ?> " /><?php echo $filterkeyword->keyword ?><br>
+                <?php endforeach; ?>
+                </div>
+          
+                <?php if (isset($_SESSION['user_id'])) : ?>
+                    <p><label for="mysubmissions">Submitted by Me:</label><input type="checkbox" id="mysubmissions" name="mysubmissions"></p>
+                <?php endif; ?>
+                <p><input type="submit" value="Search" /><input type="submit" value="Clear" /></p>
+                </form>
             </div>
         </div>
     </div>
@@ -104,7 +110,12 @@
     }
 
     function redirectURL (zoom, latitude, longitude, keyword) {
-        window.location = "<?= base_url('index.php/explore/index/') ?>" + '/' + zoom + '/' + latitude + '/' + longitude + '?keyword=' + keyword;
+        var keywordquery = '';
+        if (keyword > '') {
+            keywordquery = '?keyword=' + keyword
+        }
+            
+        window.location = "<?= base_url('index.php/explore/index/') ?>" + '/' + zoom + '/' + latitude + '/' + longitude + keywordquery;
     }
 
     function getMapCenter(map, sessionid) {
@@ -248,7 +259,7 @@
                             ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="4" onclick="stars(this.name);" /><img id="locationratingstar4" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
                             ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="5" onclick="stars(this.name);" /><img id="locationratingstar5" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
 
-                            var keywordlist = '<h4>Keywords:</h4><div id="keywords">';
+                            var keywordlist = '<h4>Keywords:</h4><div class="keywords">';
                             <?php foreach ($keywords as $keyword): ?>
                                 var checked='';
                                 if (locations[i][9].indexOf("<?php echo $keyword->keyword ?>") >= 0) {

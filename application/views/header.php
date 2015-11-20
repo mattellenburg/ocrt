@@ -55,7 +55,7 @@
 <body>
     <div id="header">
         <div id="title">
-            <h1><a href="#">Obstacle Course Race Training</a></h1>
+            <h1>Obstacle Course Race Training</h1>
         </div>
         <div id="navigation">
             <ul>

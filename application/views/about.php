@@ -72,6 +72,11 @@
             <li>Updated keywords</li>
             <li>UI updates</li>
         </ul>
+        <h4>0.10 Beta release</h4>
+        <ul>
+            <li>User interface enhancements</li>
+            <li>Training page enhancements</li>
+        </ul>
     </div>
 </div>
 
