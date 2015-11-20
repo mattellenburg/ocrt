@@ -9,16 +9,10 @@
 
     if (w < 600) {
         //All pages
-        document.body.style.backgroundColor = "SaddleBrown";    
-        document.body.style.backgroundImage = "none";    
-        
         document.getElementById("title").style.marginLeft="5px";
         var h1 = document.getElementsByTagName("h1");
-        var i;
-        for (i = 0; i < h1.length; i++) {
-            h1[i].style.fontSize = "large";
-            h1[i].style.margin = "5px";
-        }
+        h1[0].style.fontSize = "large";
+        h1[0].style.margin = "5px";
 
         var h2 = document.getElementsByTagName("h2");
         var i;
@@ -59,54 +53,41 @@
             var div = home.getElementsByTagName("div");
             var i;
             for (i = 0; i < div.length; i++) {
-                div[i].style.marginLeft="10px";
+                div[i].style.marginLeft="0px";
                 var a = div[i].getElementsByTagName("a");
                 var img = a[0].getElementsByTagName("img");
                 img[0].style.width = "100px";
                 img[0].style.height = "100px";
                 img[0].style.borderRadius = "5px";
                 img[0].style.padding = "0px";
+                var h2 = a[0].getElementsByTagName("h2");
+                h2[0].style.width = "100px";
+                h2[0].style.height = "20px";
+                h2[0].style.borderRadius = "5px";
+                h2[0].style.padding = "0px";
             }    
         }
         else if (page==="explore") {
             var explore = document.getElementById("explore");
-            explore.style.width = 400;
+            explore.style.padding="0px";
 
-            var instructions = document.getElementById("instructions");
-            instructions.style.width = 400;
-            instructions.style.marginBottom = "10px";
-
-            var div = explore.getElementsByTagName("div");
-            div[0].style.padding = "5px";
-//            var i;
-//            for (i = 0; i < div.length; i++) {
-//                div[i].style.padding = "5px";
-//            }    
-
-            var p = explore.getElementsByTagName("p");
-            var i;
-            for (i = 0; i < p.length; i++) {
-                p[i].style.width = 400;
-            }    
-
-            document.getElementById("googleMap").style.width=400;
-            document.getElementById("googleMap").style.height=400;
+            var map = document.getElementById("map");
+            map.style.marginBottom="50px";
+            map.style.height="500px";
 
             var pointInformation = document.getElementById("pointInformation");
-            pointInformation.style.width = 400;
-            pointInformation.style.paddingLeft = "10px";
-            pointInformation.style.paddingRight = "0px";
-            pointInformation.style.marginBottom = "10px";
-            
+            pointInformation.style.marginBottom="50px";
+            pointInformation.style.height="500px";
+
             var filters = document.getElementById("filters");
-            filters.style.width = 400;
-            filters.style.paddingLeft = "10px";
-            filters.style.paddingRight = "0px";
-            filters.style.marginBottom = "10px";
-        }
-        else if (page==="train") {
-            var train = document.getElementById("train");
-            train.style.width = 400;
+            filters.style.marginBottom="50px";
+            filters.style.height="500px";
+
+            var content = document.getElementsByClassName("content");
+            var i;
+            for (i = 0; i < content.length; i++) {
+                content[i].style.height="450px";
+            }
         }
     }
 </script>

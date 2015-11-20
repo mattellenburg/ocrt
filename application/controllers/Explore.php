@@ -28,6 +28,13 @@ class Explore extends CI_Controller {
         if ($this->input->post('search') > '') {
             $filter = $filter.'<li>Search term: '.$this->input->post('search').'</li>';
         }
+        if ($this->input->post('filterkeywords') > '') {
+            $filter = $filter.'<li>Keyword(s): <ul>';
+            foreach ($this->input->post('filterkeywords') as $filterkeywordid) {
+                $filter = $filter.'<li>'.$this->keyword_model->get_keyword($filterkeywordid)[0]->keyword.'</li>';
+            }
+            $filter = $filter.'</ul></li>';
+        }
         if ($this->input->post('mysubmissions') == 'on') {
             $where = $where.' and p.createdbyid = '.$_SESSION['user_id'];
             $filter = $filter.'<li>My submissions</li>';
@@ -37,12 +44,12 @@ class Explore extends CI_Controller {
         $data->keyword = '';
         if ($this->input->get('keyword', TRUE) > '') {
             $keyword = ' where p.keywords like '."'%".$this->input->get('keyword', TRUE)."%'";
-            $filter = $filter.'<li>Keywords: '.$this->input->get('keyword', TRUE).'</li>';
+            $filter = $filter.'<li>Keyword(s): '.$this->input->get('keyword', TRUE).'</li>';
             $data->keyword = $this->input->get('keyword', TRUE);
         }
         
         if ($filter !== '') {
-            $data->filter = '<ul class="selectedfilters">'.$filter.'</ul>';
+            $data->filter = 'Current filters: <ul class="selectedfilters">'.$filter.'</ul>';
         }
         else {
             $data->filter = '';

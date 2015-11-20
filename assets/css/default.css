@@ -48,6 +48,15 @@ a:hover, a:visited:hover {
     color: #ecba82;
 }
 
+.keywords {
+    height: 200px;
+    width: 100%;
+    overflow-y: scroll;
+    margin-bottom: 10px;
+    color: black;
+    background-color: #68a357;
+}
+
 #header {
     width: 100%;
     background-color: #297045;
@@ -211,30 +220,20 @@ label > input + img {
   border:2px solid transparent;
 }
 
-.keywords {
-    height: 250px;
-    width: 100%;
-    overflow-y: scroll;
-    margin-bottom: 10px;
-    color: black;
-    background-color: #68a357;
-}
-
 #filters > .content {
+    overflow-y: scroll;
     border-radius: 10px;
     background-color: #ecba82;
     color: black;
     padding: 10px;
-    margin-bottom: 5px;
-    overflow: visible;
     height: 450px;
 }
 
 #filters ul {
     list-style-type: none;
     font-size: 14px;
-    width: 50%;
     display: inline;
+    padding-left: 0px;
 }
 
 #filters ul li {

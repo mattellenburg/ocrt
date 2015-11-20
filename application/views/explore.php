@@ -16,9 +16,10 @@
         </div>
     </div>
     <div id="filters">
-        <h2>Location Filters <?php echo $filter ?></h2>
+        <h2>Location Filters</h2>
         <div class="content">
             <div>
+                <?php echo $filter ?>
                 <?= form_open() ?>
                 <p>
                     <label for="filterrating">Average Rating:</label>
@@ -41,7 +42,7 @@
                 <?php if (isset($_SESSION['user_id'])) : ?>
                     <p><label for="mysubmissions">Submitted by Me:</label><input type="checkbox" id="mysubmissions" name="mysubmissions"></p>
                 <?php endif; ?>
-                <p><input type="submit" value="Search" /><input type="submit" value="Clear" /></p>
+                <p><input type="submit" value="Search" /></p>
                 </form>
             </div>
         </div>
