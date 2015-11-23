@@ -20,7 +20,7 @@ class Point_pending_model extends CI_Model {
             'lastmodifieddate' => date('Y-m-j H:i:s')
         );
 
-            return $this->db->insert('points_pending', $data);	
+        return $this->db->insert('points_pending', $data);	
     }
 
     public function get_point($id) {
@@ -32,6 +32,8 @@ class Point_pending_model extends CI_Model {
     public function delete_point($id) {
         $this -> db -> where('id', $id);
         $this -> db -> delete('points_pending');
+        
+        return TRUE;
     }
 
     public function get_points() {

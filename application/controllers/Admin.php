@@ -31,12 +31,12 @@ class Admin extends CI_Controller {
         }
     }
     
-    public function locations($id = NULL) {
+    public function locations($action = NULL, $id = NULL) {
         $data = new stdClass();
         $data->message = '';
 
         if ($_SESSION['is_admin']) {
-            if ($id > 0) {
+            if ($action == 'approve' && $id > 0) {
                 $pending_point = $this->point_pending_model->get_point($id);
 
                 if ($this->point_model->create_point($pending_point->title, $pending_point->description, $pending_point->latitude, $pending_point->longitude, $pending_point->icon)) {					
@@ -45,6 +45,16 @@ class Admin extends CI_Controller {
                 } 
                 else {				
                     $data->message = 'There was a problem approving the point.';
+                }
+            }
+            else if ($action == 'deny' && $id > 0) {
+                $pending_point = $this->point_pending_model->get_point($id);
+
+                if ($this->point_pending_model->delete_point($id)) {					                    				
+                    $data->message = 'Point has been denied.';
+                } 
+                else {				
+                    $data->message = 'There was a problem denying the point.';
                 }
             }
 

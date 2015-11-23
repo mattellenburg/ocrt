@@ -16,7 +16,7 @@ class Train extends CI_Controller {
 
     public function index() {
         $data = new stdClass();
-        $data->message = '';
+        $data->pageinformation = 'Select an obstacle to view relevant exercises.  Select an exerciese to view appropriate locations.';
 
         $data->exercises = $this->keyword_model->get_exercises();
 

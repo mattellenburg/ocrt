@@ -73,15 +73,15 @@
 
             var map = document.getElementById("map");
             map.style.marginBottom="50px";
-            map.style.height="500px";
+            map.style.height="450px";
 
             var pointInformation = document.getElementById("pointInformation");
             pointInformation.style.marginBottom="50px";
-            pointInformation.style.height="500px";
+            pointInformation.style.height="450px";
 
             var filters = document.getElementById("filters");
             filters.style.marginBottom="50px";
-            filters.style.height="500px";
+            filters.style.height="450px";
 
             var content = document.getElementsByClassName("content");
             var i;

@@ -8,10 +8,6 @@ html {
     height: 100%;
 }
 
-h1 { 
-    color: #ecba82;
-}
-
 h2 {
     border-radius: 10px;
     background-color: #204e4a;
@@ -27,7 +23,7 @@ h2 {
     padding: 10px;
     border-radius: 10px;
     text-align: left;
-    height: 500px;
+    height: 450px;
     width: 97%;
 }
 
@@ -65,10 +61,30 @@ a:hover, a:visited:hover {
 
 #title {
     display: inline-block;
+    background-color: #204e4a;
+    border-radius: 10px;
+    padding: 0px 10px 10px 10px;
+    margin-top: 10px;
+}
+
+#title h1 { 
+    color: #ecba82;
+    margin: 0px;
+}
+
+#title p { 
+    color: white;
+    padding: 10px 0px 0px 20px;
+    margin: 0px;
+    font-style: italic;
 }
 
 #navigation {
     display: inline-block;
+}
+
+#navigation ul {
+    margin: 0px;
 }
 
 #navigation ul li {
@@ -98,10 +114,12 @@ a:hover, a:visited:hover {
 }
 
 #message {
-    width: 100%;
+    width: 95%;
     margin-top: 10px;
     margin-left: 10px;
-    color: #ecba82;
+    color: white;
+    text-align: left;
+    font-size: 20px;
 }
 
 #home {
@@ -111,45 +129,55 @@ a:hover, a:visited:hover {
     text-align: center;
 }
 
-#home img {
+.homeblock {
+    display: inline-block;  
+    padding: 50px;
+    vertical-align: top;
+}
+
+.homeblock img {
     width: 200px;
     height: 200px;
-    padding: 100px;
+    padding: 50px;
     border: 3px solid #000;
     border-radius: 50px;
     background-color: white;
 }
 
-#home img:hover {
+.homeblock img:hover {
     width: 200px;
     height: 200px;
-    padding: 100px;
+    padding: 50px;
     border: 3px solid #000;
     border-radius: 50px;
     background-color: #204e4a;
 }
 
-#home h2 {
+.homeblock h2 {
     width: 200px;
-    padding: 20px 100px 20px 100px;
+    padding: 20px 50px 20px 50px;
     border: 3px solid #000;
     border-radius: 50px;
     background-color: #ecba82;
     color: black;
 }
 
-#home h2:hover {
+.homeblock h2:hover {
     width: 200px;
-    padding: 20px 100px 20px 100px;
+    padding: 20px 50px 20px 50px;
     border: 3px solid #000;
     border-radius: 50px;
     color: #ecba82;
     background-color: #204e4a;
 }
 
-.homeblock {
-    display: inline-block;  
-    padding: 20px;
+.homeblock p {
+    width: 300px;
+    padding: 0px;
+    margin: 0px;
+    color: white;   
+    text-align: left;
+    font-size: 18px;
 }
 
 #explore {

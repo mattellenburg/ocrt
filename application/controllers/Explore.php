@@ -16,122 +16,129 @@ class Explore extends CI_Controller {
         $this->load->library('googlemaps');
     }
 
-    public function index($zoom = NULL, $latitude = NULL, $longitude = NULL, $pointid = NULL) {
-        $data = new stdClass();
-
-        $where = ' where (p.title like '."'%".$this->input->post('search')."%'".' or p.description like '."'%".$this->input->post('search')."%'".')';
-        $filter = '';
-        if ($this->input->post('filterrating') > 0) {
-            $where = $where.' and pr.avgrating >= '.strval($this->input->post('filterrating'));
-            $filter = $filter.'<li>Average Rating: '.strval($this->input->post('filterrating')).'+</li>';
-        }
-        if ($this->input->post('search') > '') {
-            $filter = $filter.'<li>Search term: '.$this->input->post('search').'</li>';
-        }
-        if ($this->input->post('filterkeywords') > '') {
-            $filter = $filter.'<li>Keyword(s): <ul>';
-            foreach ($this->input->post('filterkeywords') as $filterkeywordid) {
-                $filter = $filter.'<li>'.$this->keyword_model->get_keyword($filterkeywordid)[0]->keyword.'</li>';
-            }
-            $filter = $filter.'</ul></li>';
-        }
-        if ($this->input->post('mysubmissions') == 'on') {
-            $where = $where.' and p.createdbyid = '.$_SESSION['user_id'];
-            $filter = $filter.'<li>My submissions</li>';
-        }
-
-        $keyword = '';
-        $data->keyword = '';
-        if ($this->input->get('keyword', TRUE) > '') {
-            $keyword = ' where p.keywords like '."'%".$this->input->get('keyword', TRUE)."%'";
-            $filter = $filter.'<li>Keyword(s): '.$this->input->get('keyword', TRUE).'</li>';
-            $data->keyword = $this->input->get('keyword', TRUE);
-        }
-        
-        if ($filter !== '') {
-            $data->filter = 'Current filters: <ul class="selectedfilters">'.$filter.'</ul>';
-        }
+    private function add_pending_point($title, $description, $latitude, $longitude, $icon) {
+        if ($this->point_pending_model->create_point($title, $description, $latitude, $longitude, $icon)) {				
+            return 'Your location has been submitted for review.';
+        } 
         else {
-            $data->filter = '';
+            return 'There was a problem creating your location.';
         }
-
-        $data->zoom = $zoom;
-        $data->latitude = $latitude;
-        $data->longitude = $longitude;
-        
-        if ($this->input->post('locationrating') > 0) {
-            $query = $this->pointsratings_model->get_rating($pointid);
-
-            if ($query->num_rows() > 0) {
-                if ($this->pointsratings_model->update_rating($pointid, $this->input->post('locationrating'))) {
-                    $data->message = 'Your rating has been updated.';				
-                }
-                else {
-                    $data->message = 'There was a problem updating your rating.';
-                }
+    }
+    
+    private function rate_location($pointid, $rating) { 
+        if ($this->pointsratings_model->get_rating($pointid)->num_rows() > 0) {
+            if ($this->pointsratings_model->update_rating($pointid, $rating)) {
+                return 'Your rating has been updated.';				
             }
             else {
-                if ($this->pointsratings_model->create_rating($pointid, $this->input->post('locationrating'))) {				
-                    $data->message = 'Your rating has been recorded.';					
-                } 
-                else {
-                    $data->message = 'There was a problem saving your rating.';
-                }
+                return 'There was a problem updating your rating.';
             }
         }
-        
-        if(sizeof($this->input->post('keywords'))) {
+        else {
+            if ($this->pointsratings_model->create_rating($pointid, $rating)) {				
+                return 'Your rating has been recorded.';					
+            } 
+            else {
+                return 'There was a problem saving your rating.';
+            }
+        }
+    }
+    
+    private function update_keywords($data, $pointid, $keywords) {
+        if (sizeof($keywords) > 0) {
             if ($this->pointskeywords_model->update_pointkeyword($pointid)) {				
-                foreach ($this->input->post('keywords') as $keywordid):
-                    $pointkeyword = $this->pointskeywords_model->get_pointkeyword($pointid, $keywordid);
-                    if ($pointkeyword->num_rows() > 0) {
+                foreach ($keywords as $keywordid):
+                    if ($this->pointskeywords_model->get_pointkeyword($pointid, $keywordid)->num_rows() > 0) {
                         if ($this->pointskeywords_model->update_pointkeyword($pointid, $keywordid, 0)) {				
-                            $data->message = 'Your keywords have been recorded.';					
+                            return 'Your keywords have been recorded.';					
                         } 
                         else {
-                            $data->message = 'There was a problem saving your keywords.';
+                            return 'There was a problem saving your keywords.';
                         }
                     }
                     else {
                         if ($this->pointskeywords_model->create_pointkeyword($pointid, $keywordid)) {				
-                            $data->message = 'Your keywords have been recorded.';					
+                            return 'Your keywords have been recorded.';					
                         } 
                         else {
-                            $data->message = 'There was a problem saving your keywords.';
+                            return 'There was a problem saving your keywords.';
                         }
                     }
                 endforeach;
             }
-            else {
-                $data->message = 'There was a problem saving your keywords.';
-            }
         }
         else {
             if ($this->pointskeywords_model->update_pointkeyword($pointid)) {				
-                $data->message = 'Your keywords have been deleted.';					
+                return 'Your keywords have been deleted.';					
             } 
             else {
-                $data->message = 'There was a problem deleting your keywords.';
+                return 'There was a problem deleting your keywords.';
             }
+        }        
+    }
+    
+    private function get_filters($filters) {
+        $filter = '';
+        if ($filters->rating > 0) {
+            $filter = $filter.'<li>Average Rating: '.strval($filters->rating).'+</li>';
         }
         
-        if ($this->input->get('title', TRUE) <> '' && $this->input->get('description', TRUE) <> '') {
-            if ($this->point_pending_model->create_point($this->input->get('title', TRUE), $this->input->get('description', TRUE), $this->input->get('latitude', TRUE), $this->input->get('longitude', TRUE), $this->input->get('icon', TRUE))) {				
-                $data->message = 'Your location has been submitted for review.';
-            } 
-            else {
-                $data->message = 'There was a problem creating your location.';
+        if ($filters->search > '') {
+            $filter = $filter.'<li>Search term: '.$filter->search.'</li>';
+        }
+        
+        if ($filters->keywords > '') {
+            $filter = $filter.'<li>Keyword(s): <ul>';
+            foreach ($filters->keywords as $filterkeywordid) {
+                $filter = $filter.'<li>'.$this->keyword_model->get_keyword($filterkeywordid)[0]->keyword.'</li>';
             }
+            $filter = $filter.'</ul></li>';
         }
-        else {
-            $data->message = '';
+        
+        if (isset($filters->userid)) {
+            $filter = $filter.'<li>My submissions</li>';
+        }
+        
+        if ($filter !== '') {
+            $filter = 'Current filters: <ul class="selectedfilters">'.$filter.'</ul>';
+        }
+        
+        return $filter;
+    }
+    
+    public function index($mapview = 1, $zoom = 13, $latitude = NULL, $longitude = NULL, $pointid = NULL, $rating = NULL) {
+        $headerdata = new stdClass();
+        $headerdata->pageinformation = 'Use the map to view training locations.  Registered users may submit new locations for review and edit existing locations.  Use the filters to narrow your location search.  Only locations within 3 miles of the map center are displayed.';        
+
+        $data = new stdClass();
+        
+        $filters = new stdClass();
+        $filters->rating = $this->input->get('filterrating', TRUE);
+        $filters->search = $this->input->get('filtersearch', TRUE);
+        $filters->keywords = $this->input->get('filterkeywords', TRUE);
+        if ($this->input->get('mysubmissions', TRUE) === 'on') { $filters->userid = $_SESSION['user_id']; }
+        
+        if ($this->input->get('title', TRUE) <> '' && $this->input->get('description', TRUE) <> '') {
+            $data->message = $this->add_pending_point($this->input->get('title', TRUE), $this->input->get('description', TRUE), $this->input->get('latitude', TRUE), $this->input->get('longitude', TRUE), $this->input->get('icon', TRUE));
+        }
+        else if ($rating > 0) {
+            $data->message = $this->rate_location($pointid, $rating);
+        }
+        else if ($this->input->post('submit') == 'Update Keywords') {
+            $data->message = $this->update_keywords($pointid, $this->input->get('locationkeywords', TRUE));
         }
 
-        $data->points = $this->point_model->get_points($where, $latitude, $longitude, $keyword);
-        $data->points_pending = $this->point_pending_model->get_points();
+        $data->mapview = $mapview;
+        $data->zoom = $zoom;
+        $data->latitude = $latitude;
+        $data->longitude = $longitude;
+        $data->pointid = $pointid;
         $data->keywords = $this->keyword_model->get_keywords();
-
-        $this->load->view('header', $data);
+        $data->points_pending = $this->point_pending_model->get_points();
+        $data->points = $this->point_model->get_points($latitude, $longitude, $filters);
+        $data->filters = $this->get_filters($filters);
+        
+        $this->load->view('header', $headerdata);
         $this->load->view('explore', $data);
         $this->load->view('footer');	
     }

@@ -19,7 +19,7 @@
         <h2>Location Filters</h2>
         <div class="content">
             <div>
-                <?php echo $filter ?>
+                <?php echo $filters ?>
                 <?= form_open() ?>
                 <p>
                     <label for="filterrating">Average Rating:</label>
@@ -51,30 +51,10 @@
 
 <script src="http://maps.googleapis.com/maps/api/js"></script>
 <script>
-    function stars(name, rating) {
-        if (typeof rating === 'undefined') {
-            rating = document.querySelector('input[name = "' + name + '"]:checked').value;
-        }
-
-        for(i=1; i<=5; i++) {
-            var star = name + 'star' + i.toString()
-
-            if (i<=rating) {
-                document.getElementById(star).src="<?php echo base_url('assets/images/starblack.png') ?>";    
-            }
-            else {
-                document.getElementById(star).src="<?php echo base_url('assets/images/starwhite.png') ?>";            
-            }
-        }
-    }
-
     function initialize() {
         var sessionid = " <?php if (isset($_SESSION['user_id'])) { echo $_SESSION['user_id']; } else { echo 0; } ?> ";
 
-        var mapProp = {
-            mapTypeId:google.maps.MapTypeId.ROADMAP
-        };
-        var map=new google.maps.Map(document.getElementById("googleMap"),mapProp);
+        var map=new google.maps.Map(document.getElementById("googleMap"), {mapTypeId:google.maps.MapTypeId.ROADMAP});
 
         google.maps.event.addListener(map,'dragstart',function(){
             this.set('dragging',true);          
@@ -90,9 +70,9 @@
             var longitude = "<?php echo $longitude?>";
             var zoom = "<?php echo $zoom?>";
 
-            if (parseInt(zoom) !== map.getZoom()) { redirectURL(map.getZoom(), latitude, longitude); }
+            if (parseInt(zoom) !== map.getZoom()) { redirectURL('1', map.getZoom(), latitude, longitude, '1'); }
         });
-
+        
         google.maps.event.addListener(map, 'idle', function() {
             if(!this.get('dragging') && this.get('oldCenter') && this.get('oldCenter')!==this.getCenter()) {
                 var zoom = "<?php echo $zoom?>";
@@ -110,24 +90,25 @@
         }    
     }
 
-    function redirectURL (zoom, latitude, longitude, keyword) {
+    function redirectURL (mapview, zoom, latitude, longitude, keyword) {
         var keywordquery = '';
         if (keyword > '') {
             keywordquery = '?keyword=' + keyword
         }
             
-        window.location = "<?= base_url('index.php/explore/index/') ?>" + '/' + zoom + '/' + latitude + '/' + longitude + keywordquery;
+        window.location = "<?= base_url('index.php/explore/index/') ?>" + '/' + mapview + '/' + zoom + '/' + latitude + '/' + longitude + keywordquery;
     }
 
     function getMapCenter(map, sessionid) {
+        var mapview = "<?php echo $mapview?>";
+        var zoom = "<?php echo $zoom?>";
         var latitude = "<?php echo $latitude?>";
         var longitude = "<?php echo $longitude?>";
-        var zoom = "<?php echo $zoom?>";
 
         if (map.getCenter() === undefined && latitude === '' && longitude === '') {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
-                    redirectURL(13, position.coords.latitude, position.coords.longitude, "<?php echo $keyword; ?>");
+                    redirectURL(mapview, 13, position.coords.latitude, position.coords.longitude);
                 }, 
                 function() {
                     handleLocationError(true, new infoWindow, map.getCenter());
@@ -138,7 +119,7 @@
             }
         }
         else if (zoom === '') {
-            redirectURL(13, latitude, longitude, 'xx');
+            redirectURL('', 13, latitude, longitude, '');
         }
         else {
             map.setZoom(parseInt(zoom));
@@ -156,27 +137,30 @@
     function loadPoints(map, sessionid) {
         var locations = new Array();
         var i = 0;
-        <?php foreach ($points as $point): ?>
-            var title = " <?php echo $point['title'] ?> ";
-            var description = " <?php echo $point['description'] ?> ";
-            var latitude = " <?php echo $point['latitude'] ?> ";
-            var longitude = " <?php echo $point['longitude'] ?> ";
-            var icon = " <?php echo $point['icon'] ?> ";
-            var type = 'confirmed';
-            var pointid = " <?php echo $point['id'] ?> ";
-            var userrating = " <?php echo $point['userrating'] ?> ";
-            var avgrating = " <?php echo $point['avgrating'] ?> ";
-            var keywords = " <?php echo $point['keywords'] ?> ";
-            var distance = " <?php echo $point['distance'] ?> ";
+        <?php if (isset($points)) { ?>
+            <?php foreach ($points as $point): ?>
+                var title = " <?php echo $point['title'] ?> ";
+                var description = " <?php echo $point['description'] ?> ";
+                var latitude = " <?php echo $point['latitude'] ?> ";
+                var longitude = " <?php echo $point['longitude'] ?> ";
+                var icon = " <?php echo $point['icon'] ?> ";
+                var type = 'confirmed';
+                var pointid = " <?php echo $point['id'] ?> ";
+                var userrating = " <?php echo $point['userrating'] ?> ";
+                var avgrating = " <?php echo $point['avgrating'] ?> ";
+                var keywords = " <?php echo $point['keywords'] ?> ";
+                var distance = " <?php echo $point['distance'] ?> ";
 
-            var point = new Array(title, latitude, longitude, description, icon, type, pointid, userrating, avgrating, keywords, distance);
+                var point = new Array(title, latitude, longitude, description, icon, type, pointid, userrating, avgrating, keywords, distance);
 
-            locations[i] = point;
+                locations[i] = point;
 
-            i++;
-        <?php endforeach; ?>
+                i++;
+            <?php endforeach; ?>
+        <?php } ?>
 
-        <?php foreach ($points_pending as $point): ?>
+        <?php if (isset($points_pending)) { ?>           
+            <?php foreach ($points_pending as $point): ?>
             var title = " <?php echo $point['title'] ?> ";
             var description = " <?php echo $point['description'] ?> ";
             var latitude = " <?php echo $point['latitude'] ?> ";
@@ -190,6 +174,7 @@
 
             i++;
         <?php endforeach; ?>
+        <?php } ?>
 
         var marker, i;
         var image;
@@ -284,7 +269,7 @@
 
             google.maps.event.addListener(marker, 'dblclick', (function(marker, i) {
                 return function() {
-                    redirectURL("<?php echo $zoom?>", "<?php echo $latitude?>", "<?php echo $longitude?>");
+                    redirectURL('3', "<?php echo $zoom?>", "<?php echo $latitude?>", "<?php echo $longitude?>", '3');
                 }
             })(marker, i));
         }		
@@ -299,7 +284,7 @@
         google.maps.event.clearListeners(map, 'click');
 
         google.maps.event.addListener(marker, 'dblclick', function(event) {
-            redirectURL("<?php echo $zoom?>", "<?php echo $latitude?>", "<?php echo $longitude?>");
+            redirectURL('4', "<?php echo $zoom?>", "<?php echo $latitude?>", "<?php echo $longitude?>", '4');
         });
 
         return marker;
@@ -323,7 +308,7 @@
         var title = '<p><label for="title">Title:</label><input type="text" name="title"></p>';
         var description = '<p>Description:</p><textarea name="description" rows="10"></textarea></p>';
         var icon = '<p><label for="icon">Icon:</label><div id="divIcon"><input type="radio" name="icon" value="1" class="radioIcon"><img src=" <?php echo base_url('assets/images/Playground-50.png') ?> " /></input><input type="radio" name="icon" value="2" class="radioIcon"><img src=" <?php echo base_url('assets/images/Pullups Filled-50.png') ?> " /></input><input type="radio" name="icon" value="3" class="radioIcon"><img src=" <?php echo base_url('assets/images/City Bench-50.png') ?> " /></input><input type="radio" name="icon" value="4" class="radioIcon"><img src=" <?php echo base_url('assets/images/Weight-50.png') ?> " /></input><input type="radio" name="icon" value="5" class="radioIcon"><img src=" <?php echo base_url('assets/images/Pushups-50.png') ?> " /></input><input type="radio" name="icon" value="6" class="radioIcon"><img src=" <?php echo base_url('assets/images/Stadium-50.png') ?> " /></input><input type="radio" name="icon" value="7" class="radioIcon"><img src=" <?php echo base_url('assets/images/Trekking-50.png') ?> " /></input><input type="radio" name="icon" value="8" class="radioIcon"><img src=" <?php echo base_url('assets/images/Climbing Filled-50.png') ?> " /></input><input type="radio" name="icon" value="9" class="radioIcon"><img src=" <?php echo base_url('assets/images/Wakeup Hill on Stairs-50.png') ?> " /></input></div></p>';
-        var submit = '<p><input type="submit" value="Submit"><input type="button" value="Cancel" onClick="redirectURL(' + <?php echo $zoom?> + ',' + <?php echo $latitude?> + ',' + <?php echo $longitude?> + ');"></p>';
+        var submit = '<p><input type="submit" value="Submit"><input type="button" value="Cancel" onClick="redirectURL(' + <?php echo $mapview?> + ',' + <?php echo $zoom?> + ',' + <?php echo $latitude?> + ',' + <?php echo $longitude?> + ');"></p>';
         var divend = '</div>';
         
         return '<form action="' + "<?= base_url('index.php/explore/index/'.$zoom.'/'.$latitude.'/'.$longitude) ?>" + '">' + heading + divstart + instructions + latlong + icon + title + description + submit + divend + '</form>';
@@ -334,7 +319,7 @@
 
         geocoder.geocode( { 'address': document.getElementById("address").value}, function(results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
-                redirectURL("<?php echo $zoom?>", results[0].geometry.location.lat(), results[0].geometry.location.lng());
+                redirectURL('5', "<?php echo $zoom?>", results[0].geometry.location.lat(), results[0].geometry.location.lng());
             } 
         }); 
     }

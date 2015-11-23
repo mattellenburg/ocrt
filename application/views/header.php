@@ -46,7 +46,8 @@
 <body>
     <div id="header">
         <div id="title">
-            <h1>Obstacle Course Race Training</h1>
+            <h1>(O)bstacle (C)ourse (R)ace (T)raining</h1>
+            <p>Explore, train, and race...</p>
         </div>
         <div id="navigation">
             <ul>
@@ -70,7 +71,8 @@
     </div>
     <div id="main">
         <div id="message">
-            <p><?php echo $message ?><p>
+            <p><?php if(isset($message)) { echo $message; } ?><p>
+            <p><?php if(isset($pageinformation)) { echo $pageinformation; } ?><p>
         </div>
 
     
