@@ -84,7 +84,7 @@ class Explore extends CI_Controller {
         }
         
         if ($filters->search > '') {
-            $filter = $filter.'<li>Search term: '.$filter->search.'</li>';
+            $filter = $filter.'<li>Search term: '.$filters->search.'</li>';
         }
         
         if ($filters->keywords > '') {
@@ -106,23 +106,23 @@ class Explore extends CI_Controller {
         return $filter;
     }
     
-    public function index($mapview = 1, $zoom = 13, $latitude = NULL, $longitude = NULL, $pointid = NULL, $rating = NULL) {
+    public function index($mapview = 1, $zoom = 13, $latitude = NULL, $longitude = NULL, $pointid = NULL) {
         $headerdata = new stdClass();
         $headerdata->pageinformation = 'Use the map to view training locations.  Registered users may submit new locations for review and edit existing locations.  Use the filters to narrow your location search.  Only locations within 3 miles of the map center are displayed.';        
 
         $data = new stdClass();
         
         $filters = new stdClass();
-        $filters->rating = $this->input->get('filterrating', TRUE);
-        $filters->search = $this->input->get('filtersearch', TRUE);
-        $filters->keywords = $this->input->get('filterkeywords', TRUE);
-        if ($this->input->get('mysubmissions', TRUE) === 'on') { $filters->userid = $_SESSION['user_id']; }
+        $filters->rating = $this->input->post('filterrating', TRUE);
+        $filters->search = $this->input->post('filtersearch', TRUE);
+        $filters->keywords = $this->input->post('filterkeywords', TRUE);
+        if ($this->input->post('mysubmissions', TRUE) === 'on') { $filters->userid = $_SESSION['user_id']; }
         
         if ($this->input->get('title', TRUE) <> '' && $this->input->get('description', TRUE) <> '') {
             $data->message = $this->add_pending_point($this->input->get('title', TRUE), $this->input->get('description', TRUE), $this->input->get('latitude', TRUE), $this->input->get('longitude', TRUE), $this->input->get('icon', TRUE));
         }
-        else if ($rating > 0) {
-            $data->message = $this->rate_location($pointid, $rating);
+        else if ($pointid > 0) {
+            $headerdata->message = $this->rate_location($pointid, $this->input->post('locationrating', TRUE));
         }
         else if ($this->input->post('submit') == 'Update Keywords') {
             $data->message = $this->update_keywords($pointid, $this->input->get('locationkeywords', TRUE));

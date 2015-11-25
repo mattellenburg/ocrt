@@ -30,7 +30,7 @@
                     <label><input type="radio" id="filterrating" name="filterrating" value="5" onclick="stars(this.name);" /><img id="filterratingstar5" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>
                     or higher
                 </p>
-                <label for="search">Title/Description Search:</label><input type="text" id="search" name="search" /></p>
+                <label for="search">Title/Description Search:</label><input type="text" id="filtersearch" name="filtersearch" /></p>
            
                 <label for="filterkeywords">Keywords:</label>
                 <div class="keywords">
@@ -66,20 +66,24 @@
         });
 
         google.maps.event.addListener(map,'zoom_changed',function(){
+            var mapview = "<?php echo $mapview?>";
+            var zoom = "<?php echo $zoom?>";
             var latitude = "<?php echo $latitude?>";
             var longitude = "<?php echo $longitude?>";
-            var zoom = "<?php echo $zoom?>";
+            var pointid = "<?php echo $pointid?>";
 
-            if (parseInt(zoom) !== map.getZoom()) { redirectURL('1', map.getZoom(), latitude, longitude, '1'); }
+            if (parseInt(zoom) !== map.getZoom()) { redirectURL(mapview, map.getZoom(), latitude, longitude, pointid, ''); }
         });
         
         google.maps.event.addListener(map, 'idle', function() {
             if(!this.get('dragging') && this.get('oldCenter') && this.get('oldCenter')!==this.getCenter()) {
+                var mapview = "<?php echo $mapview?>";
                 var zoom = "<?php echo $zoom?>";
-                redirectURL (zoom, map.getCenter().lat(), map.getCenter().lng());
+                var pointid = "<?php echo $pointid?>";
+                redirectURL (mapview, zoom, map.getCenter().lat(), map.getCenter().lng(), pointid, '');
             }
             if(!this.get('dragging')){
-                this.set('oldCenter',this.getCenter())
+                this.set('oldCenter',this.getCenter());
             }
         });
 
@@ -90,13 +94,14 @@
         }    
     }
 
-    function redirectURL (mapview, zoom, latitude, longitude, keyword) {
+    function redirectURL (mapview, zoom, latitude, longitude, pointid, keyword) {
+        //alert (mapview + ',' + zoom + ',' + latitude + ',' + longitude + ',' + pointid + ',' + keyword);
         var keywordquery = '';
         if (keyword > '') {
-            keywordquery = '?keyword=' + keyword
+            keywordquery = '?keyword=' + keyword;
         }
             
-        window.location = "<?= base_url('index.php/explore/index/') ?>" + '/' + mapview + '/' + zoom + '/' + latitude + '/' + longitude + keywordquery;
+        window.location = "<?= base_url('index.php/explore/index/') ?>" + '/' + mapview + '/' + zoom + '/' + latitude + '/' + longitude + '/' + pointid + keywordquery;
     }
 
     function getMapCenter(map, sessionid) {
@@ -108,7 +113,7 @@
         if (map.getCenter() === undefined && latitude === '' && longitude === '') {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
-                    redirectURL(mapview, 13, position.coords.latitude, position.coords.longitude);
+                    redirectURL(mapview, 13, position.coords.latitude, position.coords.longitude, '', '');
                 }, 
                 function() {
                     handleLocationError(true, new infoWindow, map.getCenter());
@@ -119,17 +124,17 @@
             }
         }
         else if (zoom === '') {
-            redirectURL('', 13, latitude, longitude, '');
+            redirectURL(mapview, 13, latitude, longitude, '', '');
         }
         else {
             map.setZoom(parseInt(zoom));
             map.setCenter(new google.maps.LatLng(latitude, longitude));
 
-            loadPoints(map, sessionid)
+            loadPoints(map, sessionid);
 
             new google.maps.Marker({
                 position: new google.maps.LatLng(latitude, longitude),
-                map: map,
+                map: map
             });
         }
     }
@@ -236,7 +241,7 @@
 
                     if (locations[i][5] === 'confirmed') {
                         if (sessionid>0) {
-                            var form = '<form method="post" action="' + "<?= base_url('index.php/explore/index/'.$zoom.'/'.$latitude.'/'.$longitude) ?>" + '/' + locations[i][6].trim() + '">';
+                            var form = '<form method="post" action="' + "<?= base_url('index.php/explore/index/'.$mapview.'/'.$zoom.'/'.$latitude.'/'.$longitude) ?>" + '/' + locations[i][6].trim() + '">';
 
                             var ratingsystem = '<h4>Rate This Location:</h4>';
                             ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="1" onclick="stars(this.name);" /><img id="locationratingstar1" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
@@ -264,17 +269,17 @@
                             }
                         }
                     }
-                }
+                };
             })(marker, i));
 
             google.maps.event.addListener(marker, 'dblclick', (function(marker, i) {
                 return function() {
-                    redirectURL('3', "<?php echo $zoom?>", "<?php echo $latitude?>", "<?php echo $longitude?>", '3');
-                }
+                    redirectURL("<?php echo $mapview ?>", "<?php echo $zoom ?>", "<?php echo $latitude ?>", "<?php echo $longitude ?>", "<?php if (isset($pointid)) { echo $pointid; } ?>");
+                };
             })(marker, i));
         }		
     }
-
+    
     function placeMarker(pos, map) {
         var marker=new google.maps.Marker();
 
@@ -284,7 +289,7 @@
         google.maps.event.clearListeners(map, 'click');
 
         google.maps.event.addListener(marker, 'dblclick', function(event) {
-            redirectURL('4', "<?php echo $zoom?>", "<?php echo $latitude?>", "<?php echo $longitude?>", '4');
+            redirectURL("<?php echo $mapview?>", "<?php echo $zoom?>", "<?php echo $latitude?>", "<?php echo $longitude?>", "<?php if (isset($pointid)) { echo $pointid; } ?>");
         });
 
         return marker;
@@ -308,7 +313,7 @@
         var title = '<p><label for="title">Title:</label><input type="text" name="title"></p>';
         var description = '<p>Description:</p><textarea name="description" rows="10"></textarea></p>';
         var icon = '<p><label for="icon">Icon:</label><div id="divIcon"><input type="radio" name="icon" value="1" class="radioIcon"><img src=" <?php echo base_url('assets/images/Playground-50.png') ?> " /></input><input type="radio" name="icon" value="2" class="radioIcon"><img src=" <?php echo base_url('assets/images/Pullups Filled-50.png') ?> " /></input><input type="radio" name="icon" value="3" class="radioIcon"><img src=" <?php echo base_url('assets/images/City Bench-50.png') ?> " /></input><input type="radio" name="icon" value="4" class="radioIcon"><img src=" <?php echo base_url('assets/images/Weight-50.png') ?> " /></input><input type="radio" name="icon" value="5" class="radioIcon"><img src=" <?php echo base_url('assets/images/Pushups-50.png') ?> " /></input><input type="radio" name="icon" value="6" class="radioIcon"><img src=" <?php echo base_url('assets/images/Stadium-50.png') ?> " /></input><input type="radio" name="icon" value="7" class="radioIcon"><img src=" <?php echo base_url('assets/images/Trekking-50.png') ?> " /></input><input type="radio" name="icon" value="8" class="radioIcon"><img src=" <?php echo base_url('assets/images/Climbing Filled-50.png') ?> " /></input><input type="radio" name="icon" value="9" class="radioIcon"><img src=" <?php echo base_url('assets/images/Wakeup Hill on Stairs-50.png') ?> " /></input></div></p>';
-        var submit = '<p><input type="submit" value="Submit"><input type="button" value="Cancel" onClick="redirectURL(' + <?php echo $mapview?> + ',' + <?php echo $zoom?> + ',' + <?php echo $latitude?> + ',' + <?php echo $longitude?> + ');"></p>';
+        var submit = '<p><input type="submit" value="Submit"><input type="button" value="Cancel" onClick="redirectURL(' + <?php echo $mapview?> + ',' + <?php echo $zoom?> + ',' + <?php echo $latitude?> + ',' + <?php echo $longitude?> + ',' + <?php if (isset($pointid)) { echo $pointid; } ?> + ');"></p>';
         var divend = '</div>';
         
         return '<form action="' + "<?= base_url('index.php/explore/index/'.$zoom.'/'.$latitude.'/'.$longitude) ?>" + '">' + heading + divstart + instructions + latlong + icon + title + description + submit + divend + '</form>';
@@ -319,9 +324,26 @@
 
         geocoder.geocode( { 'address': document.getElementById("address").value}, function(results, status) {
             if (status == google.maps.GeocoderStatus.OK) {
-                redirectURL('5', "<?php echo $zoom?>", results[0].geometry.location.lat(), results[0].geometry.location.lng());
+                redirectURL("<?php echo $mapview?>", "<?php echo $zoom?>", results[0].geometry.location.lat(), results[0].geometry.location.lng(), "<?php if (isset($pointid)) { echo $pointid; } ?>");
             } 
         }); 
+    }
+
+    function stars(name, rating) {
+        if (typeof rating === 'undefined') {
+            rating = document.querySelector('input[name = "' + name + '"]:checked').value;
+        }
+
+        for(i=1; i<=5; i++) {
+            var star = name + 'star' + i.toString()
+
+            if (i<=rating) {
+                document.getElementById(star).src="<?php echo base_url('assets/images/starblack.png') ?>";    
+            }
+            else {
+                document.getElementById(star).src="<?php echo base_url('assets/images/starwhite.png') ?>";            
+            }
+        }
     }
 
     google.maps.event.addDomListener(window, 'load', initialize);    

@@ -30,22 +30,21 @@ class Point_model extends CI_Model {
         $where->where2 = ' where p.distance <= 3';
 
         if ($filters->rating > 0) {
-            $where->where1 += ' and pr.avgrating >= '.$filters->rating;
+            $where->where1 .= ' and pr.avgrating >= '.$filters->rating;
         }
         
-        if ($filters->search > '') {
-            $where->where1 += '<li>Search term: '.$filter->search.'</li>';
-        }
         if ($this->input->post('mysubmissions') == 'on') {
-            $where = $where.' and p.createdbyid = '.$_SESSION['user_id'];
+
+            $where->where1 .= ' and p.createdbyid = '.(string)$filters->userid;
         }
-        
-        if ($filters->keywords > '') {
-            $where->where2 += " (";
+
+        if (sizeof($filters->keywords) > 0) {
+
+            $where->where2 .= ' and (';
             foreach ($filters->keywords as $keywordid) {
-                $where->where2 += '<li>'.$this->keyword_model->get_keyword($keywordid)[0]->keyword.'</li>';
+                $where->where2 .= 'p.keywords like \'%'.$this->keyword_model->get_keyword($keywordid)[0]->keyword.'%\' OR';
             }
-            $where->where2 += "%'";
+            $where->where2 = substr($where->where2, 0, strlen($where->where2)-2).')';
         }
         
         return $where;
@@ -62,6 +61,9 @@ class Point_model extends CI_Model {
             $userid=0;
             if (isset($_SESSION['user_id'])) {
                 $userid=$_SESSION['user_id'];
+                if ($_SESSION['is_admin'] && $this->input->get('debug', TRUE) == 'y') {
+                    echo 'SET SQL_BIG_SELECTS=1; select * from (select p.*, userrating, avgrating, GROUP_CONCAT(k.keyword) as keywords, '.$this->calculate_distance($latitude, $longitude).' as distance from points as p left join (select pointid, avg(rating) as avgrating from pointsratings group by pointid) as pr on p.id=pr.pointid left join (select pointid, rating as userrating from pointsratings where userid='.$userid.') as pru on p.id=pru.pointid  left join (select * from pointskeywords where deleteflag=0) as pk on p.id=pk.pointid left join keywords k on pk.keywordid=k.id '.$where->where1.' group by p.id) as p '.$where->where2;
+                }
             }
 
             $this->db->query('SET SQL_BIG_SELECTS=1');
