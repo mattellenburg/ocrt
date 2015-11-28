@@ -1,14 +1,14 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 <div id="explore">
     <div id="map">
-        <h2>Explore <input type="text" name="address" id="address" onkeydown="if (event.keyCode == 13) document.getElementById('go').click()" placeholder="Enter location" /> <input id="go" type="button" value="Go" onclick="getLatLong();" /></h2>
+        <h2>Map <input type="text" name="address" id="address" onkeydown="if (event.keyCode == 13) document.getElementById('go').click()" placeholder="Enter location" /> <input id="go" type="button" value="Go" onclick="getLatLong();" /></h2>
         <div class="content">
             <p>Click on the map to submit a new location.</p>
             <div id="googleMap"></div>
         </div>
     </div>
     <div id="pointInformation">
-        <h2>Click a point to view its information</h2>
+        <h2>Location Information</h2>
         <div class="content">
             <h3></h3>
             <p></p>
@@ -243,12 +243,26 @@
                         if (sessionid>0) {
                             var form = '<form method="post" action="' + "<?= base_url('index.php/explore/index/'.$mapview.'/'.$zoom.'/'.$latitude.'/'.$longitude) ?>" + '/' + locations[i][6].trim() + '">';
 
+                            var selected1 = '';
+                            var selected2 = '';
+                            var selected3 = '';
+                            var selected4 = '';
+                            var selected5 = '';
+                            
+                            if (locations[i][7] === 1) { selected1 = 'selected'; }
+                            if (locations[i][7] === 2) { selected2 = 'selected'; }
+                            if (locations[i][7] === 3) { selected3 = 'selected'; }
+                            if (locations[i][7] === 4) { selected4 = 'selected'; }
+                            if (locations[i][7] === 5) { selected5 = 'selected'; }
+                            
+                            alert(locations[i][7] === 2 + ',' + selected2);
+                            
                             var ratingsystem = '<h4>Rate This Location:</h4>';
-                            ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="1" onclick="stars(this.name);" /><img id="locationratingstar1" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
-                            ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="2" onclick="stars(this.name);" /><img id="locationratingstar2" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
-                            ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="3" onclick="stars(this.name);" /><img id="locationratingstar3" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
-                            ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="4" onclick="stars(this.name);" /><img id="locationratingstar4" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
-                            ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="5" onclick="stars(this.name);" /><img id="locationratingstar5" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
+                            ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="1" onclick="stars(this.name);" ' + selected1 + ' /><img id="locationratingstar1" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
+                            ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="2" onclick="stars(this.name);" ' + selected2 + ' /><img id="locationratingstar2" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
+                            ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="3" onclick="stars(this.name);" ' + selected3 + ' /><img id="locationratingstar3" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
+                            ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="4" onclick="stars(this.name);" ' + selected4 + ' /><img id="locationratingstar4" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
+                            ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="5" onclick="stars(this.name);" ' + selected5 + ' /><img id="locationratingstar5" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
 
                             var keywordlist = '<h4>Keywords:</h4><div class="keywords">';
                             <?php foreach ($keywords as $keyword): ?>
@@ -306,13 +320,13 @@
         var filters = document.getElementById("filters");
         filters.style.display = "none";
 
-        var heading = '<h2>New Location (' + latitude + ', ' + longitude + ')</h2>';
+        var heading = '<h2>New Location</h2>';
         var divstart = '<div class="content">';
-        var instructions = '<p>Enter a title and description and click the button to submit your point for review.</p>';
+        var instructions = '<p>Enter a title and description and click the button to submit your location for review.</p>';
         var latlong = '<p><input type="hidden" name="latitude" value=' + latitude + '><input type="hidden" name="longitude" value=' + longitude + '></p>';
         var title = '<p><label for="title">Title:</label><input type="text" name="title"></p>';
-        var description = '<p>Description:</p><textarea name="description" rows="10"></textarea></p>';
-        var icon = '<p><label for="icon">Icon:</label><div id="divIcon"><input type="radio" name="icon" value="1" class="radioIcon"><img src=" <?php echo base_url('assets/images/Playground-50.png') ?> " /></input><input type="radio" name="icon" value="2" class="radioIcon"><img src=" <?php echo base_url('assets/images/Pullups Filled-50.png') ?> " /></input><input type="radio" name="icon" value="3" class="radioIcon"><img src=" <?php echo base_url('assets/images/City Bench-50.png') ?> " /></input><input type="radio" name="icon" value="4" class="radioIcon"><img src=" <?php echo base_url('assets/images/Weight-50.png') ?> " /></input><input type="radio" name="icon" value="5" class="radioIcon"><img src=" <?php echo base_url('assets/images/Pushups-50.png') ?> " /></input><input type="radio" name="icon" value="6" class="radioIcon"><img src=" <?php echo base_url('assets/images/Stadium-50.png') ?> " /></input><input type="radio" name="icon" value="7" class="radioIcon"><img src=" <?php echo base_url('assets/images/Trekking-50.png') ?> " /></input><input type="radio" name="icon" value="8" class="radioIcon"><img src=" <?php echo base_url('assets/images/Climbing Filled-50.png') ?> " /></input><input type="radio" name="icon" value="9" class="radioIcon"><img src=" <?php echo base_url('assets/images/Wakeup Hill on Stairs-50.png') ?> " /></input></div></p>';
+        var description = '<p>Description:</p><textarea name="description" style="margin: 0px; width: 350px; height: 120px;"></textarea></p>';
+        var icon = '<div id="divIcon"><input type="radio" name="icon" value="1" class="radioIcon"><img src=" <?php echo base_url('assets/images/Playground-50.png') ?> " /></input><input type="radio" name="icon" value="2" class="radioIcon"><img src=" <?php echo base_url('assets/images/Pullups Filled-50.png') ?> " /></input><input type="radio" name="icon" value="3" class="radioIcon"><img src=" <?php echo base_url('assets/images/City Bench-50.png') ?> " /></input><input type="radio" name="icon" value="4" class="radioIcon"><img src=" <?php echo base_url('assets/images/Weight-50.png') ?> " /></input><input type="radio" name="icon" value="5" class="radioIcon"><img src=" <?php echo base_url('assets/images/Pushups-50.png') ?> " /></input><br><input type="radio" name="icon" value="6" class="radioIcon"><img src=" <?php echo base_url('assets/images/Stadium-50.png') ?> " /></input><input type="radio" name="icon" value="7" class="radioIcon"><img src=" <?php echo base_url('assets/images/Trekking-50.png') ?> " /></input><input type="radio" name="icon" value="8" class="radioIcon"><img src=" <?php echo base_url('assets/images/Climbing Filled-50.png') ?> " /></input><input type="radio" name="icon" value="9" class="radioIcon"><img src=" <?php echo base_url('assets/images/Wakeup Hill on Stairs-50.png') ?> " /></input></div>';
         var submit = '<p><input type="submit" value="Submit"><input type="button" value="Cancel" onClick="redirectURL(' + <?php echo $mapview?> + ',' + <?php echo $zoom?> + ',' + <?php echo $latitude?> + ',' + <?php echo $longitude?> + ',' + <?php if (isset($pointid)) { echo $pointid; } ?> + ');"></p>';
         var divend = '</div>';
         

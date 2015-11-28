@@ -51,15 +51,15 @@
         </div>
         <div id="navigation">
             <ul>
-                <li><a href="<?= base_url('index.php/home/index') ?>">Home</a></li>
-                <li><a href="<?= base_url('index.php/explore/index') ?>">Explore</a></li>
-                <li><a href="<?= base_url('index.php/train/index') ?>">Train</a></li>
-                <li><a href="<?= base_url('index.php/race/index') ?>">Race</a></li>    
-                <li><a href="<?= base_url('index.php/contact/index') ?>">Contact</a></li>
-                <li><a href="<?= base_url('index.php/about/index') ?>">About</a></li>
+                <li><a href="<?= base_url('index.php/home') ?>">Home</a></li>
+                <li><a href="<?= base_url('index.php/explore') ?>">Explore</a></li>
+                <li><a href="<?= base_url('index.php/train') ?>">Train</a></li>
+                <li><a href="<?= base_url('index.php/race') ?>">Race</a></li>    
+                <li><a href="<?= base_url('index.php/contact') ?>">Contact</a></li>
+                <li><a href="<?= base_url('index.php/about') ?>">About</a></li>
                 <?php if (isset($_SESSION['user_id']) && $_SESSION['logged_in'] && $_SESSION['is_confirmed']) : ?>
                     <?php if ($_SESSION['is_admin']) : ?>
-                        <li><a href="<?= base_url('index.php/admin/index') ?>">Admin</a></li>
+                        <li><a href="<?= base_url('index.php/admin') ?>">Admin</a></li>
                     <?php endif; ?>
                     <li><a href="<?= base_url('index.php/user/logout') ?>">Logout</a></li>
                 <?php else : ?>
