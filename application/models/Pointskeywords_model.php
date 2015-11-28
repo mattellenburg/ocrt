@@ -19,35 +19,13 @@ class Pointskeywords_model extends CI_Model {
         return $this->db->insert('pointskeywords', $data);
     }
     
-    public function update_pointkeyword($pointid, $keywordid = NULL, $delete = 1) {
-        $data = array(
-            'deleteflag' => $delete,
-            'updatedate' => date('Y-m-j H:i:s')
-        );
-
-        $userid = 0;
-        if (isset($_SESSION['user_id']))
-        {
-            $userid = $_SESSION['user_id'];
-        }
+    public function delete_pointkeywords($pointid) {
+        $this->db->where('pointid', $pointid);
+        $this->db->delete('pointskeywords');
         
-        if ($keywordid == NULL) {
-            $where = array(
-                'pointid' => $pointid,
-                'userid' => $userid
-            );
-        }
-        else {
-            $where = array(
-                'pointid' => $pointid,
-                'keywordid' => $keywordid,
-                'userid' => $userid
-            );
-        }
-
-        return $this->db->update('pointskeywords', $data, $where);
+        return TRUE;        
     }
-
+    
     public function get_pointkeywords($pointid) {
         return $this->db->get_where('pointskeywords', array('pointid' => $pointid));      
     }

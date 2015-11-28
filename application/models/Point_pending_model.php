@@ -30,8 +30,8 @@ class Point_pending_model extends CI_Model {
     }
 
     public function delete_point($id) {
-        $this -> db -> where('id', $id);
-        $this -> db -> delete('points_pending');
+        $this->db->where('id', $id);
+        $this->db->delete('points_pending');
         
         return TRUE;
     }

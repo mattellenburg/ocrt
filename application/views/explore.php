@@ -249,15 +249,13 @@
                             var selected4 = '';
                             var selected5 = '';
                             
-                            if (locations[i][7] === 1) { selected1 = 'selected'; }
-                            if (locations[i][7] === 2) { selected2 = 'selected'; }
-                            if (locations[i][7] === 3) { selected3 = 'selected'; }
-                            if (locations[i][7] === 4) { selected4 = 'selected'; }
-                            if (locations[i][7] === 5) { selected5 = 'selected'; }
+                            if (locations[i][7] == 1) { selected1 = 'selected'; }
+                            if (locations[i][7] == 2) { selected2 = 'selected'; }
+                            if (locations[i][7] == 3) { selected3 = 'selected'; }
+                            if (locations[i][7] == 4) { selected4 = 'selected'; }
+                            if (locations[i][7] == 5) { selected5 = 'selected'; }
                             
-                            alert(locations[i][7] === 2 + ',' + selected2);
-                            
-                            var ratingsystem = '<h4>Rate This Location:</h4>';
+                            var ratingsystem = '<h4>Rate Location:</h4>';
                             ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="1" onclick="stars(this.name);" ' + selected1 + ' /><img id="locationratingstar1" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
                             ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="2" onclick="stars(this.name);" ' + selected2 + ' /><img id="locationratingstar2" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
                             ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="3" onclick="stars(this.name);" ' + selected3 + ' /><img id="locationratingstar3" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
@@ -270,11 +268,11 @@
                                 if (locations[i][9].indexOf("<?php echo $keyword->keyword ?>") >= 0) {
                                     checked = 'checked';
                                 }
-                                keywordlist += '<input id="keywords[]" name="keywords[]" type="checkbox" value=" <?php echo $keyword->id ?> "' + checked + ' />' + " <?php echo $keyword->keyword ?> " + '<br>';
+                                keywordlist += '<input id="locationkeywords[]" name="locationkeywords[]" type="checkbox" value=" <?php echo $keyword->id ?> "' + checked + ' />' + " <?php echo $keyword->keyword ?> " + '<br>';
                             <?php endforeach; ?>
                             keywordlist += '</div>';
 
-                            var submit = '<input type="submit" value="Submit Rating and Keywords"></form>';
+                            var submit = '<input id="ratingkeywordssubmit" name="ratingkeywordssubmit" type="submit" value="Submit Rating and Keywords"><input type="button" value="Edit Location Information" onClick="editLocation(<?php echo $latitude ?>,<?php echo $longitude ?>,\"' + locations[i][7] + '\",\"' + locations[i][0] + '\",\"' + locations[i][3] + '\");"></form>';
 
                             div[0].innerHTML = form + ratingsystem + keywordlist + submit;
 
@@ -315,8 +313,13 @@
             document.getElementById('pointInformation').innerHTML = buildForm(event.latLng.lat(), event.latLng.lng());
         });	
     }
+    
+    function editLocation(latitude, longitude, icon, title, description) {
+        alert(title);
+        document.getElementById('pointInformation').innerHTML = buildForm(latitude, longitude, icon, title, description);
+    }
 
-    function buildForm(latitude, longitude) {
+    function buildForm(latitude, longitude, icon, title, description) {
         var filters = document.getElementById("filters");
         filters.style.display = "none";
 
@@ -324,13 +327,13 @@
         var divstart = '<div class="content">';
         var instructions = '<p>Enter a title and description and click the button to submit your location for review.</p>';
         var latlong = '<p><input type="hidden" name="latitude" value=' + latitude + '><input type="hidden" name="longitude" value=' + longitude + '></p>';
-        var title = '<p><label for="title">Title:</label><input type="text" name="title"></p>';
+        var title = '<p><label for="title">Title:</label><input type="text" name="title" value="' + title + '"></p>';
         var description = '<p>Description:</p><textarea name="description" style="margin: 0px; width: 350px; height: 120px;"></textarea></p>';
         var icon = '<div id="divIcon"><input type="radio" name="icon" value="1" class="radioIcon"><img src=" <?php echo base_url('assets/images/Playground-50.png') ?> " /></input><input type="radio" name="icon" value="2" class="radioIcon"><img src=" <?php echo base_url('assets/images/Pullups Filled-50.png') ?> " /></input><input type="radio" name="icon" value="3" class="radioIcon"><img src=" <?php echo base_url('assets/images/City Bench-50.png') ?> " /></input><input type="radio" name="icon" value="4" class="radioIcon"><img src=" <?php echo base_url('assets/images/Weight-50.png') ?> " /></input><input type="radio" name="icon" value="5" class="radioIcon"><img src=" <?php echo base_url('assets/images/Pushups-50.png') ?> " /></input><br><input type="radio" name="icon" value="6" class="radioIcon"><img src=" <?php echo base_url('assets/images/Stadium-50.png') ?> " /></input><input type="radio" name="icon" value="7" class="radioIcon"><img src=" <?php echo base_url('assets/images/Trekking-50.png') ?> " /></input><input type="radio" name="icon" value="8" class="radioIcon"><img src=" <?php echo base_url('assets/images/Climbing Filled-50.png') ?> " /></input><input type="radio" name="icon" value="9" class="radioIcon"><img src=" <?php echo base_url('assets/images/Wakeup Hill on Stairs-50.png') ?> " /></input></div>';
         var submit = '<p><input type="submit" value="Submit"><input type="button" value="Cancel" onClick="redirectURL(' + <?php echo $mapview?> + ',' + <?php echo $zoom?> + ',' + <?php echo $latitude?> + ',' + <?php echo $longitude?> + ',' + <?php if (isset($pointid)) { echo $pointid; } ?> + ');"></p>';
         var divend = '</div>';
         
-        return '<form action="' + "<?= base_url('index.php/explore/index/'.$zoom.'/'.$latitude.'/'.$longitude) ?>" + '">' + heading + divstart + instructions + latlong + icon + title + description + submit + divend + '</form>';
+        return '<form action="' + "<?= base_url('index.php/explore/index/'.$mapview.'/'.$zoom.'/'.$latitude.'/'.$longitude) ?>" + '">' + heading + divstart + instructions + latlong + icon + title + description + submit + divend + '</form>';
     }
 
     function getLatLong() {

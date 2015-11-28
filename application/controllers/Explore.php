@@ -26,7 +26,7 @@ class Explore extends CI_Controller {
     }
     
     private function rate_location($pointid, $rating) { 
-        if ($this->pointsratings_model->get_rating($pointid)->num_rows() > 0) {
+        if ($this->pointsratings_model->get_rating($pointid)->num_rows() > 0 && $rating > 0) {
             if ($this->pointsratings_model->update_rating($pointid, $rating)) {
                 return 'Your rating has been updated.';				
             }
@@ -34,7 +34,7 @@ class Explore extends CI_Controller {
                 return 'There was a problem updating your rating.';
             }
         }
-        else {
+        else if ($rating > 0) {
             if ($this->pointsratings_model->create_rating($pointid, $rating)) {				
                 return 'Your rating has been recorded.';					
             } 
@@ -44,31 +44,18 @@ class Explore extends CI_Controller {
         }
     }
     
-    private function update_keywords($data, $pointid, $keywords) {
+    private function update_keywords($pointid, $keywords) {
         if (sizeof($keywords) > 0) {
-            if ($this->pointskeywords_model->update_pointkeyword($pointid)) {				
-                foreach ($keywords as $keywordid):
-                    if ($this->pointskeywords_model->get_pointkeyword($pointid, $keywordid)->num_rows() > 0) {
-                        if ($this->pointskeywords_model->update_pointkeyword($pointid, $keywordid, 0)) {				
-                            return 'Your keywords have been recorded.';					
-                        } 
-                        else {
-                            return 'There was a problem saving your keywords.';
-                        }
-                    }
-                    else {
-                        if ($this->pointskeywords_model->create_pointkeyword($pointid, $keywordid)) {				
-                            return 'Your keywords have been recorded.';					
-                        } 
-                        else {
-                            return 'There was a problem saving your keywords.';
-                        }
-                    }
-                endforeach;
-            }
+            $this->pointskeywords_model->delete_pointkeywords($pointid);
+            foreach ($keywords as $keywordid):
+                if ($this->pointskeywords_model->get_pointkeyword($pointid, $keywordid)->num_rows() == 0) {
+                    $this->pointskeywords_model->create_pointkeyword($pointid, $keywordid);
+                }
+            endforeach;
+            return 'Your keywords have been recorded.';					
         }
         else {
-            if ($this->pointskeywords_model->update_pointkeyword($pointid)) {				
+            if ($this->pointskeywords_model->delete_pointkeywords($pointid)) {				
                 return 'Your keywords have been deleted.';					
             } 
             else {
@@ -119,13 +106,11 @@ class Explore extends CI_Controller {
         if ($this->input->post('mysubmissions', TRUE) === 'on') { $filters->userid = $_SESSION['user_id']; }
         
         if ($this->input->get('title', TRUE) <> '' && $this->input->get('description', TRUE) <> '') {
-            $data->message = $this->add_pending_point($this->input->get('title', TRUE), $this->input->get('description', TRUE), $this->input->get('latitude', TRUE), $this->input->get('longitude', TRUE), $this->input->get('icon', TRUE));
+            $headerdata->message = $this->add_pending_point($this->input->get('title', TRUE), $this->input->get('description', TRUE), $this->input->get('latitude', TRUE), $this->input->get('longitude', TRUE), $this->input->get('icon', TRUE));
         }
-        else if ($pointid > 0) {
+        else if ($this->input->post('ratingkeywordssubmit', TRUE) == 'Submit Rating and Keywords') {
             $headerdata->message = $this->rate_location($pointid, $this->input->post('locationrating', TRUE));
-        }
-        else if ($this->input->post('submit') == 'Update Keywords') {
-            $data->message = $this->update_keywords($pointid, $this->input->get('locationkeywords', TRUE));
+            $headerdata->message = $this->update_keywords($pointid, $this->input->post('locationkeywords', TRUE));
         }
 
         $data->mapview = $mapview;

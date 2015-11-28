@@ -42,9 +42,9 @@ class Point_model extends CI_Model {
 
             $where->where2 .= ' and (';
             foreach ($filters->keywords as $keywordid) {
-                $where->where2 .= 'p.keywords like \'%'.$this->keyword_model->get_keyword($keywordid)[0]->keyword.'%\' OR';
+                $where->where2 .= 'p.keywords like \'%'.$this->keyword_model->get_keyword($keywordid)[0]->keyword.'%\' OR ';
             }
-            $where->where2 = substr($where->where2, 0, strlen($where->where2)-2).')';
+            $where->where2 = substr($where->where2, 0, strlen($where->where2)-3).')';
         }
         
         return $where;
