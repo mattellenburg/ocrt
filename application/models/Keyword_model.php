@@ -35,6 +35,10 @@ class Keyword_model extends CI_Model {
         return $this->db->get_where('keywords', array('id' => $id))->result();      
     }
 
+    public function get_keyword_by_keyword($keyword) {
+        return $this->db->get_where('keywords', array('keyword' => urldecode($keyword)))->result();      
+    }
+
     public function get_keywords() {
         $this->db->order_by('keyword');
         return $this->db->get('keywords')->result();      

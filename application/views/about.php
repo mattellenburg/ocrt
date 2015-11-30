@@ -70,12 +70,17 @@
         <h4>0.9 Beta release</h4>
         <ul>
             <li>Updated keywords</li>
-            <li>UI updates</li>
+            <li>User interface updates</li>
         </ul>
         <h4>0.10 Beta release</h4>
         <ul>
             <li>User interface enhancements</li>
             <li>Training page enhancements</li>
+        </ul>
+        <h4>0.11 Beta release</h4>
+        <ul>
+            <li>User interface enhancements</li>
+            <li>Added ability to edit location information</li>
         </ul>
     </div>
 </div>

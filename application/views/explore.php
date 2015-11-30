@@ -42,7 +42,7 @@
                 <?php if (isset($_SESSION['user_id'])) : ?>
                     <p><label for="mysubmissions">Submitted by Me:</label><input type="checkbox" id="mysubmissions" name="mysubmissions"></p>
                 <?php endif; ?>
-                <p><input type="submit" value="Search" /></p>
+                    <p><input type="submit" value="Search" /><input type="button" value="Clear" onclick="redirectURL(<?php echo $mapview ?>, <?php echo $zoom ?>, <?php echo $latitude ?>, <?php echo $longitude ?>, <?php if (isset($pointid)) { echo $pointid; } ?>);" /></p>
                 </form>
             </div>
         </div>
@@ -72,7 +72,7 @@
             var longitude = "<?php echo $longitude?>";
             var pointid = "<?php echo $pointid?>";
 
-            if (parseInt(zoom) !== map.getZoom()) { redirectURL(mapview, map.getZoom(), latitude, longitude, pointid, ''); }
+            if (parseInt(zoom) !== map.getZoom()) { redirectURL(mapview, map.getZoom(), latitude, longitude, pointid); }
         });
         
         google.maps.event.addListener(map, 'idle', function() {
@@ -80,7 +80,7 @@
                 var mapview = "<?php echo $mapview?>";
                 var zoom = "<?php echo $zoom?>";
                 var pointid = "<?php echo $pointid?>";
-                redirectURL (mapview, zoom, map.getCenter().lat(), map.getCenter().lng(), pointid, '');
+                redirectURL (mapview, zoom, map.getCenter().lat(), map.getCenter().lng(), pointid);
             }
             if(!this.get('dragging')){
                 this.set('oldCenter',this.getCenter());
@@ -94,14 +94,11 @@
         }    
     }
 
-    function redirectURL (mapview, zoom, latitude, longitude, pointid, keyword) {
-        //alert (mapview + ',' + zoom + ',' + latitude + ',' + longitude + ',' + pointid + ',' + keyword);
-        var keywordquery = '';
-        if (keyword > '') {
-            keywordquery = '?keyword=' + keyword;
-        }
+    function redirectURL (mapview, zoom, latitude, longitude, pointid) {
+        var querykeyword = " <?php echo $querykeyword ?> ".trim();
+        //alert (mapview + ',' + zoom + ',' + latitude + ',' + longitude + ',' + pointid + ',' + querykeyword);
             
-        window.location = "<?= base_url('index.php/explore/index/') ?>" + '/' + mapview + '/' + zoom + '/' + latitude + '/' + longitude + '/' + pointid + keywordquery;
+        window.location = "<?= base_url('index.php/explore/index/') ?>" + '/' + mapview + '/' + zoom + '/' + latitude + '/' + longitude + '/' + pointid + '/' + querykeyword;
     }
 
     function getMapCenter(map, sessionid) {
@@ -113,7 +110,7 @@
         if (map.getCenter() === undefined && latitude === '' && longitude === '') {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
-                    redirectURL(mapview, 13, position.coords.latitude, position.coords.longitude, '', '');
+                    redirectURL(mapview, 13, position.coords.latitude, position.coords.longitude, 0);
                 }, 
                 function() {
                     handleLocationError(true, new infoWindow, map.getCenter());
@@ -124,7 +121,7 @@
             }
         }
         else if (zoom === '') {
-            redirectURL(mapview, 13, latitude, longitude, '', '');
+            redirectURL(mapview, 13, latitude, longitude, 0);
         }
         else {
             map.setZoom(parseInt(zoom));
@@ -156,7 +153,7 @@
                 var keywords = " <?php echo $point['keywords'] ?> ";
                 var distance = " <?php echo $point['distance'] ?> ";
 
-                var point = new Array(title, latitude, longitude, description, icon, type, pointid, userrating, avgrating, keywords, distance);
+                var point = new Array(title, latitude, longitude, description, icon, type, pointid, userrating, avgrating, keywords, distance, 0);
 
                 locations[i] = point;
 
@@ -166,62 +163,29 @@
 
         <?php if (isset($points_pending)) { ?>           
             <?php foreach ($points_pending as $point): ?>
-            var title = " <?php echo $point['title'] ?> ";
-            var description = " <?php echo $point['description'] ?> ";
-            var latitude = " <?php echo $point['latitude'] ?> ";
-            var longitude = " <?php echo $point['longitude'] ?> ";
-            var icon = " <?php echo $point['icon'] ?> ";
-            var type = 'pending';
+                var title = " <?php echo $point->title ?> ";
+                var description = " <?php echo $point->description ?> ";
+                var latitude = " <?php echo $point->latitude ?> ";
+                var longitude = " <?php echo $point->longitude ?> ";
+                var icon = " <?php echo $point->icon ?> ";
+                var type = 'pending';
+                var pointid = " <?php echo $point->pointid ?> ";
+                var id = " <?php echo $point->id ?> ";
 
-            var point = new Array(title, latitude, longitude, description, icon, type);
+                var point = new Array(title, latitude, longitude, description, icon, type, pointid, 0, 0, '', 0, id);
 
-            locations[i] = point;
+                locations[i] = point;
 
-            i++;
-        <?php endforeach; ?>
+                i++;
+            <?php endforeach; ?>
         <?php } ?>
 
         var marker, i;
-        var image;
 
         for (i = 0; i < locations.length; i++) { 
-            if (locations[i][5] == 'pending') {
-                image = " <?php echo base_url('assets/images/star.png') ?> ";
-            }
-            else if (locations[i][4] == 1) {
-                image = " <?php echo base_url('assets/images/Playground-50.png') ?> ";
-            }
-            else if (locations[i][4] == 2) {
-                image = " <?php echo base_url('assets/images/Pullups Filled-50.png') ?> ";
-            }
-            else if (locations[i][4] == 3) {
-                image = " <?php echo base_url('assets/images/City Bench-50.png') ?> ";
-            }
-            else if (locations[i][4] == 4) {
-                image = " <?php echo base_url('assets/images/Weight-50.png') ?> ";
-            }
-            else if (locations[i][4] == 5) {
-                image = " <?php echo base_url('assets/images/Pushups-50.png') ?> ";
-            }
-            else if (locations[i][4] == 6) {
-                image = " <?php echo base_url('assets/images/Stadium-50.png') ?> ";
-            }
-            else if (locations[i][4] == 7) {
-                image = " <?php echo base_url('assets/images/Trekking-50.png') ?> ";
-            }
-            else if (locations[i][4] == 8) {
-                image = " <?php echo base_url('assets/images/Climbing Filled-50.png') ?> ";
-            }
-            else if (locations[i][4] == 9) {
-                image = " <?php echo base_url('assets/images/Wakeup Hill on Stairs-50.png') ?> ";
-            }
-            else {
-                image = " <?php echo base_url('assets/images/Marker-50.png') ?> ";
-            }
-
             marker = new google.maps.Marker({
                 position: new google.maps.LatLng(locations[i][1], locations[i][2]),
-                icon: image,
+                icon: getImage(locations[i][5], locations[i][4]),
                 map: map
             });
 
@@ -230,7 +194,6 @@
                     var pointinformation = document.getElementById("pointInformation");
                     
                     var h2 = pointinformation.getElementsByTagName("h2");
-                    h2[0].innerHTML = locations[i][0] + ' (' + parseFloat(locations[i][8]).toFixed(1) + ' stars / ' + parseFloat(locations[i][10]).toFixed(1) + ' miles)';
                     
                     var content = pointinformation.getElementsByTagName("div");
                     
@@ -239,47 +202,62 @@
 
                     var div = content[0].getElementsByTagName("div");
 
-                    if (locations[i][5] === 'confirmed') {
-                        if (sessionid>0) {
-                            var form = '<form method="post" action="' + "<?= base_url('index.php/explore/index/'.$mapview.'/'.$zoom.'/'.$latitude.'/'.$longitude) ?>" + '/' + locations[i][6].trim() + '">';
+                    var pointid = 0;
+                    if (locations[i][6] > 0) { pointid = parseInt(locations[i][6]); }
+                    var pendingpointid = 0;
+                    if (locations[i][11] > 0) { pendingpointid = locations[i][11]; }
+                    var icon = 0;
+                    if (locations[i][4] > 0) { icon = locations[i][4]; }
+                    var title = locations[i][0].replace("'","''").trim();
+                    var description = locations[i][3].replace("'","''").trim();
 
-                            var selected1 = '';
-                            var selected2 = '';
-                            var selected3 = '';
-                            var selected4 = '';
-                            var selected5 = '';
-                            
-                            if (locations[i][7] == 1) { selected1 = 'selected'; }
-                            if (locations[i][7] == 2) { selected2 = 'selected'; }
-                            if (locations[i][7] == 3) { selected3 = 'selected'; }
-                            if (locations[i][7] == 4) { selected4 = 'selected'; }
-                            if (locations[i][7] == 5) { selected5 = 'selected'; }
-                            
-                            var ratingsystem = '<h4>Rate Location:</h4>';
-                            ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="1" onclick="stars(this.name);" ' + selected1 + ' /><img id="locationratingstar1" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
-                            ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="2" onclick="stars(this.name);" ' + selected2 + ' /><img id="locationratingstar2" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
-                            ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="3" onclick="stars(this.name);" ' + selected3 + ' /><img id="locationratingstar3" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
-                            ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="4" onclick="stars(this.name);" ' + selected4 + ' /><img id="locationratingstar4" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
-                            ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="5" onclick="stars(this.name);" ' + selected5 + ' /><img id="locationratingstar5" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
+                    if (locations[i][5] === 'confirmed' && sessionid > 0) {
+                        h2[0].innerHTML = locations[i][0] + ' (' + parseFloat(locations[i][8]).toFixed(1) + ' stars / ' + parseFloat(locations[i][10]).toFixed(1) + ' miles)';
+                        var form = '<form method="post" action="' + "<?= base_url('index.php/explore/index/'.$mapview.'/'.$zoom.'/'.$latitude.'/'.$longitude) ?>" + '/' + pointid.toString() + '">';
 
-                            var keywordlist = '<h4>Keywords:</h4><div class="keywords">';
-                            <?php foreach ($keywords as $keyword): ?>
-                                var checked='';
-                                if (locations[i][9].indexOf("<?php echo $keyword->keyword ?>") >= 0) {
-                                    checked = 'checked';
-                                }
-                                keywordlist += '<input id="locationkeywords[]" name="locationkeywords[]" type="checkbox" value=" <?php echo $keyword->id ?> "' + checked + ' />' + " <?php echo $keyword->keyword ?> " + '<br>';
-                            <?php endforeach; ?>
-                            keywordlist += '</div>';
+                        var selected1 = '';
+                        var selected2 = '';
+                        var selected3 = '';
+                        var selected4 = '';
+                        var selected5 = '';
 
-                            var submit = '<input id="ratingkeywordssubmit" name="ratingkeywordssubmit" type="submit" value="Submit Rating and Keywords"><input type="button" value="Edit Location Information" onClick="editLocation(<?php echo $latitude ?>,<?php echo $longitude ?>,\"' + locations[i][7] + '\",\"' + locations[i][0] + '\",\"' + locations[i][3] + '\");"></form>';
+                        if (locations[i][7] == 1) { selected1 = 'selected'; }
+                        if (locations[i][7] == 2) { selected2 = 'selected'; }
+                        if (locations[i][7] == 3) { selected3 = 'selected'; }
+                        if (locations[i][7] == 4) { selected4 = 'selected'; }
+                        if (locations[i][7] == 5) { selected5 = 'selected'; }
 
-                            div[0].innerHTML = form + ratingsystem + keywordlist + submit;
+                        var ratingsystem = '<h4>Rate Location:</h4>';
+                        ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="1" onclick="stars(this.name);" ' + selected1 + ' /><img id="locationratingstar1" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
+                        ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="2" onclick="stars(this.name);" ' + selected2 + ' /><img id="locationratingstar2" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
+                        ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="3" onclick="stars(this.name);" ' + selected3 + ' /><img id="locationratingstar3" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
+                        ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="4" onclick="stars(this.name);" ' + selected4 + ' /><img id="locationratingstar4" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
+                        ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="5" onclick="stars(this.name);" ' + selected5 + ' /><img id="locationratingstar5" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
 
-                            if (locations[i][7] > 0) {
-                                stars('locationrating', parseInt(locations[i][7]));
+                        var keywordlist = '<h4>Keywords:</h4><div class="keywords">';
+                        <?php foreach ($keywords as $keyword): ?>
+                            var checked='';
+                            if (locations[i][9].indexOf("<?php echo $keyword->keyword ?>") >= 0) {
+                                checked = 'checked';
                             }
+                            keywordlist += '<input id="locationkeywords[]" name="locationkeywords[]" type="checkbox" value=" <?php echo $keyword->id ?> "' + checked + ' />' + " <?php echo $keyword->keyword ?> " + '<br>';
+                        <?php endforeach; ?>
+                        keywordlist += '</div>';
+
+                        var submit = '<input id="ratingkeywordssubmit" name="ratingkeywordssubmit" type="submit" value="Submit Rating and Keywords"><input type="button" value="Edit Location Information" onClick="editLocation(' + locations[i][1] + ',' + locations[i][2] + ',' + icon + ',' + String.fromCharCode(39) + title + String.fromCharCode(39) + ',' + String.fromCharCode(39) + description + String.fromCharCode(39) + ',' + pointid + ');"></form>';
+
+                        div[0].innerHTML = form + ratingsystem + keywordlist + submit;
+
+                        if (locations[i][7] > 0) {
+                            stars('locationrating', parseInt(locations[i][7]));
                         }
+                    }
+                    else if (sessionid > 0) {
+                        h2[0].innerHTML = title;
+                        var currenticon = '<p>Icon: <img src="' + getImage('', locations[i][4]) + '" /></p>';
+                        var form = '<form method="post" action="' + "<?= base_url('index.php/explore/index/'.$mapview.'/'.$zoom.'/'.$latitude.'/'.$longitude) ?>" + '/' + pointid + '">';
+                        var submit = '<input type="button" value="Edit Location Information" onClick="editLocation(' + locations[i][1] + ',' + locations[i][2] + ',' + icon + ',' + String.fromCharCode(39) + title + String.fromCharCode(39) + ',' + String.fromCharCode(39) + description + String.fromCharCode(39) + ',' + pointid + ',' + pendingpointid + ');"><input type="button" value="Delete Location" onClick="deleteLocation(' + pendingpointid + ');"></form>';
+                        div[0].innerHTML = currenticon + form + submit;
                     }
                 };
             })(marker, i));
@@ -291,6 +269,45 @@
             })(marker, i));
         }		
     }
+    
+    function getImage(pending, icon) {
+        if (pending == 'pending') {
+            image = " <?php echo base_url('assets/images/star.png') ?> ";
+        }
+        else if (icon == 1) {
+            image = " <?php echo base_url('assets/images/Playground-50.png') ?> ";
+        }
+        else if (icon == 2) {
+            image = " <?php echo base_url('assets/images/Pullups Filled-50.png') ?> ";
+        }
+        else if (icon == 3) {
+            image = " <?php echo base_url('assets/images/City Bench-50.png') ?> ";
+        }
+        else if (icon == 4) {
+            image = " <?php echo base_url('assets/images/Weight-50.png') ?> ";
+        }
+        else if (icon == 5) {
+            image = " <?php echo base_url('assets/images/Pushups-50.png') ?> ";
+        }
+        else if (icon == 6) {
+            image = " <?php echo base_url('assets/images/Stadium-50.png') ?> ";
+        }
+        else if (icon == 7) {
+            image = " <?php echo base_url('assets/images/Trekking-50.png') ?> ";
+        }
+        else if (icon == 8) {
+            image = " <?php echo base_url('assets/images/Climbing Filled-50.png') ?> ";
+        }
+        else if (icon == 9) {
+            image = " <?php echo base_url('assets/images/Wakeup Hill on Stairs-50.png') ?> ";
+        }
+        else {
+            image = " <?php echo base_url('assets/images/Marker-50.png') ?> ";
+        }
+        
+        return image;
+    }
+    
     
     function placeMarker(pos, map) {
         var marker=new google.maps.Marker();
@@ -310,30 +327,66 @@
     function addMapClickEvent(map) {
         google.maps.event.addListener(map, 'click', function(event) {
             placeMarker(event.latLng, map);
-            document.getElementById('pointInformation').innerHTML = buildForm(event.latLng.lat(), event.latLng.lng());
+            document.getElementById('pointInformation').innerHTML = buildForm(event.latLng.lat(), event.latLng.lng(), 0, '', '', 0, 0);
         });	
     }
     
-    function editLocation(latitude, longitude, icon, title, description) {
-        alert(title);
-        document.getElementById('pointInformation').innerHTML = buildForm(latitude, longitude, icon, title, description);
+    function editLocation(latitude, longitude, icon, title, description, pointid, pendingpointid) {
+        document.getElementById('pointInformation').innerHTML = buildForm(latitude, longitude, icon, title, description, pointid, pendingpointid);
     }
 
-    function buildForm(latitude, longitude, icon, title, description) {
+    function deleteLocation(pendingpointid) {
         var filters = document.getElementById("filters");
         filters.style.display = "none";
 
-        var heading = '<h2>New Location</h2>';
+        var heading = '<h2>Delete Location</h2>';
         var divstart = '<div class="content">';
+        var pointid = '<p><input type="hidden" id="pendingpointid" name="pendingpointid" value=' + pendingpointid + '></p>';
+        var confirmation = '<p>Are you sure you wish to delete this location?</p>';
+        var submit = '<p><input type="submit" id="deletelocation" name="deletelocation" value="Delete Location" /><input type="submit" value="Cancel" /></p>';
+        var divend = '</div>';
+        
+        document.getElementById('pointInformation').innerHTML = '<form method="post" action="' + "<?= base_url('index.php/explore/index/'.$mapview.'/'.$zoom.'/'.$latitude.'/'.$longitude) ?>" + '">' + heading + divstart + pointid + confirmation + submit + divend + '</form>';
+    }
+
+    function getChecked(variable) {
+        var checked = ['','','','','','','','',''];
+
+        if (variable === 1) { checked[0] = 'checked'; }
+        if (variable === 2) { checked[1] = 'checked'; }
+        if (variable === 3) { checked[2] = 'checked'; }
+        if (variable === 4) { checked[3] = 'checked'; }
+        if (variable === 5) { checked[4] = 'checked'; }
+        if (variable === 6) { checked[5] = 'checked'; }
+        if (variable === 7) { checked[6] = 'checked'; }
+        if (variable === 8) { checked[7] = 'checked'; }
+        if (variable === 9) { checked[8] = 'checked'; }
+
+        return checked;
+    }
+    
+    function buildForm(latitude, longitude, icon, title, description, pointid, pendingpointid) {
+        //alert(latitude + ', ' + longitude + ', ' + icon + ', ' + title + ', ' + description + ', ' + pointid + ', ' + pendingpointid);
+        title = title.replace("''","'").trim();
+        description = description.replace("''","'").trim();
+
+        var checked = getChecked(icon);
+        
+        var filters = document.getElementById("filters");
+        filters.style.display = "none";
+
+        var heading = '<h2>Submit Location Information</h2>';
+        var divstart = '<div class="content">';
+        var pointid = '<p><input type="hidden" id="pointid" name="pointid" value=' + pointid + '><input type="hidden" id="pendingpointid" name="pendingpointid" value=' + pendingpointid + '></p>';
         var instructions = '<p>Enter a title and description and click the button to submit your location for review.</p>';
         var latlong = '<p><input type="hidden" name="latitude" value=' + latitude + '><input type="hidden" name="longitude" value=' + longitude + '></p>';
         var title = '<p><label for="title">Title:</label><input type="text" name="title" value="' + title + '"></p>';
-        var description = '<p>Description:</p><textarea name="description" style="margin: 0px; width: 350px; height: 120px;"></textarea></p>';
-        var icon = '<div id="divIcon"><input type="radio" name="icon" value="1" class="radioIcon"><img src=" <?php echo base_url('assets/images/Playground-50.png') ?> " /></input><input type="radio" name="icon" value="2" class="radioIcon"><img src=" <?php echo base_url('assets/images/Pullups Filled-50.png') ?> " /></input><input type="radio" name="icon" value="3" class="radioIcon"><img src=" <?php echo base_url('assets/images/City Bench-50.png') ?> " /></input><input type="radio" name="icon" value="4" class="radioIcon"><img src=" <?php echo base_url('assets/images/Weight-50.png') ?> " /></input><input type="radio" name="icon" value="5" class="radioIcon"><img src=" <?php echo base_url('assets/images/Pushups-50.png') ?> " /></input><br><input type="radio" name="icon" value="6" class="radioIcon"><img src=" <?php echo base_url('assets/images/Stadium-50.png') ?> " /></input><input type="radio" name="icon" value="7" class="radioIcon"><img src=" <?php echo base_url('assets/images/Trekking-50.png') ?> " /></input><input type="radio" name="icon" value="8" class="radioIcon"><img src=" <?php echo base_url('assets/images/Climbing Filled-50.png') ?> " /></input><input type="radio" name="icon" value="9" class="radioIcon"><img src=" <?php echo base_url('assets/images/Wakeup Hill on Stairs-50.png') ?> " /></input></div>';
-        var submit = '<p><input type="submit" value="Submit"><input type="button" value="Cancel" onClick="redirectURL(' + <?php echo $mapview?> + ',' + <?php echo $zoom?> + ',' + <?php echo $latitude?> + ',' + <?php echo $longitude?> + ',' + <?php if (isset($pointid)) { echo $pointid; } ?> + ');"></p>';
+        var description = '<p>Description:</p><textarea name="description" style="margin: 0px; width: 350px; height: 120px;">' + description + '</textarea></p>';
+        var icon = '<div id="divIcon"><input type="radio" name="icon" value="1" class="radioIcon" ' + checked[0] + ' ><img src=" <?php echo base_url('assets/images/Playground-50.png') ?> " /></input><input type="radio" name="icon" value="2" class="radioIcon" ' + checked[1] + ' ><img src=" <?php echo base_url('assets/images/Pullups Filled-50.png') ?> " /></input><input type="radio" name="icon" value="3" class="radioIcon" ' + checked[2] + ' ><img src=" <?php echo base_url('assets/images/City Bench-50.png') ?> " /></input><input type="radio" name="icon" value="4" class="radioIcon" ' + checked[3] + ' ><img src=" <?php echo base_url('assets/images/Weight-50.png') ?> " /></input><input type="radio" name="icon" value="5" class="radioIcon" ' + checked[4] + ' ><img src=" <?php echo base_url('assets/images/Pushups-50.png') ?> " /></input><br><input type="radio" name="icon" value="6" class="radioIcon" ' + checked[5] + ' ><img src=" <?php echo base_url('assets/images/Stadium-50.png') ?> " /></input><input type="radio" name="icon" value="7" class="radioIcon" ' + checked[6] + ' ><img src=" <?php echo base_url('assets/images/Trekking-50.png') ?> " /></input><input type="radio" name="icon" value="8" class="radioIcon" ' + checked[7] + ' ><img src=" <?php echo base_url('assets/images/Climbing Filled-50.png') ?> " /></input><input type="radio" name="icon" value="9" class="radioIcon" ' + checked[8] + ' ><img src=" <?php echo base_url('assets/images/Wakeup Hill on Stairs-50.png') ?> " /></input></div>';
+        var submit = '<p><input type="submit" id="submitlocation" name="submitlocation" value="Submit Location Information" /><input type="submit" id="requestdeletion" name="requestdeletion" value="Request Location Deletion" /><input type="submit" value="Cancel" /></p>';
         var divend = '</div>';
         
-        return '<form action="' + "<?= base_url('index.php/explore/index/'.$mapview.'/'.$zoom.'/'.$latitude.'/'.$longitude) ?>" + '">' + heading + divstart + instructions + latlong + icon + title + description + submit + divend + '</form>';
+        return '<form method="post" action="' + "<?= base_url('index.php/explore/index/'.$mapview.'/'.$zoom.'/'.$latitude.'/'.$longitude) ?>" + '">' + heading + divstart + pointid + instructions + latlong + icon + title + description + submit + divend + '</form>';
     }
 
     function getLatLong() {

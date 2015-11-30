@@ -1,30 +1,31 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 <h2>Approve Points</h2>
 <div class="content">
-    <table>
-        <thead>
-            <tr>
-                <th>UserID</th>
-                <th>Create Date</th>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Map</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($points_pending as $point): ?>
-                <tr>
-                    <td><?php echo $point['createdbyid'] ?></td>
-                    <td><?php echo $point['createdate'] ?></td>
-                    <td><?php echo $point['title'] ?></td>
-                    <td><?php echo $point['description'] ?></td>
-                    <td>&nbsp;</td>
-                    <td><a href="<?= base_url('index.php/admin/locations').'/approve/'.$point['id'] ?>">Approve</a></td>
-                    <td><a href="<?= base_url('index.php/admin/locations').'/deny/'.$point['id'] ?>">Deny</a></td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+    <?php
+    $tmpl = array (
+        'table_open'          => '<table border="1" cellpadding="2" cellspacing="0">',
+
+        'heading_row_start'   => '<tr>',
+        'heading_row_end'     => '</tr>',
+        'heading_cell_start'  => '<th>',
+        'heading_cell_end'    => '</th>',
+
+        'row_start'           => '<tr>',
+        'row_end'             => '</tr>',
+        'cell_start'          => '<td width="100px">',
+        'cell_end'            => '</td>',
+
+        'row_alt_start'       => '<tr>',
+        'row_alt_end'         => '</tr>',
+        'cell_alt_start'      => '<td>',
+        'cell_alt_end'        => '</td>',
+
+        'table_close'         => '</table>'
+    );
+
+    $this->table->set_template($tmpl);
+
+    echo $this->table->generate();          
+    ?>  
 </div>
 

@@ -38,27 +38,58 @@ class Admin extends CI_Controller {
         if ($_SESSION['is_admin']) {
             if ($action == 'approve' && $id > 0) {
                 $pending_point = $this->point_pending_model->get_point($id);
+                $point = $this->point_model->get_point($pending_point->pointid);
 
-                if ($this->point_model->create_point($pending_point->title, $pending_point->description, $pending_point->latitude, $pending_point->longitude, $pending_point->icon)) {					
-                    $this->point_pending_model->delete_point($id);				
-                    $data->message = 'Point has been approved.';
-                } 
-                else {				
-                    $data->message = 'There was a problem approving the point.';
+                if (sizeof($point) > 0) {
+                    if ($pending_point->delete == 1) {
+                        if ($this->point_model->delete_point($pending_point->pointid)) {					
+                            $this->point_pending_model->delete_point($id);				
+                            $data->message = 'Location has been deleted.';
+                        } 
+                        else {				
+                            $data->message = 'There was a problem deleting the location.';
+                        }                        
+                    }
+                    else {
+                        if ($this->point_model->update_point($pending_point->pointid, $pending_point->title, $pending_point->description, $pending_point->latitude, $pending_point->longitude, $pending_point->icon)) {					
+                            $this->point_pending_model->delete_point($id);				
+                            $data->message = 'Location has been updated.';
+                        } 
+                        else {				
+                            $data->message = 'There was a problem updating the location.';
+                        }
+                    }
+                }
+                else {
+                    if ($this->point_model->create_point($pending_point->title, $pending_point->description, $pending_point->latitude, $pending_point->longitude, $pending_point->icon)) {					
+                        $this->point_pending_model->delete_point($id);				
+                        $data->message = 'Location has been approved.';
+                    } 
+                    else {				
+                        $data->message = 'There was a problem approving the location.';
+                    }
                 }
             }
             else if ($action == 'deny' && $id > 0) {
                 $pending_point = $this->point_pending_model->get_point($id);
 
                 if ($this->point_pending_model->delete_point($id)) {					                    				
-                    $data->message = 'Point has been denied.';
+                    $data->message = 'Location has been denied.';
                 } 
                 else {				
-                    $data->message = 'There was a problem denying the point.';
+                    $data->message = 'There was a problem denying the location.';
                 }
             }
 
             $data->points_pending = $this->point_pending_model->get_points();
+
+            $this->table->set_heading('Pending Location ID', 'Original Location ID', 'User ID', 'Create Date', 'Title', 'Description', 'Icon', 'Map', 'Delete', 'Action');
+
+            foreach($this->point_pending_model->get_points() as $point) {
+                $action = '<a href="'.base_url('index.php/admin/locations/approve/'.$point->id).'">Approve</a>&nbsp;<a href="'.base_url('index.php/admin/locations/deny/'.$point->id).'">Deny</a>';
+                
+                $this->table->add_row($point->id, $point->pointid, $point->createdbyid, $point->createdate, $point->title, $point->description, $point->icon, '', $point->delete, $action);
+            }
 
             $this->load->view('header', $data);
             $this->load->view('admin/locations');
@@ -196,7 +227,7 @@ class Admin extends CI_Controller {
         }
     }
 
-        public function obstaclesraces($id = NULL) {
+    public function obstaclesraces($id = NULL) {
         $data = new stdClass();
         $data->message = '';
        
@@ -241,7 +272,7 @@ class Admin extends CI_Controller {
         }
     }
 
-    public function builddropdownarray($source) {
+    private function builddropdownarray($source) {
         $array = array();
         foreach ($source as $item)
         {
