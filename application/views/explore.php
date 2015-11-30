@@ -54,8 +54,15 @@
     function initialize() {
         var sessionid = " <?php if (isset($_SESSION['user_id'])) { echo $_SESSION['user_id']; } else { echo 0; } ?> ";
 
-        var map=new google.maps.Map(document.getElementById("googleMap"), {mapTypeId:google.maps.MapTypeId.ROADMAP});
-
+        var mapview = <?php if (isset($mapview)) { echo $mapview; } else { echo 1; } ?>;
+        
+        if (mapview === 1) {
+            var map=new google.maps.Map(document.getElementById("googleMap"), {mapTypeId:google.maps.MapTypeId.ROADMAP});
+        }
+        else {
+            var map=new google.maps.Map(document.getElementById("googleMap"), {mapTypeId:google.maps.MapTypeId.HYBRID});
+        }
+        
         google.maps.event.addListener(map,'dragstart',function(){
             this.set('dragging',true);          
         });
@@ -65,6 +72,20 @@
             google.maps.event.trigger(this,'idle',{});
         });
 
+        google.maps.event.addListener(map, 'maptypeid_changed', function() { 
+            var zoom = "<?php echo $zoom?>";
+            var latitude = "<?php echo $latitude?>";
+            var longitude = "<?php echo $longitude?>";
+            var pointid = "<?php echo $pointid?>";
+
+            if (map.getMapTypeId() === 'roadmap') {
+                redirectURL(1, zoom, latitude, longitude, pointid);
+            }
+            else {
+                redirectURL(2, zoom, latitude, longitude, pointid);
+            }
+        });
+        
         google.maps.event.addListener(map,'zoom_changed',function(){
             var mapview = "<?php echo $mapview?>";
             var zoom = "<?php echo $zoom?>";
