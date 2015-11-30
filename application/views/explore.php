@@ -42,7 +42,7 @@
                 <?php if (isset($_SESSION['user_id'])) : ?>
                     <p><label for="mysubmissions">Submitted by Me:</label><input type="checkbox" id="mysubmissions" name="mysubmissions"></p>
                 <?php endif; ?>
-                    <p><input type="submit" value="Search" /><input type="button" value="Clear" onclick="redirectURL(<?php echo $mapview ?>, <?php echo $zoom ?>, <?php echo $latitude ?>, <?php echo $longitude ?>, <?php if (isset($pointid)) { echo $pointid; } ?>);" /></p>
+                    <p><input type="submit" value="Search" /><input type="button" value="Clear" onclick="redirectURL(<?php echo $mapview ?>, <?php echo $zoom ?>, <?php echo $latitude ?>, <?php echo $longitude ?>, <?php if (isset($pointid)) { echo $pointid; } ?>, 1);" /></p>
                 </form>
             </div>
         </div>
@@ -77,12 +77,13 @@
             var latitude = "<?php echo $latitude?>";
             var longitude = "<?php echo $longitude?>";
             var pointid = "<?php echo $pointid?>";
+            var querykeyword = "<?php echo $querykeyword?>";
 
             if (map.getMapTypeId() === 'roadmap') {
-                redirectURL(1, zoom, latitude, longitude, pointid);
+                redirectURL(1, zoom, latitude, longitude, pointid, querykeyword);
             }
             else {
-                redirectURL(2, zoom, latitude, longitude, pointid);
+                redirectURL(2, zoom, latitude, longitude, pointid, querykeyword);
             }
         });
         
@@ -115,23 +116,41 @@
         }    
     }
 
-    function redirectURL (mapview, zoom, latitude, longitude, pointid) {
-        var querykeyword = " <?php echo $querykeyword ?> ".trim();
+    function redirectURL (mapview, zoom, latitude, longitude, pointid, clearkeyword) {
+        if (pointid === '') { pointid = 0; }
+        var querykeyword = '';
+        if (clearkeyword !== 1) {
+            querykeyword = " <?php echo $querykeyword ?> ".trim();
+            if (querykeyword === '') { 
+                if (getQueryString('keyword') !== null) {
+                    querykeyword = getQueryString('keyword');
+                }   
+            }
+        }
         //alert (mapview + ',' + zoom + ',' + latitude + ',' + longitude + ',' + pointid + ',' + querykeyword);
             
         window.location = "<?= base_url('index.php/explore/index/') ?>" + '/' + mapview + '/' + zoom + '/' + latitude + '/' + longitude + '/' + pointid + '/' + querykeyword;
     }
+
+    var getQueryString = function ( field, url ) {
+        var href = url ? url : window.location.href;
+        var reg = new RegExp( '[?&]' + field + '=([^&#]*)', 'i' );
+        var string = reg.exec(href);
+        return string ? string[1] : null;
+    };
 
     function getMapCenter(map, sessionid) {
         var mapview = "<?php echo $mapview?>";
         var zoom = "<?php echo $zoom?>";
         var latitude = "<?php echo $latitude?>";
         var longitude = "<?php echo $longitude?>";
+        var pointid = "<?php echo $pointid?>";
+        var querykeyword = "<?php echo $querykeyword?>";
 
         if (map.getCenter() === undefined && latitude === '' && longitude === '') {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
-                    redirectURL(mapview, 13, position.coords.latitude, position.coords.longitude, 0);
+                    redirectURL(mapview, 13, position.coords.latitude, position.coords.longitude, pointid);
                 }, 
                 function() {
                     handleLocationError(true, new infoWindow, map.getCenter());
@@ -142,11 +161,11 @@
             }
         }
         else if (zoom === '') {
-            redirectURL(mapview, 13, latitude, longitude, 0);
+            redirectURL(mapview, 13, latitude, longitude, pointid, querykeyword);
         }
         else {
             map.setZoom(parseInt(zoom));
-            map.setCenter(new google.maps.LatLng(latitude, longitude));
+            map.setCenter(new google.maps.LatLng(latitude, longitude, pointid));
 
             loadPoints(map, sessionid);
 

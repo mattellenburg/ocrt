@@ -59,6 +59,7 @@ class Explore extends CI_Controller {
         $data->latitude = $latitude;
         $data->longitude = $longitude;
         $data->pointid = $pointid;
+        $data->querykeyword = $querykeyword;
         $data->keywords = $this->keyword_model->get_keywords();
         $data->points_pending = $this->point_pending_model->get_points();
         $data->points = $this->point_model->get_points($latitude, $longitude, $filters);

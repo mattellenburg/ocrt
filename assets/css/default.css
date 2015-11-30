@@ -56,7 +56,6 @@ a:hover, a:visited:hover {
 #header {
     width: 100%;
     background-color: #297045;
-    padding: 0px 10px 0px 10px;
 }
 
 #title {
@@ -64,7 +63,7 @@ a:hover, a:visited:hover {
     background-color: #204e4a;
     border-radius: 10px;
     padding: 0px 10px 10px 10px;
-    margin-top: 10px;
+    margin: 10px 0px 0px 10px;
 }
 
 #title h1 { 
@@ -109,7 +108,7 @@ a:hover, a:visited:hover {
 
 #main {
     display: inline-block;
-    width: 100%;
+    width: 95%;
     padding: 0px 10px 0px 10px;
 }
 
