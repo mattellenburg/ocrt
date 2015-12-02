@@ -12,11 +12,14 @@ class Train extends CI_Controller {
         $this->load->library('form_validation');
         $this->load->model('keyword_model');
         $this->load->model('obstaclesexercises_model');
+        $this->load->model('point_model');
+        $this->load->model('point_pending_model');
     }
 
     public function index() {
+        $headerdata = new stdClass();
         $data = new stdClass();
-        $data->pageinformation = 'Select an obstacle to view relevant exercises.  Select an exerciese to view appropriate locations.';
+        $headerdata->pageinformation = 'Select an obstacle to view relevant exercises.  Select an exerciese to view appropriate locations.';
 
         $data->exercises = $this->keyword_model->get_exercises();
 
@@ -30,8 +33,9 @@ class Train extends CI_Controller {
             $obstacles['<a>'.$obstacle->keyword.'</a>'] = $exercises;
         }        
         $data->obstacles = $obstacles;
-
-        $this->load->view('header', $data);
+        $data->points = $this->point_model->get_training_points(39.0353576, -77.12402559999998);
+        
+        $this->load->view('header', $headerdata);
         $this->load->view('train', $data);
         $this->load->view('footer');	
     }

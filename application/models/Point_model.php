@@ -70,6 +70,23 @@ class Point_model extends CI_Model {
             return $this->db->query('select * from (select p.*, userrating, avgrating, GROUP_CONCAT(k.keyword) as keywords, '.$this->calculate_distance($latitude, $longitude).' as distance from points as p left join (select pointid, avg(rating) as avgrating from pointsratings group by pointid) as pr on p.id=pr.pointid left join (select pointid, rating as userrating from pointsratings where userid='.$userid.') as pru on p.id=pru.pointid  left join (select * from pointskeywords where deleteflag=0) as pk on p.id=pk.pointid left join keywords k on pk.keywordid=k.id '.$where->where1.' group by p.id) as p '.$where->where2)->result_array();       
         }
     }
+    
+    public function get_training_points($latitude = NULL, $longitude = NULL, $filters = NULL) {
+        if ($latitude !== NULL && $longitude !== NULL) {
+            $userid=0;
+            if (isset($_SESSION['user_id'])) {
+                $userid=$_SESSION['user_id'];
+                if ($_SESSION['is_admin'] && $this->input->get('debug', TRUE) == 'y') {
+                }
+            }
+
+            $where = new stdClass();
+            $where->where2 = ' where p.distance <= 3';
+            
+            $this->db->query('SET SQL_BIG_SELECTS=1');
+            return $this->db->query('select * from (select p.*, '.$this->calculate_distance($latitude, $longitude).' as distance from points as p group by p.id) as p '.$where->where2)->result_array();       
+        }
+    }
 
     private function build_where ($filters) {
         $where = new stdClass();
