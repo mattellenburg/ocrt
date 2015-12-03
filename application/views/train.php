@@ -4,9 +4,7 @@
     <div class="content">
         <?php /*var_dump($points);*/ ?>
         <div id="map"></div>
-        <div id="right-panel">
-          <p>Total Distance: <span id="total"></span></p>
-        </div>
+        <div id="right-panel"></div>
     </div>
     <div class="content">
         <h3>Obstacles & Exercises <button id="all">Toggle All</button></h3>
@@ -25,11 +23,13 @@
         });
 
         var directionsService = new google.maps.DirectionsService;
-        var directionsDisplay = new google.maps.DirectionsRenderer({
-            draggable: true,
-            map: map,
-            panel: document.getElementById('right-panel')
-        });
+        var directionsDisplay = new google.maps.DirectionsRenderer;
+        directionsDisplay.setMap(map);
+//        var directionsDisplay = new google.maps.DirectionsRenderer({
+//            draggable: true,
+//            map: map,
+//            panel: document.getElementById('right-panel')
+//        });
 
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
@@ -46,15 +46,27 @@
                 
                 marker.addListener('click', function() {
                     var latlng = center.lat.toString() + ', ' + center.lng.toString();
-                    var waypoint = {location: latlng};
+                    var waypoint = {location: latlng, stopover: true};
 
                     displayRoute(waypoints, waypoint, directionsService, directionsDisplay);
                 });
             });
         }
+        
+        google.maps.event.addListener(map, 'click', function(event) {
+            var latlng = event.latLng.lat() + ', ' + event.latLng.lng();
+            var waypoint = {location: latlng, stopover: true};
+
+            displayRoute(waypoints, waypoint, directionsService, directionsDisplay);
+        });	
   
         directionsDisplay.addListener('directions_changed', function() {
-            computeTotalDistance(directionsDisplay.getDirections());
+            if (waypoints.length === 1) {
+                document.getElementById('right-panel').innerHTML = '<p>Total Distance: <span id="total"></span></p><p>A - 0.00 mi</p>';
+            }
+            else if (waypoints.length > 1) {
+                computeTotalDistance(directionsDisplay.getDirections(), waypoints);
+            }
         });
         
         var locations = new Array();
@@ -87,7 +99,7 @@
             
             google.maps.event.addListener(marker, 'click', (function(marker, i) {
                 return function() {
-                    var waypoint = {location: locations[i][1].toString() + ', ' + locations[i][2].toString()};
+                    var waypoint = {location: locations[i][1].toString() + ', ' + locations[i][2].toString(), stopover: true};
                     displayRoute(waypoints, waypoint, directionsService, directionsDisplay);
                 }
             })(marker, i));
@@ -95,31 +107,33 @@
     }
 
     function displayRoute(waypoints, waypoint, service, display) {
-        waypoints.push(waypoint);
+        if (waypoints.length < 10) { 
+            var waypoints2;
+            waypoints.push(waypoint); 
 
-        var origin = waypoints[0].location;
-        var destination = origin;
-        if (waypoints.length > 1) {
-            destination = waypoints[waypoints.length - 1].location;
-        }
-        if (waypoints.length > 2) {
-            waypoints.splice(0,1);
-            waypoints.splice(waypoints.length - 1,1);
-        }
-       
-        service.route({
-            origin: origin,
-            destination: destination,
-            waypoints: waypoints,
-            travelMode: google.maps.TravelMode.WALKING
-        }, function(response, status) {
-            if (status === google.maps.DirectionsStatus.OK) {
-                display.setDirections(response);
-            } 
-            else {
-                alert('Could not display directions due to: ' + status);
+            var origin = waypoints[0].location;
+            var destination = origin;
+            if (waypoints.length > 1) {
+                destination = waypoints[waypoints.length - 1].location;
             }
-        });
+            if (waypoints.length > 2) {
+                waypoints2 = waypoints.slice(1,waypoints.length - 1);
+            }
+
+            service.route({
+                origin: origin,
+                destination: destination,
+                waypoints: waypoints2,
+                travelMode: google.maps.TravelMode.WALKING
+            }, function(response, status) {
+                if (status === google.maps.DirectionsStatus.OK) {
+                    display.setDirections(response);
+                } 
+                else {
+                    alert('Could not display directions due to: ' + status);
+                }
+            });
+        }
     }
 
     function getImage(icon) {
@@ -157,14 +171,57 @@
         return image;
     }
 
-    function computeTotalDistance(result) {
+    function computeTotalDistance(result, waypoints) {
         var total = 0;
         var myroute = result.routes[0];
+
         for (var i = 0; i < myroute.legs.length; i++) {
+            //var_dump(myroute.legs[i], document.getElementById('right-panel'));
             total += myroute.legs[i].distance.value;
+            if (parseInt(i) === parseInt(myroute.legs.length - 1)) {
+                document.getElementById('right-panel').innerHTML += '<p>' + String.fromCharCode(97 + i + 1).toUpperCase() + ' - ' + parseFloat(myroute.legs[i].distance.value/1000*.621371).toFixed(2) + ' mi</p>';
+            }
         }
-        total = total / 1000;
-        document.getElementById('total').innerHTML = total + ' km';
+        
+        document.getElementById('total').innerHTML = parseFloat(total/1000*.621371).toFixed(2) + ' mi';
     }
+    
+function var_dump(obj, element)
+{
+    var logMsg = objToString(obj, 0);
+    if (element) // set innerHTML to logMsg
+    {
+        var pre = document.createElement('pre');
+        pre.innerHTML = logMsg;
+        element.innerHTML = '';
+        element.appendChild(pre);
+    }
+    else // write logMsg to the console
+    {
+        console.log(logMsg);
+    }
+}
+
+function objToString(obj, level)
+{
+    var out = '';
+    for (var i in obj)
+    {
+        for (loop = level; loop > 0; loop--)
+        {
+            out += "    ";
+        }
+        if (obj[i] instanceof Object)
+        {
+            out += i + " (Object):\n";
+            out += objToString(obj[i], level + 1);
+        }
+        else
+        {
+            out += i + ": " + obj[i] + "\n";
+        }
+    }
+    return out;
+}
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?callback=initMap" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCLrhs-LKivwuYlINaomHmKyINdWKx5Z-Y&callback=initMap" async defer></script>
