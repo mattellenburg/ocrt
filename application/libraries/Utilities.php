@@ -77,6 +77,15 @@ class Utilities {
     
     public function calculate_distance ($latitude, $longitude) {
         return '3959*acos(cos(radians('.$latitude.'))*cos(radians(p.latitude))*cos(radians(p.longitude)-radians('.$longitude.'))+sin(radians('.$latitude.'))*sin(radians(p.latitude)))';
-    }}
+    }
+
+    public function builddropdownarray($source) {
+        $array = array();
+        foreach ($source as $item) {
+            $array[$item->id] = $item->keyword;
+        }
+        return $array;
+    }
+}
 ?>
 

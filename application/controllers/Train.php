@@ -71,6 +71,7 @@ class Train extends CI_Controller {
         $data->keywords = $this->keyword_model->get_keywords();
         $data->points_pending = $this->point_pending_model->get_points();
         $data->points = $this->point_model->get_points($latitude, $longitude, $filters);
+        $data->routes = $this->utilities->builddropdownarray($this->route_model->get_routes($latitude, $longitude));
         $data->filters = $this->utilities->get_filter_text($filters);
         
         $this->load->view('header', $headerdata);

@@ -2,12 +2,13 @@
 <div id="train">
     <?php 
         $data = new stdClass();
-        $data->instructions = 'Click on the map or a waypoint to create a route.';
+        $data->instructions = 'Click on the map or a waypoint to create a route or select an existing route.';
         $this->load->view('viewparts/map.php', $data); 
     ?>
     <div id="routeInformation">
         <h2>Route Information</h2>
         <div class="content">
+            <p><label for="routeid">Route:</label><?php echo form_dropdown('route', $routes); ?></p>
             <div class="scroll">
                 <div id="route"></div>
             </div>
