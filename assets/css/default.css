@@ -221,6 +221,31 @@ a:hover, a:visited:hover {
     padding: 5px 0px 5px 0px;
 }
 
+#train {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+#train > div {
+    display: inline-block;
+    width: 48%;
+    vertical-align: top;
+    min-width: 300px;
+    margin-right: 5px;
+}
+
+#train h2 {
+    border-radius: 10px;
+    background-color: #204e4a;
+    color: #ecba82;
+    padding: 10px;
+    margin: 0px 0px 5px 0px;
+    text-align: left;
+}
+
 #map > .content {
     border-radius: 10px;
     background-color: #ecba82;

@@ -1,258 +1,17 @@
 <?php include 'map.php';?>
 <script>
     function initialize() {
+        var url = 'index.php/explore/index/';
+        var map = initializeMap(url);
         var sessionid = " <?php if (isset($_SESSION['user_id'])) { echo $_SESSION['user_id']; } else { echo 0; } ?> ";
-
-        var mapview = <?php if (isset($mapview)) { echo $mapview; } else { echo 1; } ?>;
-        
-        if (mapview === 1) {
-            var map=new google.maps.Map(document.getElementById("googleMap"), {mapTypeId:google.maps.MapTypeId.ROADMAP});
-        }
-        else {
-            var map=new google.maps.Map(document.getElementById("googleMap"), {mapTypeId:google.maps.MapTypeId.HYBRID});
-        }
-        
-        google.maps.event.addListener(map,'dragstart',function(){
-            this.set('dragging',true);          
-        });
-
-        google.maps.event.addListener(map,'dragend',function(){
-            this.set('dragging',false);
-            google.maps.event.trigger(this,'idle',{});
-        });
-
-        google.maps.event.addListener(map, 'maptypeid_changed', function() { 
-            var zoom = "<?php echo $zoom?>";
-            var latitude = "<?php echo $latitude?>";
-            var longitude = "<?php echo $longitude?>";
-            var pointid = "<?php echo $pointid?>";
-            var querykeyword = "<?php echo $querykeyword?>";
-
-            if (map.getMapTypeId() === 'roadmap') {
-                redirectURL(1, zoom, latitude, longitude, pointid, querykeyword);
-            }
-            else {
-                redirectURL(2, zoom, latitude, longitude, pointid, querykeyword);
-            }
-        });
-        
-        google.maps.event.addListener(map,'zoom_changed',function(){
-            var mapview = "<?php echo $mapview?>";
-            var zoom = "<?php echo $zoom?>";
-            var latitude = "<?php echo $latitude?>";
-            var longitude = "<?php echo $longitude?>";
-            var pointid = "<?php echo $pointid?>";
-
-            if (parseInt(zoom) !== map.getZoom()) { redirectURL(mapview, map.getZoom(), latitude, longitude, pointid); }
-        });
-        
-        google.maps.event.addListener(map, 'idle', function() {
-            if(!this.get('dragging') && this.get('oldCenter') && this.get('oldCenter')!==this.getCenter()) {
-                var mapview = "<?php echo $mapview?>";
-                var zoom = "<?php echo $zoom?>";
-                var pointid = "<?php echo $pointid?>";
-                redirectURL (mapview, zoom, map.getCenter().lat(), map.getCenter().lng(), pointid);
-            }
-            if(!this.get('dragging')){
-                this.set('oldCenter',this.getCenter());
-            }
-        });
-
-        getMapCenter(map, sessionid);    
+        getMapCenter(url, map, sessionid);    
 
         if (sessionid > 0) {
-            addMapClickEvent(map);
+            addMapClickEvent(url, map);
         }    
     }
 
-    function redirectURL (mapview, zoom, latitude, longitude, pointid, clearkeyword) {
-        if (pointid === '') { pointid = 0; }
-        var querykeyword = '';
-        if (clearkeyword !== 1) {
-            querykeyword = " <?php echo $querykeyword ?> ".trim();
-            if (querykeyword === '') { 
-                if (getQueryString('keyword') !== null) {
-                    querykeyword = getQueryString('keyword');
-                }   
-            }
-        }
-        //alert (mapview + ',' + zoom + ',' + latitude + ',' + longitude + ',' + pointid + ',' + querykeyword);
-            
-        window.location = "<?= base_url('index.php/explore/index/') ?>" + '/' + mapview + '/' + zoom + '/' + latitude + '/' + longitude + '/' + pointid + '/' + querykeyword;
-    }
-
-    function getMapCenter(map, sessionid) {
-        var mapview = "<?php echo $mapview?>";
-        var zoom = "<?php echo $zoom?>";
-        var latitude = "<?php echo $latitude?>";
-        var longitude = "<?php echo $longitude?>";
-        var pointid = "<?php echo $pointid?>";
-        var querykeyword = "<?php echo $querykeyword?>";
-
-        if (map.getCenter() === undefined && latitude === '' && longitude === '') {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    redirectURL(mapview, 13, position.coords.latitude, position.coords.longitude, pointid);
-                }, 
-                function() {
-                    handleLocationError(true, new infoWindow, map.getCenter());
-                });
-            } 
-            else {
-                handleLocationError(false, new infoWindow, map.getCenter());
-            }
-        }
-        else if (zoom === '') {
-            redirectURL(mapview, 13, latitude, longitude, pointid, querykeyword);
-        }
-        else {
-            map.setZoom(parseInt(zoom));
-            map.setCenter(new google.maps.LatLng(latitude, longitude, pointid));
-
-            loadPoints(map, sessionid);
-
-            new google.maps.Marker({
-                position: new google.maps.LatLng(latitude, longitude),
-                map: map
-            });
-        }
-    }
-
-    function loadPoints(map, sessionid) {
-        var locations = new Array();
-        var i = 0;
-        <?php if (isset($points)) { ?>
-            <?php foreach ($points as $point): ?>
-                var title = " <?php echo $point['title'] ?> ";
-                var description = " <?php echo $point['description'] ?> ";
-                var latitude = " <?php echo $point['latitude'] ?> ";
-                var longitude = " <?php echo $point['longitude'] ?> ";
-                var icon = " <?php echo $point['icon'] ?> ";
-                var type = 'confirmed';
-                var pointid = " <?php echo $point['id'] ?> ";
-                var userrating = " <?php echo $point['userrating'] ?> ";
-                var avgrating = " <?php echo $point['avgrating'] ?> ";
-                var keywords = " <?php echo $point['keywords'] ?> ";
-                var distance = " <?php echo $point['distance'] ?> ";
-
-                var point = new Array(title, latitude, longitude, description, icon, type, pointid, userrating, avgrating, keywords, distance, 0);
-
-                locations[i] = point;
-
-                i++;
-            <?php endforeach; ?>
-        <?php } ?>
-
-        <?php if (isset($points_pending)) { ?>           
-            <?php foreach ($points_pending as $point): ?>
-                var title = " <?php echo $point->title ?> ";
-                var description = " <?php echo $point->description ?> ";
-                var latitude = " <?php echo $point->latitude ?> ";
-                var longitude = " <?php echo $point->longitude ?> ";
-                var icon = " <?php echo $point->icon ?> ";
-                var type = 'pending';
-                var pointid = " <?php echo $point->pointid ?> ";
-                var id = " <?php echo $point->id ?> ";
-
-                var point = new Array(title, latitude, longitude, description, icon, type, pointid, 0, 0, '', 0, id);
-
-                locations[i] = point;
-
-                i++;
-            <?php endforeach; ?>
-        <?php } ?>
-
-        var marker, i;
-
-        for (i = 0; i < locations.length; i++) { 
-            marker = new google.maps.Marker({
-                position: new google.maps.LatLng(locations[i][1], locations[i][2]),
-                icon: getImage(locations[i][5], locations[i][4]),
-                map: map
-            });
-
-            google.maps.event.addListener(marker, 'click', (function(marker, i) {
-                return function() {
-                    var pointinformation = document.getElementById("pointInformation");
-                    
-                    var h2 = pointinformation.getElementsByTagName("h2");
-                    
-                    var content = pointinformation.getElementsByTagName("div");
-                    
-                    var p = content[0].getElementsByTagName("p");
-                    p[0].innerHTML = locations[i][3];
-
-                    var div = content[0].getElementsByTagName("div");
-
-                    var pointid = 0;
-                    if (locations[i][6] > 0) { pointid = parseInt(locations[i][6]); }
-                    var pendingpointid = 0;
-                    if (locations[i][11] > 0) { pendingpointid = locations[i][11]; }
-                    var icon = 0;
-                    if (locations[i][4] > 0) { icon = locations[i][4]; }
-                    var title = locations[i][0].replace("'","''").trim();
-                    var description = locations[i][3].replace("'","''").trim();
-
-                    if (locations[i][5] === 'confirmed' && sessionid > 0) {
-                        h2[0].innerHTML = locations[i][0] + ' (' + parseFloat(locations[i][8]).toFixed(1) + ' stars / ' + parseFloat(locations[i][10]).toFixed(1) + ' miles)';
-                        var form = '<form method="post" action="' + "<?= base_url('index.php/explore/index/'.$mapview.'/'.$zoom.'/'.$latitude.'/'.$longitude) ?>" + '/' + pointid.toString() + '">';
-
-                        var selected1 = '';
-                        var selected2 = '';
-                        var selected3 = '';
-                        var selected4 = '';
-                        var selected5 = '';
-
-                        if (locations[i][7] == 1) { selected1 = 'selected'; }
-                        if (locations[i][7] == 2) { selected2 = 'selected'; }
-                        if (locations[i][7] == 3) { selected3 = 'selected'; }
-                        if (locations[i][7] == 4) { selected4 = 'selected'; }
-                        if (locations[i][7] == 5) { selected5 = 'selected'; }
-
-                        var ratingsystem = '<h4>Rate Location:</h4>';
-                        ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="1" onclick="stars(this.name);" ' + selected1 + ' /><img id="locationratingstar1" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
-                        ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="2" onclick="stars(this.name);" ' + selected2 + ' /><img id="locationratingstar2" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
-                        ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="3" onclick="stars(this.name);" ' + selected3 + ' /><img id="locationratingstar3" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
-                        ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="4" onclick="stars(this.name);" ' + selected4 + ' /><img id="locationratingstar4" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
-                        ratingsystem += '<label><input type="radio" id="locationrating" name="locationrating" value="5" onclick="stars(this.name);" ' + selected5 + ' /><img id="locationratingstar5" src="<?php echo base_url('assets/images/starwhite.png') ?>"/></label>';
-
-                        var keywordlist = '<h4>Keywords:</h4><div class="keywords">';
-                        <?php foreach ($keywords as $keyword): ?>
-                            var checked='';
-                            if (locations[i][9].indexOf("<?php echo $keyword->keyword ?>") >= 0) {
-                                checked = 'checked';
-                            }
-                            keywordlist += '<input id="locationkeywords[]" name="locationkeywords[]" type="checkbox" value=" <?php echo $keyword->id ?> "' + checked + ' />' + " <?php echo $keyword->keyword ?> " + '<br>';
-                        <?php endforeach; ?>
-                        keywordlist += '</div>';
-
-                        var submit = '<input id="ratingkeywordssubmit" name="ratingkeywordssubmit" type="submit" value="Submit Rating and Keywords"><input type="button" value="Edit Location Information" onClick="editLocation(' + locations[i][1] + ',' + locations[i][2] + ',' + icon + ',' + String.fromCharCode(39) + title + String.fromCharCode(39) + ',' + String.fromCharCode(39) + description + String.fromCharCode(39) + ',' + pointid + ');"></form>';
-
-                        div[0].innerHTML = form + ratingsystem + keywordlist + submit;
-
-                        if (locations[i][7] > 0) {
-                            stars('locationrating', parseInt(locations[i][7]));
-                        }
-                    }
-                    else if (sessionid > 0) {
-                        h2[0].innerHTML = title;
-                        var currenticon = '<p>Icon: <img src="' + getImage('', locations[i][4]) + '" /></p>';
-                        var form = '<form method="post" action="' + "<?= base_url('index.php/explore/index/'.$mapview.'/'.$zoom.'/'.$latitude.'/'.$longitude) ?>" + '/' + pointid + '">';
-                        var submit = '<input type="button" value="Edit Location Information" onClick="editLocation(' + locations[i][1] + ',' + locations[i][2] + ',' + icon + ',' + String.fromCharCode(39) + title + String.fromCharCode(39) + ',' + String.fromCharCode(39) + description + String.fromCharCode(39) + ',' + pointid + ',' + pendingpointid + ');"><input type="button" value="Delete Location" onClick="deleteLocation(' + pendingpointid + ');"></form>';
-                        div[0].innerHTML = currenticon + form + submit;
-                    }
-                };
-            })(marker, i));
-
-            google.maps.event.addListener(marker, 'dblclick', (function(marker, i) {
-                return function() {
-                    redirectURL("<?php echo $mapview ?>", "<?php echo $zoom ?>", "<?php echo $latitude ?>", "<?php echo $longitude ?>", "<?php if (isset($pointid)) { echo $pointid; } ?>");
-                };
-            })(marker, i));
-        }		
-    }
-    
-    function placeMarker(pos, map) {
+    function placeMarker(url, pos, map) {
         var marker=new google.maps.Marker();
 
         marker.setPosition(pos);
@@ -261,15 +20,15 @@
         google.maps.event.clearListeners(map, 'click');
 
         google.maps.event.addListener(marker, 'dblclick', function(event) {
-            redirectURL("<?php echo $mapview?>", "<?php echo $zoom?>", "<?php echo $latitude?>", "<?php echo $longitude?>", "<?php if (isset($pointid)) { echo $pointid; } ?>");
+            redirectURL(url, "<?php echo $mapview?>", "<?php echo $zoom?>", "<?php echo $latitude?>", "<?php echo $longitude?>", "<?php if (isset($pointid)) { echo $pointid; } ?>");
         });
 
         return marker;
     }
 
-    function addMapClickEvent(map) {
+    function addMapClickEvent(url, map) {
         google.maps.event.addListener(map, 'click', function(event) {
-            placeMarker(event.latLng, map);
+            placeMarker(url, event.latLng, map);
             document.getElementById('pointInformation').innerHTML = buildForm(event.latLng.lat(), event.latLng.lng(), 0, '', '', 0, 0);
         });	
     }
@@ -330,16 +89,6 @@
         var divend = '</div>';
         
         return '<form method="post" action="' + "<?= base_url('index.php/explore/index/'.$mapview.'/'.$zoom.'/'.$latitude.'/'.$longitude) ?>" + '">' + heading + divstart + pointid + instructions + latlong + icon + title + description + submit + divend + '</form>';
-    }
-
-    function getLatLong() {
-        var geocoder = new google.maps.Geocoder();
-
-        geocoder.geocode( { 'address': document.getElementById("address").value}, function(results, status) {
-            if (status == google.maps.GeocoderStatus.OK) {
-                redirectURL("<?php echo $mapview?>", "<?php echo $zoom?>", results[0].geometry.location.lat(), results[0].geometry.location.lng(), "<?php if (isset($pointid)) { echo $pointid; } ?>");
-            } 
-        }); 
     }
 
     function stars(name, rating) {

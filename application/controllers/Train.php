@@ -8,19 +8,41 @@ class Train extends CI_Controller {
         $this->load->helper(array('url'));
         $this->load->helper('html');
         $this->load->helper('form');
-        $this->load->helper('utilities');
-        $this->load->library('form_validation');
+        $this->load->model('route_model');
+        $this->load->model('routewaypoints_model');
         $this->load->model('keyword_model');
         $this->load->model('obstaclesexercises_model');
         $this->load->model('point_model');
         $this->load->model('point_pending_model');
+        $this->load->library('utilities');
     }
 
-    public function index() {
+    public function index($mapview = 1, $zoom = 13, $latitude = NULL, $longitude = NULL, $pointid = NULL, $querykeyword = NULL) {
         $headerdata = new stdClass();
         $data = new stdClass();
-        $headerdata->pageinformation = 'Select an obstacle to view relevant exercises.  Select an exerciese to view appropriate locations.';
+        $headerdata->pageinformation = 'Use the map to create and save routes.  Select an obstacle to view relevant exercises.  Select an exerciese to view appropriate locations.';
 
+        if ($this->input->post('submitroute', TRUE) == 'Submit Route') {
+            $route = new stdClass();
+            $route->waypoints = array();
+            
+            $i=1;
+            foreach (explode(";", rtrim($this->input->post('route', TRUE), ";")) as $waypoint) {
+                $wp = new stdClass();
+                $wp->latitude = floatval(explode("," , $waypoint)[0]);
+                $wp->longitude = floatval(explode("," , $waypoint)[1]);
+                $wp->sortorder = $i;
+                
+                $i++;
+                
+                array_push($route->waypoints, $wp);
+            }
+            
+            if ($this->routewaypoints_model->create_routewaypoints($this->route_model->create_route($this->input->post('routename', TRUE)), $route)) {
+                $headerdata->message = 'Your route has been saved.';
+            }
+        }
+        
         $data->exercises = $this->keyword_model->get_exercises();
 
         $obstacles = array();
@@ -32,8 +54,24 @@ class Train extends CI_Controller {
             }
             $obstacles['<a>'.$obstacle->keyword.'</a>'] = $exercises;
         }        
+        
         $data->obstacles = $obstacles;
-        $data->points = $this->point_model->get_training_points(39.0353576, -77.12402559999998);
+        
+        $filters = $this->utilities->build_filter_class($this->input->post('filterrating', TRUE), $this->input->post('filtersearch', TRUE), $this->input->post('filterkeywords', TRUE), $this->input->post('mysubmissions', TRUE));
+        if ($querykeyword !== NULL) {
+            $filters->keywords = array($this->keyword_model->get_keyword_by_keyword($querykeyword)[0]->id);
+        }
+
+        $data->mapview = $mapview;
+        $data->zoom = $zoom;
+        $data->latitude = $latitude;
+        $data->longitude = $longitude;
+        $data->pointid = $pointid;
+        $data->querykeyword = $querykeyword;
+        $data->keywords = $this->keyword_model->get_keywords();
+        $data->points_pending = $this->point_pending_model->get_points();
+        $data->points = $this->point_model->get_points($latitude, $longitude, $filters);
+        $data->filters = $this->utilities->get_filter_text($filters);
         
         $this->load->view('header', $headerdata);
         $this->load->view('train', $data);
