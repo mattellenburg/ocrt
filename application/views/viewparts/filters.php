@@ -25,7 +25,7 @@
             <?php if (isset($_SESSION['user_id'])) : ?>
                 <p><label for="mysubmissions">Submitted by Me:</label><input type="checkbox" id="mysubmissions" name="mysubmissions"></p>
             <?php endif; ?>
-                <p><input type="submit" value="Search" /><input type="button" value="Clear" onclick="redirectURL(<?php echo $mapview ?>, <?php echo $zoom ?>, <?php echo $latitude ?>, <?php echo $longitude ?>, <?php if (isset($pointid)) { echo $pointid; } ?>, 1);" /></p>
+            <p><input type="submit" value="Search" /><input type="button" value="Clear" onclick="redirectURL(<?php echo $mapview ?>, <?php echo $zoom ?>, <?php echo $latitude ?>, <?php echo $longitude ?>, <?php if (isset($pointid)) { echo $pointid; } ?>, 1);" /></p>
             </form>
         </div>
     </div>

@@ -22,7 +22,7 @@ class Route_model extends CI_Model {
     public function get_routes($latitude = NULL, $longitude = NULL) {
         if ($latitude !== NULL && $longitude !== NULL) {
             $this->db->query('SET SQL_BIG_SELECTS=1');
-            return $this->db->query('select r.* from (select r.*, '.$this->utilities->calculate_distance($latitude, $longitude).' as distance from routes r left join (select routeid, latitude, longitude from routewaypoints where sortorder=1) rw on r.id = rw.routeid) r where r.distance < 10');
+            return $this->db->query('select r.* from (select r.*, '.$this->utilities->calculate_distance($latitude, $longitude).' as distance from routes r left join (select routeid, latitude, longitude from routewaypoints where sortorder=1) rw on r.id = rw.routeid) r where r.distance < 10')->result_array();
         }
     }
     

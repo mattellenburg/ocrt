@@ -76,10 +76,20 @@ class Utilities {
     }
     
     public function calculate_distance ($latitude, $longitude) {
-        return '3959*acos(cos(radians('.$latitude.'))*cos(radians(p.latitude))*cos(radians(p.longitude)-radians('.$longitude.'))+sin(radians('.$latitude.'))*sin(radians(p.latitude)))';
+        return '3959*acos(cos(radians('.$latitude.'))*cos(radians(latitude))*cos(radians(longitude)-radians('.$longitude.'))+sin(radians('.$latitude.'))*sin(radians(latitude)))';
     }
 
-    public function builddropdownarray($source) {
+    public function builddropdownarrayroute($source) {
+        $array = array();
+        if (sizeof($source) > 0) {
+            foreach ($source as $item) {
+                $array[$item['id']] = $item['routename'];
+            }            
+        }
+        return $array;
+    }
+
+    public function builddropdownarraykeyword($source) {
         $array = array();
         foreach ($source as $item) {
             $array[$item->id] = $item->keyword;

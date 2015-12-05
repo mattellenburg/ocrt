@@ -43,7 +43,7 @@
   
         directionsDisplay.addListener('directions_changed', function() {
             if (waypoints.length === 1) {
-                document.getElementById('route').innerHTML = '<form method="post" action="' + "<?= base_url('index.php/train/index/'.$mapview.'/'.$zoom.'/'.$latitude.'/'.$longitude) ?>" + '"><p><b>Total Distance: <span id="total"></span></b></p><p>Location A - 0.00 mi</p>';
+                document.getElementById('route').innerHTML = '<p><b>Total Distance: <span id="total"></span></b></p><p>Location A - 0.00 mi</p>';
             }
             else if (waypoints.length > 1) {
                 computeTotalDistance(directionsDisplay.getDirections(), waypoints);

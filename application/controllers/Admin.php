@@ -216,8 +216,8 @@ class Admin extends CI_Controller {
                 $this->table->add_row('<a href="'.base_url('index.php/admin/obstaclesexercises/'.$obstacleexercise->id).'">Delete</a>', $this->keyword_model->get_keyword($obstacleexercise->obstacleid)[0]->keyword, $this->keyword_model->get_keyword($obstacleexercise->exerciseid)[0]->keyword);
             }
 
-            $data->obstacles = $this->utilities->builddropdownarray($this->keyword_model->get_obstacles());
-            $data->exercises = $this->utilities->builddropdownarray($this->keyword_model->get_exercises());
+            $data->obstacles = $this->utilities->builddropdownarraykeyword($this->keyword_model->get_obstacles());
+            $data->exercises = $this->utilities->builddropdownarraykeyword($this->keyword_model->get_exercises());
             
             $this->load->view('header', $data);
             $this->load->view('admin/obstaclesexercises', $data);
@@ -261,7 +261,7 @@ class Admin extends CI_Controller {
                 $races[$race->id] = $race->race;
             }
         
-            $data->obstacles = $this->utilities->builddropdownarray($this->keyword_model->get_obstacles());
+            $data->obstacles = $this->utilities->builddropdownarraykeyword($this->keyword_model->get_obstacles());
             $data->races = $races;
             
             $this->load->view('header', $data);
