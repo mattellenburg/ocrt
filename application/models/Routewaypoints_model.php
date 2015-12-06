@@ -30,8 +30,11 @@ class Routewaypoints_model extends CI_Model {
 
     public function create_routewaypoints($routeid, $route) {
         foreach ($route->waypoints as $waypoint) {
+            if ($waypoint->pointid > 0) { $pointid = $waypoint->pointid; } else { $pointid = NULL; }
+            
             $data = array(
                 'routeid' => $routeid,
+                'pointid' => $pointid,
                 'latitude' => $waypoint->latitude,
                 'longitude' => $waypoint->longitude,
                 'sortorder' => $waypoint->sortorder

@@ -16,13 +16,11 @@
             </form>
         </div>
     </div>
-    <div id="workoutInformation">
-        <h2>Workout Information</h2>
+    <div id="locationworkouts">
+        <h2>Location Workouts</h2>
         <div class="content">
             <?= form_open() ?>
-            <div class="scroll">
-                <div id="workout"></div>
-            </div>
+            <div id="workout"></div>
             </form>
         </div>
     </div>
