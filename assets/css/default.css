@@ -231,7 +231,7 @@ a:hover, a:visited:hover {
 
 #train > div {
     display: inline-block;
-    width: 48%;
+    width: 32%;
     vertical-align: top;
     min-width: 300px;
     margin-right: 5px;

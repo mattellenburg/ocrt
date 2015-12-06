@@ -27,7 +27,7 @@
                 
                 marker.addListener('click', function() {
                     var latlng = center.lat.toString() + ', ' + center.lng.toString();
-                    var waypoint = {location: latlng, stopover: true};
+                    var waypoint = {location: latlng, stopover: true, title: ''};
 
                     displayRoute(waypoints, waypoint, directionsService, directionsDisplay);
                 });
@@ -36,51 +36,29 @@
         
         google.maps.event.addListener(map, 'click', function(event) {
             var latlng = event.latLng.lat() + ', ' + event.latLng.lng();
-            var waypoint = {location: latlng, stopover: true};
+            var waypoint = {location: latlng, stopover: true, title: ''};
 
             displayRoute(waypoints, waypoint, directionsService, directionsDisplay);
         });	
   
         directionsDisplay.addListener('directions_changed', function() {
-            if (waypoints.length === 1) {
-                document.getElementById('route').innerHTML = '<p><b>Total Distance: <span id="total"></span></b></p><p>Location A - 0.00 mi</p>';
-            }
-            else if (waypoints.length > 1) {
-                computeTotalDistance(directionsDisplay.getDirections(), waypoints);
-            }
+            computeTotalDistance(directionsDisplay.getDirections(), waypoints);
         });
         
-        var locations = new Array();
-        var i = 0;
-        <?php if (isset($points)) { ?>
-            <?php foreach ($points as $point): ?>
-                var title = " <?php echo $point['title'] ?> ";
-                var description = " <?php echo $point['description'] ?> ";
-                var latitude = " <?php echo $point['latitude'] ?> ";
-                var longitude = " <?php echo $point['longitude'] ?> ";
-                var icon = " <?php echo $point['icon'] ?> ";
-                var pointid = " <?php echo $point['id'] ?> ";
-
-                var point = new Array(title, latitude, longitude, description, icon, pointid);
-
-                locations[i] = point;
-
-                i++;
-            <?php endforeach; ?>
-        <?php } ?>
+        var locations = getLocations();
 
         var marker, i;
 
         for (i = 0; i < locations.length; i++) { 
             marker = new google.maps.Marker({
                 position: new google.maps.LatLng(locations[i][1], locations[i][2]),
-                icon: getImage('', locations[i][4]),
+                icon: getImage(locations[i][5], locations[i][4]),
                 map: map
             });
             
             google.maps.event.addListener(marker, 'click', (function(marker, i) {
                 return function() {
-                    var waypoint = {location: locations[i][1].toString() + ', ' + locations[i][2].toString(), stopover: true};
+                    var waypoint = {location: locations[i][1].toString() + ', ' + locations[i][2].toString(), stopover: true, title: ' - <a onClick="loadWorkoutInformation(' + parseInt(locations[i][6]) + ');" href="#">' + locations[i][0] + '</a>'};
                     displayRoute(waypoints, waypoint, directionsService, directionsDisplay);
                 }
             })(marker, i));
@@ -89,7 +67,7 @@
 
     function displayRoute(waypoints, waypoint, service, display) {
         if (waypoints.length < 10) { 
-            var waypoints2;
+            var waypoints2 = [];
             waypoints.push(waypoint); 
 
             var origin = waypoints[0].location;
@@ -98,7 +76,10 @@
                 destination = waypoints[waypoints.length - 1].location;
             }
             if (waypoints.length > 2) {
-                waypoints2 = waypoints.slice(1,waypoints.length - 1);
+                for(i=1; i<waypoints.length-1; i++) {
+                    var waypoint2 = {location: waypoints[i].location, stopover: true};
+                    waypoints2.push(waypoint2);
+                }
             }
 
             service.route({
@@ -123,9 +104,11 @@
 
         for (var i = 0; i < myroute.legs.length; i++) {
             total += myroute.legs[i].distance.value;
-            
-            if (parseInt(i) === parseInt(myroute.legs.length - 1)) {
-                document.getElementById('route').innerHTML += '<p>Location ' + String.fromCharCode(97 + i + 1).toUpperCase() + ' - ' + parseFloat(myroute.legs[i].distance.value/1000*.621371).toFixed(2) + ' mi</p>';
+            if (waypoints.length === 1) {
+                document.getElementById('route').innerHTML = '<p><b>Total Distance: <span id="total"></span></b></p><p>Location A - 0.00 mi' + waypoints[i].title + '</p>';
+            }
+            else if (waypoints.length === 2 || i === waypoints.length - 2) {
+                document.getElementById('route').innerHTML += '<p>Location ' + String.fromCharCode(97 + i + 1).toUpperCase() + ' - ' + parseFloat(myroute.legs[i].distance.value/1000*.621371).toFixed(2) + ' mi' + waypoints[i+1].title + '</p>';
             }
         }
 
@@ -133,8 +116,25 @@
         for (var i = 0; i < waypoints.length; i++) {
             route += waypoints[i].location + ';';
         }
-        
-        document.getElementById('total').innerHTML = parseFloat(total/1000*.621371).toFixed(2) + ' mi <input type="text" id="routename" name="routename" placeholder="Enter a route name"><input type="submit" id="submitroute" name="submitroute" value="Submit Route" /><input type="hidden" name="route" id="route" value="' + route + '" /></form>';
+
+        if (waypoints.length > 1 && <?php if (isset($_SESSION['user_id'])) { echo 1; } else { echo 0; } ?>) {
+            document.getElementById('total').innerHTML = parseFloat(total/1000*.621371).toFixed(2) + ' mi <input type="text" id="routename" name="routename" placeholder="Enter a route name"><input type="submit" id="submitroute" name="submitroute" value="Submit Route" /><input type="hidden" name="route" id="route" value="' + route + '" /></form>';
+        }
+        else if (waypoints.length > 1) {         
+            document.getElementById('total').innerHTML = parseFloat(total/1000*.621371).toFixed(2) + ' mi';
+        }
+    }
+    
+    function loadWorkoutInformation(pointid) {
+        var locations = getLocations();
+        var location = [];
+        for (var i=0; i < locations.length; i++) {
+            if (parseInt(locations[i][6]) === pointid) {
+                location = {description: locations[i][3]};
+            }
+        }
+
+        document.getElementById('workout').innerHTML = '<p>' + location.description + '</p>';
     }
     
     google.maps.event.addDomListener(window, 'load', initialize); 

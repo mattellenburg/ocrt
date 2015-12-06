@@ -2,16 +2,26 @@
 <div id="train">
     <?php 
         $data = new stdClass();
-        $data->instructions = 'Click on the map or a waypoint to create a route or select an existing route.';
+        $data->instructions = 'Click on the map or a waypoint to create a route.';
         $this->load->view('viewparts/map.php', $data); 
     ?>
     <div id="routeInformation">
         <h2>Route Information</h2>
         <div class="content">
             <?= form_open() ?>
-            <p><label for="routeid">Route:</label><?php echo form_dropdown('route', $routes); ?><input type="submit" id="submitloadroute" name="submitloadroute" value="Load Route"/></p>
+            <p><?php echo form_dropdown('route', $routes); ?><input type="submit" id="submitloadroute" name="submitloadroute" value="Load Route"/></p>
             <div class="scroll">
                 <div id="route"></div>
+            </div>
+            </form>
+        </div>
+    </div>
+    <div id="workoutInformation">
+        <h2>Workout Information</h2>
+        <div class="content">
+            <?= form_open() ?>
+            <div class="scroll">
+                <div id="workout"></div>
             </div>
             </form>
         </div>
