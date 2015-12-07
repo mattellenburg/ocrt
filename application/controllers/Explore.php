@@ -13,7 +13,7 @@ class Explore extends CI_Controller {
         $this->load->model('keyword_model');
         $this->load->helper('form');
         $this->load->library('form_validation');
-        $this->load->library('googlemaps');
+        $this->load->library('utilities');
     }
     
     public function index($mapview = 1, $zoom = 13, $latitude = NULL, $longitude = NULL, $pointid = NULL, $querykeyword = NULL) {
@@ -26,19 +26,6 @@ class Explore extends CI_Controller {
         if ($this->input->get('keyword', TRUE) > '') {
             $data->querykeyword = $this->input->get('keyword', TRUE);
         }
-
-        $filters = new stdClass();
-        $filters->rating = $this->input->post('filterrating', TRUE);
-        $filters->search = $this->input->post('filtersearch', TRUE);
-
-        if ($querykeyword !== NULL) {
-            $filters->keywords = array($this->keyword_model->get_keyword_by_keyword($querykeyword)[0]->id);
-        }
-        if ($this->input->post('filterkeywords', TRUE) > '') {
-            $filters->keywords = $this->input->post('filterkeywords', TRUE);
-        }
-
-        if ($this->input->post('mysubmissions', TRUE) === 'on') { $filters->userid = $_SESSION['user_id']; }
         
         if ($this->input->post('deletelocation', TRUE) == 'Delete Location') {
             $headerdata->message = $this->delete_pending_point($this->input->post('pendingpointid', TRUE));
@@ -54,6 +41,11 @@ class Explore extends CI_Controller {
             $headerdata->message = $this->update_keywords($pointid, $this->input->post('locationkeywords', TRUE));
         }
 
+        $filters = $this->utilities->build_filter_class($this->input->post('filterrating', TRUE), $this->input->post('filtersearch', TRUE), $this->input->post('filterkeywords', TRUE), $this->input->post('mysubmissions', TRUE));
+        if ($querykeyword !== NULL) {
+            $filters->keywords = array($this->keyword_model->get_keyword_by_keyword($querykeyword)[0]->id);
+        }
+
         $data->mapview = $mapview;
         $data->zoom = $zoom;
         $data->latitude = $latitude;
@@ -63,7 +55,7 @@ class Explore extends CI_Controller {
         $data->keywords = $this->keyword_model->get_keywords();
         $data->points_pending = $this->point_pending_model->get_points();
         $data->points = $this->point_model->get_points($latitude, $longitude, $filters);
-        $data->filters = $this->get_filters($filters);
+        $data->filters = $this->utilities->get_filter_text($filters);
         
         $this->load->view('header', $headerdata);
         $this->load->view('explore', $data);
@@ -135,36 +127,5 @@ class Explore extends CI_Controller {
                 return 'There was a problem deleting your keywords.';
             }
         }        
-    }
-    
-    private function get_filters($filters) {
-        $filter = '';
-        if ($filters->rating > 0) {
-            $filter = $filter.'<li>Average Rating: '.strval($filters->rating).'+</li>';
-        }
-        
-        if ($filters->search > '') {
-            $filter = $filter.'<li>Search term: '.$filters->search.'</li>';
-        }
-        
-        if (isset($filters->keywords)) {
-            if ($filters->keywords > '') {
-                $filter = $filter.'<li>Keyword(s): <ul>';
-                foreach ($filters->keywords as $filterkeywordid) {
-                    $filter = $filter.'<li>'.$this->keyword_model->get_keyword($filterkeywordid)[0]->keyword.'</li>';
-                }
-                $filter = $filter.'</ul></li>';
-            }
-        }
-        
-        if (isset($filters->userid)) {
-            $filter = $filter.'<li>My submissions</li>';
-        }
-        
-        if ($filter !== '') {
-            $filter = 'Current filters: <ul class="selectedfilters">'.$filter.'</ul>';
-        }
-        
-        return $filter;
-    }
+    }    
 }

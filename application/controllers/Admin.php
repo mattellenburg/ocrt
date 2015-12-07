@@ -15,6 +15,7 @@ class Admin extends CI_Controller {
         $this->load->library('table');
         $this->load->helper('form');
         $this->load->library('form_validation');
+        $this->load->library('utilities');
     }
 
     public function index() {
@@ -215,8 +216,8 @@ class Admin extends CI_Controller {
                 $this->table->add_row('<a href="'.base_url('index.php/admin/obstaclesexercises/'.$obstacleexercise->id).'">Delete</a>', $this->keyword_model->get_keyword($obstacleexercise->obstacleid)[0]->keyword, $this->keyword_model->get_keyword($obstacleexercise->exerciseid)[0]->keyword);
             }
 
-            $data->obstacles = $this->builddropdownarray($this->keyword_model->get_obstacles());
-            $data->exercises = $this->builddropdownarray($this->keyword_model->get_exercises());
+            $data->obstacles = $this->utilities->builddropdownarraykeyword($this->keyword_model->get_obstacles());
+            $data->exercises = $this->utilities->builddropdownarraykeyword($this->keyword_model->get_exercises());
             
             $this->load->view('header', $data);
             $this->load->view('admin/obstaclesexercises', $data);
@@ -260,7 +261,7 @@ class Admin extends CI_Controller {
                 $races[$race->id] = $race->race;
             }
         
-            $data->obstacles = $this->builddropdownarray($this->keyword_model->get_obstacles());
+            $data->obstacles = $this->utilities->builddropdownarraykeyword($this->keyword_model->get_obstacles());
             $data->races = $races;
             
             $this->load->view('header', $data);
@@ -270,15 +271,6 @@ class Admin extends CI_Controller {
         else {
             redirect('/');
         }
-    }
-
-    private function builddropdownarray($source) {
-        $array = array();
-        foreach ($source as $item)
-        {
-            $array[$item->id] = $item->keyword;
-        }
-        return $array;
     }
 
     public function garmin($start = 1) {
