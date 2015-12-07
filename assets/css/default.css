@@ -262,6 +262,12 @@ a:hover, a:visited:hover {
     border-radius: 10px;
 }
 
+#register label, #login label, #profile label {
+    width: 200px;
+    display: inline-block;
+    font-weight: bold;
+}
+
 label > input { 
   visibility: hidden; 
   position: absolute; 

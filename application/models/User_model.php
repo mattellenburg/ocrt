@@ -7,14 +7,40 @@ class User_model extends CI_Model {
         $this->load->database();
     }
 	
-    public function create_user($email, $password) {
+    public function create_user($email, $password, $runpace = NULL) {
         $data = array(
             'email'      => $email,
             'password'   => $this->hash_password($password),
-            'created_at' => date('Y-m-j H:i:s'),
+            'runpace'   => $runpace,
+            'created_at' => date('Y-m-j H:i:s')
         );
 
         return $this->db->insert('users', $data);
+    }
+       
+    public function update_user($email, $password, $runpace = NULL) {
+        if ($password == '') {
+            $data = array(
+                'email'      => $email,
+                'runpace'   => $runpace,
+                'updated_at' => date('Y-m-j H:i:s')
+            );
+        }
+        else {
+            $data = array(
+                'email'      => $email,
+                'password'   => $this->hash_password($password),
+                'runpace'   => $runpace,
+                'updated_at' => date('Y-m-j H:i:s')
+            );
+        }
+
+        $where = array(
+            'id' => $_SESSION['user_id']
+        );
+
+        var_dump($data);
+        return $this->db->update('users', $data, $where);
     }
 	
     public function resolve_user_login($email, $password) {

@@ -61,6 +61,7 @@
                     <?php if ($_SESSION['is_admin']) : ?>
                         <li><a href="<?= base_url('index.php/admin') ?>">Admin</a></li>
                     <?php endif; ?>
+                    <li><a href="<?= base_url('index.php/user/profile') ?>">Profile</a></li>
                     <li><a href="<?= base_url('index.php/user/logout') ?>">Logout</a></li>
                 <?php else : ?>
                     <li><a href="<?= base_url('index.php/user/register') ?>">Register</a></li>

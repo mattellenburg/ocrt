@@ -9,9 +9,11 @@
             <?= $error ?>
         <?php endif; ?>
         <?= form_open() ?>
-        <p><label for="email">Email:</label><input type="email" id="email" name="email" placeholder="Enter your email"></p>
-        <p><label for="password">Password:</label><input type="password" id="password" name="password" placeholder="Enter a password"></p>
-        <p><label for="password_confirm">Confirm Password:</label><input type="password" id="password_confirm" name="password_confirm" placeholder="Confirm your password"></p>
+        <p>* Indicates required fields</p>
+        <p><label for="email">Email: *</label><input type="email" id="email" name="email" placeholder="Enter your email"></p>
+        <p><label for="password">Password: *</label><input type="password" id="password" name="password" placeholder="Enter a password"></p>
+        <p><label for="password_confirm">Confirm Password: *</label><input type="password" id="password_confirm" name="password_confirm" placeholder="Confirm your password"></p>
+        <p><label for="runpace_minutes">Running Pace:</label><input type="text" id="runpace_minutes" name="runpace_minutes" placeholder="e.g. 8"><input type="text" id="runpace_seconds" name="runpace_seconds" placeholder="e.g. 30"></p>
         <p><input type="submit" value="Register"></p>
         </form>
     </div>

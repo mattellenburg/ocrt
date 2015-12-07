@@ -11,8 +11,8 @@ class User extends CI_Controller {
     }
 		
     public function register() {
-        $data = new stdClass();
-        $data->message = '';
+        $headerdata = new stdClass();
+        $headerdata->message = '';
 
         $this->load->helper('form');
         $this->load->library('form_validation');
@@ -20,9 +20,11 @@ class User extends CI_Controller {
         $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email|is_unique[users.email]');
         $this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[6]');
         $this->form_validation->set_rules('password_confirm', 'Confirm Password', 'trim|required|min_length[6]|matches[password]');
+        $this->form_validation->set_rules('runpace_minutes', 'Running Pace Minutes', 'integer|greater_than[-1]');
+        $this->form_validation->set_rules('runpace_seconds', 'Running Pace Seconds', 'integer|less_than[60]|greater_than[-1]');
 
         if ($this->form_validation->run() === false) {
-            $this->load->view('header', $data);
+            $this->load->view('header', $headerdata);
             $this->load->view('register');
             $this->load->view('footer');
         } 
@@ -30,7 +32,12 @@ class User extends CI_Controller {
             $email = $this->input->post('email');
             $password = $this->input->post('password');
 
-            if ($this->user_model->create_user($email, $password)) {    
+            $runpace = NULL;
+            if ($this->input->post('runpace_minutes', NULL) !== '' && $this->input->post('runpace_seconds', NULL) !== '') {
+                $runpace = number_format($this->input->post('runpace_minutes')) + number_format(number_format($this->input->post('runpace_seconds')) / 60, 2);
+            }
+            
+            if ($this->user_model->create_user($email, $password, $runpace)) {    
                 $this->email->from($this->input->post('email'));
                 $this->email->to('mattellenburg@ocrt4me.com'); 
 
@@ -39,8 +46,8 @@ class User extends CI_Controller {
 
                 $this->email->send();
                 
-                $data->message = 'Your registration has been received.';
-                $this->load->view('header', $data);
+                $headerdata->message = 'Your registration has been received.';
+                $this->load->view('header', $headerdata);
                 $this->load->view('register');
                 $this->load->view('footer');
             } 
@@ -53,18 +60,61 @@ class User extends CI_Controller {
 
                 $this->email->send();
 
-                $data->error = 'There was a problem creating your new account. Please try again.';
-
-                $this->load->view('header', $data);
+                $headerdata->error = 'There was a problem creating your new account. Please try again.';
+                $this->load->view('header', $headerdata);
                 $this->load->view('register');
                 $this->load->view('footer');
             }
         }
     }
-    
-    public function login() {
+
+    public function profile() {
+        $headerdata = new stdClass();
+        $headerdata->message = '';
         $data = new stdClass();
-        $data->message = '';
+
+        $this->load->helper('form');
+        $this->load->library('form_validation');
+
+        $this->form_validation->set_rules('email', 'Email', 'trim|required|valid_email');
+        $this->form_validation->set_rules('password', 'Password', 'trim|min_length[6]');
+        $this->form_validation->set_rules('password_confirm', 'Confirm Password', 'trim|min_length[6]|matches[password]');
+        $this->form_validation->set_rules('runpace_minutes', 'Running Pace Minutes', 'integer|greater_than[-1]');
+        $this->form_validation->set_rules('runpace_seconds', 'Running Pace Seconds', 'integer|less_than[60]|greater_than[-1]');
+
+        if ($this->form_validation->run() === true) {
+            $email = $this->input->post('email');
+            $password = $this->input->post('password');
+
+            $runpace = NULL;
+            if ($this->input->post('runpace_minutes', NULL) !== '' && $this->input->post('runpace_seconds', NULL) !== '') {
+                $runpace = number_format($this->input->post('runpace_minutes')) + number_format(number_format($this->input->post('runpace_seconds')) / 60, 2);
+            }
+
+            if ($this->user_model->update_user($email, $password, $runpace)) {    
+                $headerdata->message = 'Your profile has been updated.';
+            } 
+            else {
+                $headerdata->error = 'There was a problem updating your profile.';
+            }
+        }
+
+        $user=$this->user_model->get_user($_SESSION['user_id']);
+        $data->email = $user->email;
+        $data->runpace_minutes = NULL;
+        if ($user->runpace !== NULL) {
+            $data->runpace_minutes = number_format($user->runpace);
+            $data->runpace_seconds = 60 * (number_format($user->runpace, 2) - number_format($user->runpace));
+        }
+        
+        $this->load->view('header', $headerdata);
+        $this->load->view('profile', $data);
+        $this->load->view('footer');
+    }
+
+    public function login() {
+        $headerdata = new stdClass();
+        $headerdata->message = '';
 
         $this->load->helper('form');
         $this->load->library('form_validation');
@@ -73,7 +123,7 @@ class User extends CI_Controller {
         $this->form_validation->set_rules('password', 'Password', 'required');
 
         if ($this->form_validation->run() == false) {
-            $this->load->view('header', $data);
+            $this->load->view('header', $headerdata);
             $this->load->view('login');
             $this->load->view('footer');
         } 
@@ -90,15 +140,15 @@ class User extends CI_Controller {
                 $_SESSION['is_confirmed'] = (bool)$user->is_confirmed;
                 $_SESSION['is_admin'] = (bool)$user->is_admin;
 
-                $data->message = '<span class="message">You have successfully logged into the site.</span>';
+                $headerdata->message = '<span class="message">You have successfully logged into the site.</span>';
                 
-                $this->load->view('header', $data);
+                $this->load->view('header', $headerdata);
                 $this->load->view('footer');
             } 
             else {
                 $data->error = 'Wrong email or password.';
 
-                $this->load->view('header', $data);
+                $this->load->view('header', $headerdata);
                 $this->load->view('login');
                 $this->load->view('footer');
             }
