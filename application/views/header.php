@@ -47,7 +47,7 @@
     <div id="header">
         <div id="title">
             <h1>(O)bstacle (C)ourse (R)ace (T)raining</h1>
-            <p>Explore, train, and race...</p>
+            <p>The world is your gym</p>
         </div>
         <div id="navigation">
             <ul>

@@ -82,6 +82,10 @@
             <li>User interface enhancements</li>
             <li>Added ability to edit location information</li>
         </ul>
+        <h4>0.12 Beta release</h4>
+        <ul>
+            <li>Added ability to create training routes</li>
+        </ul>
     </div>
 </div>
 
