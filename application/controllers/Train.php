@@ -66,7 +66,7 @@ class Train extends CI_Controller {
             $exercises = array ();
             foreach($this->obstaclesexercises_model->get_obstaclesexercises_byobstacleid($obstacle->id) as $obstacleexercise) {
                 $exercise = $this->keyword_model->get_keyword($obstacleexercise->exerciseid)[0]->keyword;
-                array_push($exercises, '<a href="'.base_url('index.php/explore/index/').'?keyword='.$exercise.'">'.$exercise.'</a>');
+                array_push($exercises, '<a href="'.base_url('index.php/train/index/').'?keyword='.$exercise.'">'.$exercise.'</a>');
             }
             $obstacles['<a>'.$obstacle->keyword.'</a>'] = $exercises;
         }        
@@ -88,6 +88,25 @@ class Train extends CI_Controller {
             }
         }
 
+        $routewaypoints = array();
+        foreach($this->routewaypoints_model->get_routewaypoints($routeid) as $routewaypoint) {
+            $newroutewaypoint = new stdClass();
+            $newroutewaypoint->latitude = $routewaypoint->latitude;
+            $newroutewaypoint->longitude = $routewaypoint->longitude;
+            
+            $waypoint = $this->point_model->get_point($routewaypoint->pointid);
+            if (sizeof($waypoint) > 0) {
+                $newroutewaypoint->title = $waypoint[0]->title;
+                $newroutewaypoint->pointid = $routewaypoint->pointid;
+            }
+            else {
+                $newroutewaypoint->title = '';
+                $newroutewaypoint->pointid = '0';
+            }
+            
+            array_push($routewaypoints, $newroutewaypoint);
+        }
+
         $data->mapview = $mapview;
         $data->zoom = $zoom;
         $data->latitude = $latitude;
@@ -98,7 +117,7 @@ class Train extends CI_Controller {
         $data->points_pending = $this->point_pending_model->get_points();
         $data->points = $points;
         $data->routes = $this->utilities->builddropdownarrayroute($this->route_model->get_routes($latitude, $longitude));
-        $data->routewaypoints = $this->routewaypoints_model->get_routewaypoints($routeid);
+        $data->routewaypoints = $routewaypoints;
         $data->workouts = $workouts;
         $data->filters = $this->utilities->get_filter_text($filters);
 

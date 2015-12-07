@@ -26,7 +26,10 @@ class Workout_model extends CI_Model {
     public function create_workout($pointid, $workout) {		
         $data = array(
             'pointid' => $pointid,
-            'workout' => $workout
+            'workout' => preg_replace("/[\n\r]/", "<br/>", $workout),
+            'userid' => $_SESSION['user_id'],
+            'createdate' => date('Y-m-j H:i:s'),
+            'lastmodifieddate' => date('Y-m-j H:i:s')
         );
 
         return $this->db->insert('workouts', $data);

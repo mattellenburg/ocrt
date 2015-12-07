@@ -48,6 +48,9 @@ class Utilities {
     }
 
     public function build_where ($filters, $mysubmissions) {
+        $CI =& get_instance();
+        $CI->load->model('keyword_model');
+
         $where = new stdClass();
 
         $where->where1 = ' where (p.title like '."'%".$filters->search."%'".' or p.description like '."'%".$filters->search."%'".')';
@@ -66,7 +69,7 @@ class Utilities {
             if (sizeof($filters->keywords) > 0) {
                 $where->where2 .= ' and (';
                 foreach ($filters->keywords as $keywordid) {
-                    $where->where2 .= 'p.keywords like \'%'.$this->keyword_model->get_keyword($keywordid)[0]->keyword.'%\' OR ';
+                    $where->where2 .= 'p.keywords like \'%'.$CI->keyword_model->get_keyword($keywordid)[0]->keyword.'%\' OR ';
                 }
                 $where->where2 = substr($where->where2, 0, strlen($where->where2)-3).')';
             }

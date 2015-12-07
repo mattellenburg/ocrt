@@ -9,10 +9,8 @@
         <h2>Route Information</h2>
         <div class="content">
             <?= form_open() ?>
-            <p><?php echo form_dropdown('route', $routes); ?><input type="submit" id="submitloadroute" name="submitloadroute" value="Load Route"/></p>
-            <div class="scroll">
+                <p><?php echo form_dropdown('route', $routes); ?><input type="submit" id="submitloadroute" name="submitloadroute" value="Load Route"/><input type="submit" id="submitclearroute" name="submitclearroute" value="Clear Route"/></p>
                 <div id="route"></div>
-            </div>
             </form>
         </div>
     </div>

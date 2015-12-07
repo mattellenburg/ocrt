@@ -12,6 +12,20 @@
         var directionsDisplay = new google.maps.DirectionsRenderer;
         directionsDisplay.setMap(map);
 
+        var existingroute = false;
+        if (<?php if (sizeof($routewaypoints)>0) { echo 1; } else { echo 0; } ?>) {
+            waypoints = loadExistingWaypoints();
+            existingroute = displayExistingRoute(waypoints, directionsService, directionsDisplay);
+        }
+        else {
+            google.maps.event.addListener(map, 'click', function(event) {
+                var latlng = event.latLng.lat() + ', ' + event.latLng.lng();
+                var waypoint = {location: latlng, stopover: true, title: '', titlelink: '', pointid: 0};
+
+                displayRoute(waypoints, waypoint, directionsService, directionsDisplay);
+            });	
+        }
+
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 map.setCenter(new google.maps.LatLng(position.coords.latitude,position.coords.longitude));
@@ -25,28 +39,17 @@
                     map: map
                 });
                 
-                marker.addListener('click', function() {
-                    var latlng = center.lat.toString() + ', ' + center.lng.toString();
-                    var waypoint = {location: latlng, stopover: true, title: '', titlelink: '', pointid: 0};
+                if (!existingroute) {
+                    marker.addListener('click', function() {
+                        var latlng = center.lat.toString() + ', ' + center.lng.toString();
+                        var waypoint = {location: latlng, stopover: true, title: '', titlelink: '', pointid: 0};
 
-                    displayRoute(waypoints, waypoint, directionsService, directionsDisplay);
-                });
+                        displayRoute(waypoints, waypoint, directionsService, directionsDisplay);
+                    });
+                }
             });
         }
-        
-        google.maps.event.addListener(map, 'click', function(event) {
-            var latlng = event.latLng.lat() + ', ' + event.latLng.lng();
-            var waypoint = {location: latlng, stopover: true, title: '', titlelink: '', pointid: 0};
-
-            displayRoute(waypoints, waypoint, directionsService, directionsDisplay);
-        });	
-          
-        var existingroute = false;
-        if (<?php if (sizeof($routewaypoints)>0) { echo 1; } else { echo 0; } ?>) {
-            waypoints = loadExistingWaypoints();
-            existingroute = displayExistingRoute(waypoints, directionsService, directionsDisplay);
-        }
-
+                  
         directionsDisplay.addListener('directions_changed', function() {
             displayRouteInformation(directionsDisplay.getDirections(), waypoints, existingroute);
         });
@@ -62,11 +65,13 @@
                 map: map
             });
             
-            google.maps.event.addListener(marker, 'click', (function(marker, i) {
-                return function() {
-                    displayRoute(waypoints, {location: locations[i][1].toString() + ', ' + locations[i][2].toString(), stopover: true, title: ' - ' + locations[i][0], titlelink: ' - <a onClick="loadWorkoutInformation(' + parseInt(locations[i][6]) + ');" href="#">' + locations[i][0] + '</a>', pointid: locations[i][6]}, directionsService, directionsDisplay);
-                }
-            })(marker, i));
+            if (!existingroute) {
+                google.maps.event.addListener(marker, 'click', (function(marker, i) {
+                    return function() {
+                        displayRoute(waypoints, {location: locations[i][1].toString() + ', ' + locations[i][2].toString(), stopover: true, title: ' - ' + locations[i][0], titlelink: ' - <a onClick="loadWorkoutInformation(' + parseInt(locations[i][6]) + ');" href="#">' + locations[i][0] + '</a>', pointid: locations[i][6]}, directionsService, directionsDisplay);
+                    }
+                })(marker, i));
+            }
         }
     }
     
@@ -149,7 +154,7 @@
             route += waypoints[i].location + ',' + waypoints[i].pointid + ';';
         }
 
-        if (waypoints.length > 1 && <?php if (isset($_SESSION['user_id'])) { echo 1; } else { echo 0; } ?>) {
+        if (waypoints.length > 1 && !existing && <?php if (isset($_SESSION['user_id'])) { echo 1; } else { echo 0; } ?>) {
             document.getElementById('total').innerHTML = parseFloat(total/1000*.621371).toFixed(2) + ' mi <input type="text" id="routename" name="routename" placeholder="Enter a route name"><input type="submit" id="submitroute" name="submitroute" value="Submit Route" /><input type="hidden" name="route" id="route" value="' + route + '" /></form>';
         }
         else if (waypoints.length > 1) {         
@@ -189,7 +194,13 @@
     function loadExistingWaypoints() {
         var waypoints = [];
         <?php foreach ($routewaypoints as $routewaypoint): ?>
-            waypoints.push({location: <?php echo $routewaypoint->latitude; ?> + ', ' + <?php echo $routewaypoint->longitude; ?>, stopover: true, title: ' - ' + 'title', titlelink: ' - <a onClick="loadWorkoutInformation(' + parseInt(<?php echo $routewaypoint->pointid; ?>) + ');" href="#">' + <?php echo $routewaypoint->pointid; ?> + '</a>'});
+            var title = '';
+            var titlelink = '';
+
+            if (parseInt(" <?php echo $routewaypoint->pointid ?> ") > 0) {
+                titlelink = ' - <a onClick="loadWorkoutInformation(' + parseInt(" <?php echo $routewaypoint->pointid ?> ") + ');" href="#">' + " <?php echo $routewaypoint->title ?> " + '</a>';
+            }
+            waypoints.push({location: <?php echo $routewaypoint->latitude; ?> + ', ' + <?php echo $routewaypoint->longitude; ?>, stopover: true, title: ' - ' + title, titlelink: titlelink});
         <?php endforeach; ?>   
 
         return waypoints;
