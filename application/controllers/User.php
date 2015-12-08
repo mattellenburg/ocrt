@@ -102,6 +102,7 @@ class User extends CI_Controller {
         $user=$this->user_model->get_user($_SESSION['user_id']);
         $data->email = $user->email;
         $data->runpace_minutes = NULL;
+        $data->runpace_seconds = NULL;
         if ($user->runpace !== NULL) {
             $data->runpace_minutes = number_format($user->runpace);
             $data->runpace_seconds = 60 * (number_format($user->runpace, 2) - number_format($user->runpace));
