@@ -6,6 +6,7 @@ class Admin extends CI_Controller {
         parent::__construct();
         $this->load->library(array('session'));
         $this->load->helper(array('url'));
+        $this->load->model('user_model');
         $this->load->model('point_model');
         $this->load->model('point_pending_model');
         $this->load->model('keyword_model');
@@ -32,6 +33,29 @@ class Admin extends CI_Controller {
         }
     }
     
+    public function users($id = NULL, $confirmed = NULL) {
+        $headerdata = new stdClass();
+
+        if ($_SESSION['is_admin']) {
+            if ($id > 0) {
+                $this->user_model->confirm_user($id, $confirmed);            
+            }
+
+            $this->table->set_heading('ID', 'Email', 'Create Date', 'Update Date', 'Confirmed', 'Admin', 'Action');
+
+            foreach($this->user_model->get_users() as $user) {
+                $this->table->add_row($user->id, $user->email, $user->created_at, $user->updated_at, $user->is_confirmed, $user->is_admin, '<a href="'.base_url('index.php/admin/users/'.$user->id.'/1').'">Confirm</a> <a href="'.base_url('index.php/admin/users/'.$user->id.'/0').'">Deny</a>');
+            }
+
+            $this->load->view('header', $headerdata);
+            $this->load->view('admin/users');
+            $this->load->view('footer');
+        }
+        else {
+            redirect('/');
+        }
+    }
+
     public function locations($action = NULL, $id = NULL) {
         $data = new stdClass();
         $data->message = '';

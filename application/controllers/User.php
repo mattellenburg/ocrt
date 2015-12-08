@@ -133,17 +133,25 @@ class User extends CI_Controller {
 
             if ($this->user_model->resolve_user_login($email, $password)) {
                 $user_id = $this->user_model->get_user_id_from_email($email);
-                $user    = $this->user_model->get_user($user_id);
+                $user = $this->user_model->get_user($user_id);
 
-                $_SESSION['user_id'] = (int)$user->id;
-                $_SESSION['logged_in'] = (bool)true;
-                $_SESSION['is_confirmed'] = (bool)$user->is_confirmed;
-                $_SESSION['is_admin'] = (bool)$user->is_admin;
+                if ($user->is_confirmed) {
+                    $_SESSION['user_id'] = (int)$user->id;
+                    $_SESSION['logged_in'] = (bool)true;
+                    $_SESSION['is_confirmed'] = (bool)$user->is_confirmed;
+                    $_SESSION['is_admin'] = (bool)$user->is_admin;
 
-                $headerdata->message = '<span class="message">You have successfully logged into the site.</span>';
-                
-                $this->load->view('header', $headerdata);
-                $this->load->view('footer');
+                    $headerdata->message = 'You have successfully logged into the site.';
+
+                    $this->load->view('header', $headerdata);
+                    $this->load->view('footer');
+                }
+                else {
+                    $headerdata->message = 'Your account has not been confirmed.';
+
+                    $this->load->view('header', $headerdata);
+                    $this->load->view('footer');                    
+                }
             } 
             else {
                 $data->error = 'Wrong email or password.';

@@ -2,6 +2,7 @@
 <h2>Admin</h2>
 <div class="content">
     <ul>
+        <li><a href="<?= base_url('index.php/admin/users') ?>">Manage Users</a></li>
         <li><a href="<?= base_url('index.php/admin/locations') ?>">Manage Locations</a></li>
         <li><a href="<?= base_url('index.php/admin/keywords') ?>">Manage Keywords</a></li>
         <li><a href="<?= base_url('index.php/admin/races') ?>">Manage Races</a></li>

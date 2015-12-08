@@ -9,9 +9,9 @@ class User_model extends CI_Model {
 	
     public function create_user($email, $password, $runpace = NULL) {
         $data = array(
-            'email'      => $email,
-            'password'   => $this->hash_password($password),
-            'runpace'   => $runpace,
+            'email' => $email,
+            'password' => $this->hash_password($password),
+            'runpace' => $runpace,
             'created_at' => date('Y-m-j H:i:s')
         );
 
@@ -21,16 +21,16 @@ class User_model extends CI_Model {
     public function update_user($email, $password, $runpace = NULL) {
         if ($password == '') {
             $data = array(
-                'email'      => $email,
-                'runpace'   => $runpace,
+                'email' => $email,
+                'runpace' => $runpace,
                 'updated_at' => date('Y-m-j H:i:s')
             );
         }
         else {
             $data = array(
-                'email'      => $email,
-                'password'   => $this->hash_password($password),
-                'runpace'   => $runpace,
+                'email' => $email,
+                'password' => $this->hash_password($password),
+                'runpace' => $runpace,
                 'updated_at' => date('Y-m-j H:i:s')
             );
         }
@@ -39,10 +39,21 @@ class User_model extends CI_Model {
             'id' => $_SESSION['user_id']
         );
 
-        var_dump($data);
         return $this->db->update('users', $data, $where);
     }
-	
+
+    public function confirm_user($id, $confirmed) {
+        $data = array(
+            'is_confirmed' => $confirmed
+        );
+
+        $where = array(
+            'id' => $id
+        );
+
+        return $this->db->update('users', $data, $where);
+    }
+
     public function resolve_user_login($email, $password) {
         $this->db->select('password');
         $this->db->from('users');
@@ -59,6 +70,11 @@ class User_model extends CI_Model {
 
         return $this->db->get()->row('id');
     }
+	
+    public function get_users() {
+        $this->db->order_by('id');
+        return $this->db->get('users')->result();      
+    }   
 	
     public function get_user($user_id) {
         $this->db->from('users');
