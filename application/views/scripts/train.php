@@ -4,7 +4,7 @@
         var url = 'index.php/train/index/';
         var map = initializeMap(url);
         var sessionid = " <?php if (isset($_SESSION['user_id'])) { echo $_SESSION['user_id']; } else { echo 0; } ?> ";
-        getMapCenter(url, map, sessionid);    
+        var centermarker = getMapCenter(url, map, sessionid);    
 
         var waypoints = [];
 
@@ -26,27 +26,12 @@
             });	
         }
 
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                map.setCenter(new google.maps.LatLng(position.coords.latitude,position.coords.longitude));
+        if (!existingroute) {
+            centermarker.addListener('click', function() {
+                var latlng = " <?php echo $latitude; ?> " + ', ' + " <?php echo $longitude; ?> ";
+                var waypoint = {location: latlng, stopover: true, title: '', titlelink: '', pointid: 0};
 
-                var center = new Array();       
-                center.lat = map.getCenter().lat();
-                center.lng = map.getCenter().lng();
-                
-                var marker = new google.maps.Marker({
-                    position: center,
-                    map: map
-                });
-                
-                if (!existingroute) {
-                    marker.addListener('click', function() {
-                        var latlng = center.lat.toString() + ', ' + center.lng.toString();
-                        var waypoint = {location: latlng, stopover: true, title: '', titlelink: '', pointid: 0};
-
-                        displayRoute(waypoints, waypoint, directionsService, directionsDisplay);
-                    });
-                }
+                displayRoute(waypoints, waypoint, directionsService, directionsDisplay);
             });
         }
                   

@@ -3,6 +3,8 @@
     <?php 
         $data = new stdClass();
         $data->instructions = 'Click on the map to submit a new location.';
+        $data->url = 'index.php/explore/index/';
+
         $this->load->view('viewparts/map.php', $data); 
     ?>
     <div id="pointInformation">

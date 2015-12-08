@@ -86,6 +86,11 @@
         <ul>
             <li>Added ability to create training routes</li>
         </ul>
+        <h4>0.13 Beta release</h4>
+        <ul>
+            <li>Fixed issue with location search</li>
+            <li>Added User Profile page</li>
+        </ul>
     </div>
 </div>
 

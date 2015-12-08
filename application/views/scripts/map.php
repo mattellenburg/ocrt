@@ -259,6 +259,8 @@
     }
 
     function getMapCenter(url, map, sessionid) {
+        var marker;
+        
         var mapview = "<?php echo $mapview?>";
         var zoom = "<?php echo $zoom?>";
         var latitude = "<?php echo $latitude?>";
@@ -288,13 +290,25 @@
 
             loadPoints(url, map, sessionid);
 
-            new google.maps.Marker({
+            marker = new google.maps.Marker({
                 position: new google.maps.LatLng(latitude, longitude),
                 map: map
             });
         }
+        
+        return marker;
     }
 
+    function getLatLong(url) {
+        var geocoder = new google.maps.Geocoder();
+
+        geocoder.geocode( { 'address': document.getElementById("address").value}, function(results, status) {
+            if (status === google.maps.GeocoderStatus.OK) {
+                redirectURL(url, "<?php echo $mapview?>", "<?php echo $zoom?>", results[0].geometry.location.lat(), results[0].geometry.location.lng(), "<?php if (isset($pointid)) { echo $pointid; } ?>");
+            } 
+        }); 
+    }
+    
     var getQueryString = function ( field, url ) {
         var href = url ? url : window.location.href;
         var reg = new RegExp( '[?&]' + field + '=([^&#]*)', 'i' );
